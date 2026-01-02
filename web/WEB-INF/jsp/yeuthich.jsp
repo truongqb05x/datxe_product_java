@@ -28,9 +28,11 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/index.jsp">Trang chủ</a></li>
-                    <li><a href="${pageContext.request.contextPath}/pages/xemay.jsp">Thuê Xe máy</a></li>
-                    <li><a href="${pageContext.request.contextPath}/pages/oto.jsp">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/">Trang chủ</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xemay.jsp">Thuê Xe máy</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xeoto.jsp">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/datxe.jsp">Đặt Xe</a></li>
+                    <li><a href="${pageContext.request.contextPath}/timkiem.jsp">Tìm Kiếm</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons" id="authButtons">
@@ -43,11 +45,11 @@
                 <div class="avatar-placeholder" id="avatarPlaceholder">U</div>
                 <div class="user-dropdown">
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/pages/profile.jsp"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
-                        <li><a href="${pageContext.request.contextPath}/pages/lichsu.jsp"><i class="fas fa-history"></i> Lịch sử thuê xe</a></li>
-                        <li><a href="${pageContext.request.contextPath}/pages/wishlist.jsp" class="active"><i class="fas fa-heart"></i> Xe yêu thích</a></li>
+                        <li><a href="${pageContext.request.contextPath}/trangcanhan.jsp"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
+                        <li><a href="${pageContext.request.contextPath}/lichsu.jsp"><i class="fas fa-history"></i> Lịch sử thuê xe</a></li>
+                        <li><a href="${pageContext.request.contextPath}/yeuthich.jsp" class="active"><i class="fas fa-heart"></i> Xe yêu thích</a></li>
                         <li class="divider"></li>
-                        <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                        <li><a href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
                     </ul>
                 </div>
             </div>

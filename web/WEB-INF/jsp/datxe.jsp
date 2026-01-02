@@ -17,9 +17,10 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">Trang chủ</a></li>
-                    <li><a href="xemay.html">Thuê Xe máy</a></li>
-                    <li><a href="#">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/">Trang chủ</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xemay.jsp">Thuê Xe máy</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xeoto.jsp">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/datxe.jsp" class="active">Đặt Xe</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons">
@@ -32,8 +33,8 @@
     <!-- Breadcrumb -->
     <div class="breadcrumb">
         <ul>
-            <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="xemay.html">Xe máy</a></li>
+            <li><a href="${pageContext.request.contextPath}/">Trang chủ</a></li>
+            <li><a href="${pageContext.request.contextPath}/xemay.jsp">Xe máy</a></li>
             <li>Đặt thuê xe</li>
         </ul>
     </div>

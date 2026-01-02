@@ -29,9 +29,11 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/index.jsp">Trang chủ</a></li>
-                    <li><a href="${pageContext.request.contextPath}/pages/xemay.jsp">Thuê Xe máy</a></li>
-                    <li><a href="#" class="active">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/">Trang chủ</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xemay.jsp">Thuê Xe máy</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xeoto.jsp" class="active">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/datxe.jsp">Đặt Xe</a></li>
+                    <li><a href="${pageContext.request.contextPath}/timkiem.jsp">Tìm Kiếm</a></li>
                 </ul>
             </nav>
             <div class="auth-buttons" id="authButtons">
@@ -44,11 +46,11 @@
                 <div class="avatar-placeholder" id="avatarPlaceholder">U</div>
                 <div class="user-dropdown">
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/pages/profile.jsp"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
-                        <li><a href="${pageContext.request.contextPath}/pages/lichsu.jsp"><i class="fas fa-history"></i> Lịch sử thuê xe</a></li>
-                        <li><a href="${pageContext.request.contextPath}/pages/wishlist.jsp"><i class="fas fa-heart"></i> Xe yêu thích</a></li>
+                        <li><a href="${pageContext.request.contextPath}/trangcanhan.jsp"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
+                        <li><a href="${pageContext.request.contextPath}/lichsu.jsp"><i class="fas fa-history"></i> Lịch sử thuê xe</a></li>
+                        <li><a href="${pageContext.request.contextPath}/yeuthich.jsp"><i class="fas fa-heart"></i> Xe yêu thích</a></li>
                         <li class="divider"></li>
-                        <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                        <li><a href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
                     </ul>
                 </div>
             </div>
@@ -61,12 +63,12 @@
         <!-- Mobile Menu -->
         <div class="mobile-menu" id="mobileMenu">
             <ul>
-                <li><a href="${pageContext.request.contextPath}/index.jsp">Trang chủ</a></li>
-                <li><a href="${pageContext.request.contextPath}/pages/xemay.jsp">Xe máy</a></li>
-                <li><a href="${pageContext.request.contextPath}/pages/dienthoai.jsp">Xe điện</a></li>
-                <li><a href="#" class="active">Ô tô</a></li>
-                <li><a href="${pageContext.request.contextPath}/pages/about.jsp">Về chúng tôi</a></li>
-                <li><a href="${pageContext.request.contextPath}/pages/contact.jsp">Liên hệ</a></li>
+                <li><a href="${pageContext.request.contextPath}/">Trang chủ</a></li>
+                <li><a href="${pageContext.request.contextPath}/xemay.jsp">Xe máy</a></li>
+                <li><a href="${pageContext.request.contextPath}/xeoto.jsp" class="active">Ô tô</a></li>
+                <li><a href="${pageContext.request.contextPath}/datxe.jsp">Đặt Xe</a></li>
+                <li><a href="${pageContext.request.contextPath}/timkiem.jsp">Tìm Kiếm</a></li>
+                <li><a href="${pageContext.request.contextPath}/yeuthich.jsp">Yêu Thích</a></li>
                 <li>
                     <div class="auth-buttons-mobile" id="authButtonsMobile">
                         <button class="btn btn-outline" id="loginBtnMobile" style="width: 100%; margin-bottom: 0.5rem;">Đăng nhập</button>
@@ -76,7 +78,7 @@
                         <div class="avatar-placeholder">U</div>
                         <div class="user-info">
                             <p>Xin chào, <span id="mobileUserName">Người dùng</span></p>
-                            <a href="#" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;" id="logoutBtnMobile">Đăng xuất</a>
+                            <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;">Đăng xuất</a>
                         </div>
                     </div>
                 </li>

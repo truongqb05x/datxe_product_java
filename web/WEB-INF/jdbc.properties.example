@@ -1,0 +1,18 @@
+# File cấu hình database - Đổi tên thành jdbc.properties và điền thông tin
+# Example: jdbc.properties.example -> jdbc.properties
+
+# URL kết nối MySQL
+# Format: jdbc:mysql://[host]:[port]/[database_name]?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+jdbc.url=jdbc:mysql://localhost:3306/rentcar?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+
+# Username và password database
+jdbc.username=root
+jdbc.password=
+
+# MySQL JDBC Driver class name
+jdbc.driver=com.mysql.cj.jdbc.Driver
+
+# Lưu ý: 
+# - File này là file mẫu, cần đổi tên thành jdbc.properties
+# - Không commit file jdbc.properties thật vào git (có thể thêm vào .gitignore)
+# - Trong DatabaseConnection.java, cần cập nhật để đọc từ file này thay vì hardcode

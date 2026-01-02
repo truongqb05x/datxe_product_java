@@ -38,7 +38,7 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
     
-    <!-- Booking Servlet -->
+    <!-- Booking Servlet - Comment out vì chưa có class
     <servlet>
         <servlet-name>bookingServlet</servlet-name>
         <servlet-class>nntruong.servlet.BookingServlet</servlet-class>
@@ -47,6 +47,7 @@
         <servlet-name>bookingServlet</servlet-name>
         <url-pattern>/api/booking/create</url-pattern>
     </servlet-mapping>
+    -->
     
     <!-- Spring DispatcherServlet - Xử lý root path và tất cả requests -->
     <servlet>

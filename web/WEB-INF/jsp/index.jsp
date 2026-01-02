@@ -1,4 +1,39 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="javax.servlet.http.HttpSession" %>
+<%
+    // Kiểm tra session để xác định user đã đăng nhập chưa
+    HttpSession sessionObj = request.getSession(false);
+    boolean isLoggedIn = false;
+    String userName = null;
+    String userEmail = null;
+    Integer userId = null;
+    
+    if (sessionObj != null && sessionObj.getAttribute("isLoggedIn") != null) {
+        isLoggedIn = (Boolean) sessionObj.getAttribute("isLoggedIn");
+        userName = (String) sessionObj.getAttribute("userName");
+        userEmail = (String) sessionObj.getAttribute("userEmail");
+        userId = (Integer) sessionObj.getAttribute("userId");
+    }
+    
+    // Lấy các thông báo lỗi/thành công từ request attributes (từ servlet)
+    String loginError = (String) request.getAttribute("loginError");
+    String registerError = (String) request.getAttribute("registerError");
+    String registerSuccess = (String) request.getAttribute("registerSuccess");
+    
+    // Lấy các giá trị đã nhập để giữ lại trong form khi có lỗi
+    String loginEmailValue = (String) request.getAttribute("loginEmail");
+    String registerFullNameValue = (String) request.getAttribute("registerFullName");
+    String registerPhoneValue = (String) request.getAttribute("registerPhone");
+    String registerEmailValue = (String) request.getAttribute("registerEmail");
+    
+    // Xác định modal nào cần mở (nếu có lỗi)
+    String openModal = null;
+    if (loginError != null) {
+        openModal = "login";
+    } else if (registerError != null) {
+        openModal = "register";
+    }
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -30,26 +65,35 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="#" class="active">Trang chủ</a></li>
-                    <li><a href="#">Thuê Xe máy</a></li>
-                    <li><a href="#">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/" class="active">Trang chủ</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xemay.jsp">Thuê Xe máy</a></li>
+                    <li><a href="${pageContext.request.contextPath}/xeoto.jsp">Thuê Ô tô</a></li>
+                    <li><a href="${pageContext.request.contextPath}/datxe.jsp">Đặt Xe</a></li>
+                    <li><a href="${pageContext.request.contextPath}/timkiem.jsp">Tìm Kiếm</a></li>
                 </ul>
             </nav>
-            <div class="auth-buttons" id="authButtons">
+            <!-- Auth Buttons - Ẩn nếu đã đăng nhập -->
+            <div class="auth-buttons" id="authButtons"<% if (isLoggedIn) { %> style="display: none;"<% } else { %> style="display: flex;"<% } %>>
                 <button class="btn btn-outline" id="loginBtn">Đăng nhập</button>
                 <button class="btn btn-primary" id="registerBtn">Đăng ký</button>
             </div>
             
-            <!-- User Avatar (hidden by default) -->
-            <div class="user-avatar" id="userAvatar" style="display: none;">
-                <div class="avatar-placeholder" id="avatarPlaceholder">U</div>
+            <!-- User Avatar - Hiển thị nếu đã đăng nhập -->
+            <div class="user-avatar" id="userAvatar"<% if (isLoggedIn) { %> style="display: block;"<% } else { %> style="display: none;"<% } %>>
+                <div class="avatar-placeholder" id="avatarPlaceholder"><% 
+                    if (userName != null && !userName.isEmpty()) { 
+                        out.print(userName.substring(0, 1).toUpperCase());
+                    } else {
+                        out.print("U");
+                    }
+                %></div>
                 <div class="user-dropdown">
                     <ul>
-                        <li><a href="#"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
-                        <li><a href="#"><i class="fas fa-history"></i> Lịch sử thuê xe</a></li>
-                        <li><a href="#"><i class="fas fa-heart"></i> Xe yêu thích</a></li>
+                        <li><a href="${pageContext.request.contextPath}/trangcanhan.jsp"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
+                        <li><a href="${pageContext.request.contextPath}/lichsu.jsp"><i class="fas fa-history"></i> Lịch sử thuê xe</a></li>
+                        <li><a href="${pageContext.request.contextPath}/yeuthich.jsp"><i class="fas fa-heart"></i> Xe yêu thích</a></li>
                         <li class="divider"></li>
-                        <li><a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                        <li><a href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
                     </ul>
                 </div>
             </div>
@@ -69,14 +113,22 @@
                 <li><a href="#">Về chúng tôi</a></li>
                 <li><a href="#">Liên hệ</a></li>
                 <li>
-                    <div class="auth-buttons-mobile" id="authButtonsMobile">
+                    <!-- Auth Buttons Mobile - Ẩn nếu đã đăng nhập -->
+                    <div class="auth-buttons-mobile" id="authButtonsMobile"<% if (isLoggedIn) { %> style="display: none;"<% } else { %> style="display: block;"<% } %>>
                         <button class="btn btn-outline" id="loginBtnMobile" style="width: 100%; margin-bottom: 0.5rem;">Đăng nhập</button>
                         <button class="btn btn-primary" id="registerBtnMobile" style="width: 100%;">Đăng ký</button>
                     </div>
-                    <div class="user-avatar-mobile" id="userAvatarMobile" style="display: none;">
-                        <div class="avatar-placeholder">U</div>
+                    <!-- User Avatar Mobile - Hiển thị nếu đã đăng nhập -->
+                    <div class="user-avatar-mobile" id="userAvatarMobile"<% if (isLoggedIn) { %> style="display: block;"<% } else { %> style="display: none;"<% } %>>
+                        <div class="avatar-placeholder"><% 
+                            if (userName != null && !userName.isEmpty()) { 
+                                out.print(userName.substring(0, 1).toUpperCase());
+                            } else {
+                                out.print("U");
+                            }
+                        %></div>
                         <div class="user-info">
-                            <p>Xin chào, <span id="mobileUserName">Người dùng</span></p>
+                            <p>Xin chào, <span id="mobileUserName"><%= userName != null ? userName : "Người dùng" %></span></p>
                             <a href="#" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;" id="logoutBtnMobile">Đăng xuất</a>
                         </div>
                     </div>
@@ -99,9 +151,16 @@
             </div>
             
             <form class="auth-form active" id="loginForm" action="${pageContext.request.contextPath}/login" method="POST">
+                <!-- Hiển thị thông báo lỗi đăng nhập -->
+                <% if (loginError != null) { %>
+                <div class="auth-message auth-error" id="loginError" style="background-color: #fee; color: #c33; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #fcc;">
+                    <i class="fas fa-exclamation-circle"></i> <%= loginError %>
+                </div>
+                <% } %>
+                
                 <div class="form-group">
                     <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" name="email" placeholder="Nhập email của bạn" required>
+                    <input type="email" id="loginEmail" name="email" placeholder="Nhập email của bạn" value="<%= loginEmailValue != null ? loginEmailValue : "" %>" required>
                 </div>
                 
                 <div class="form-group">
@@ -126,21 +185,35 @@
             
             <!-- Form đăng ký với layout 2 cột -->
             <form class="auth-form" id="registerForm" action="${pageContext.request.contextPath}/register" method="POST">
+                <!-- Hiển thị thông báo lỗi đăng ký -->
+                <% if (registerError != null) { %>
+                <div class="auth-message auth-error" id="registerError" style="background-color: #fee; color: #c33; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #fcc;">
+                    <i class="fas fa-exclamation-circle"></i> <%= registerError %>
+                </div>
+                <% } %>
+                
+                <!-- Hiển thị thông báo thành công đăng ký -->
+                <% if (registerSuccess != null) { %>
+                <div class="auth-message auth-success" id="registerSuccess" style="background-color: #efe; color: #3c3; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #cfc;">
+                    <i class="fas fa-check-circle"></i> <%= registerSuccess %>
+                </div>
+                <% } %>
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="registerName">Họ và tên</label>
-                        <input type="text" id="registerName" name="fullName" placeholder="Nhập họ và tên" required>
+                        <input type="text" id="registerName" name="fullName" placeholder="Nhập họ và tên" value="<%= registerFullNameValue != null ? registerFullNameValue : "" %>" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="registerPhone">Số điện thoại</label>
-                        <input type="tel" id="registerPhone" name="phone" placeholder="Nhập số điện thoại" required>
+                        <input type="tel" id="registerPhone" name="phone" placeholder="Nhập số điện thoại" value="<%= registerPhoneValue != null ? registerPhoneValue : "" %>" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="registerEmail">Email</label>
-                    <input type="email" id="registerEmail" name="email" placeholder="Nhập email của bạn" required>
+                    <input type="email" id="registerEmail" name="email" placeholder="Nhập email của bạn" value="<%= registerEmailValue != null ? registerEmailValue : "" %>" required>
                 </div>
                 
                 <div class="form-row">
@@ -791,9 +864,19 @@
         const logoutBtnMobile = document.getElementById('logoutBtnMobile');
         const avatarPlaceholder = document.getElementById('avatarPlaceholder');
 
-        // Check if user is logged in (for demo purposes)
-        let isLoggedIn = false;
-        let currentUser = null;
+        // Kiểm tra session từ server-side (JSP scriptlet)
+        // Giá trị này được set từ JSP scriptlet ở đầu file
+        var userLoggedIn = <%= isLoggedIn ? "true" : "false" %>;
+        var currentUser = null;
+        
+        // Nếu đã đăng nhập, lấy thông tin từ session
+        <% if (isLoggedIn && userName != null) { %>
+        currentUser = {
+            id: <%= userId != null ? userId : "null" %>,
+            name: '<%= userName != null ? userName.replace("'", "\\'") : "" %>',
+            email: '<%= userEmail != null ? userEmail.replace("'", "\\'") : "" %>'
+        };
+        <% } %>
 
         function openAuthModal(formType) {
             authModal.classList.add('active');
@@ -801,7 +884,7 @@
             
             if (formType === 'login') {
                 loginTab.click();
-            } else {
+            } else if (formType === 'register') {
                 registerTab.click();
             }
         }
@@ -862,22 +945,34 @@
             // Server-side validation will handle registration
         });
 
-        // Update UI after login
+        // Cập nhật UI dựa trên trạng thái đăng nhập
         function updateUIAfterLogin() {
-            if (isLoggedIn && currentUser) {
-                // Update avatar placeholder with first letter of name
-                avatarPlaceholder.textContent = currentUser.name.charAt(0).toUpperCase();
+            if (userLoggedIn && currentUser) {
+                // Cập nhật avatar placeholder với chữ cái đầu của tên
+                if (avatarPlaceholder) {
+                    avatarPlaceholder.textContent = currentUser.name.charAt(0).toUpperCase();
+                }
                 
-                // Show user avatar, hide auth buttons
-                userAvatar.style.display = 'block';
-                authButtons.style.display = 'none';
+                // Hiển thị user avatar, ẩn auth buttons
+                if (userAvatar) userAvatar.style.display = 'block';
+                if (authButtons) authButtons.style.display = 'none';
                 
-                // Update mobile menu
-                userAvatarMobile.style.display = 'block';
-                authButtonsMobile.style.display = 'none';
-                document.getElementById('mobileUserName').textContent = currentUser.name;
+                // Cập nhật mobile menu
+                if (userAvatarMobile) userAvatarMobile.style.display = 'block';
+                if (authButtonsMobile) authButtonsMobile.style.display = 'none';
+                const mobileUserNameEl = document.getElementById('mobileUserName');
+                if (mobileUserNameEl) mobileUserNameEl.textContent = currentUser.name;
+            } else {
+                // Ẩn user avatar, hiển thị auth buttons
+                if (userAvatar) userAvatar.style.display = 'none';
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userAvatarMobile) userAvatarMobile.style.display = 'none';
+                if (authButtonsMobile) authButtonsMobile.style.display = 'block';
             }
         }
+        
+        // Gọi hàm cập nhật UI khi trang load
+        updateUIAfterLogin();
 
         // Logout functionality
         function logout() {
@@ -1076,8 +1171,39 @@
         }
         
         window.addEventListener('load', initMap);
+        
+        // Tự động mở modal nếu có lỗi từ servlet
+        <% if (openModal != null) { %>
+        window.addEventListener('load', function() {
+            // Đợi một chút để đảm bảo DOM đã load xong
+            setTimeout(function() {
+                <% if (openModal.equals("login")) { %>
+                openAuthModal('login');
+                <% } else if (openModal.equals("register")) { %>
+                openAuthModal('register');
+                <% } %>
+            }, 100);
+        });
+        <% } %>
+        
+        // Xóa thông báo lỗi khi user bắt đầu nhập lại
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginErrorDiv = document.getElementById('loginError');
+        if (loginEmailInput && loginErrorDiv) {
+            loginEmailInput.addEventListener('input', function() {
+                loginErrorDiv.style.display = 'none';
+            });
+        }
+        
+        const registerEmailInput = document.getElementById('registerEmail');
+        const registerErrorDiv = document.getElementById('registerError');
+        if (registerEmailInput && registerErrorDiv) {
+            registerEmailInput.addEventListener('input', function() {
+                registerErrorDiv.style.display = 'none';
+            });
+        }
 
-        // Chatbot functionality
+        // Chatbot functionality (nếu có)
         const chatbotToggle = document.getElementById('chatbotToggle');
         const chatbotWindow = document.getElementById('chatbotWindow');
         const closeChatbot = document.getElementById('closeChatbot');
