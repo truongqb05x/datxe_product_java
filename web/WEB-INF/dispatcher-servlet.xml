@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+    <!-- URL Mapping - Root path và các trang JSP -->
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="order" value="0"/>
+        <property name="mappings">
+            <props>
+                <!-- Root path trỏ đến index controller -->
+                <prop key="/">indexController</prop>
+                <prop key="/index.jsp">indexController</prop>
+                <prop key="/datxe.jsp">datxeController</prop>
+                <prop key="/timkiem.jsp">timkiemController</prop>
+                <prop key="/lichsu.jsp">lichsuController</prop>
+                <prop key="/trangcanhan.jsp">trangcanhanController</prop>
+                <prop key="/xemay.jsp">xemayController</prop>
+                <prop key="/xeoto.jsp">xeotoController</prop>
+                <prop key="/yeuthich.jsp">yeuthichController</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- View Resolver -->
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- Handler cho static resources (CSS, JS, images) -->
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="order" value="1"/>
+        <property name="mappings">
+            <props>
+                <prop key="/css/**">defaultServletHandler</prop>
+                <prop key="/static/**">defaultServletHandler</prop>
+                <prop key="/js/**">defaultServletHandler</prop>
+                <prop key="/images/**">defaultServletHandler</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="defaultServletHandler" class="org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler"/>
+
+    <!-- Controllers -->
+    <bean name="indexController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="index"/>
+    </bean>
+
+    <bean name="datxeController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="datxe"/>
+    </bean>
+
+    <bean name="timkiemController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="timkiem"/>
+    </bean>
+
+    <bean name="lichsuController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="lichsu"/>
+    </bean>
+
+    <bean name="trangcanhanController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="trangcanhan"/>
+    </bean>
+
+    <bean name="xemayController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="xemay"/>
+    </bean>
+
+    <bean name="xeotoController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="xeoto"/>
+    </bean>
+
+    <bean name="yeuthichController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="yeuthich"/>
+    </bean>
+
+</beans>
