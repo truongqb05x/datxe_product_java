@@ -60,6 +60,10 @@ public class LoginServlet extends HttpServlet {
             errorMessage = "Vui lòng nhập email";
         } else if (password == null || password.trim().isEmpty()) {
             errorMessage = "Vui lòng nhập mật khẩu";
+        } else if (!isValidEmail(email.trim())) {
+            errorMessage = "Email không hợp lệ";
+        } else if (password.length() < 6) {
+            errorMessage = "Mật khẩu phải có ít nhất 6 ký tự";
         } else {
             try {
                 // Tìm user trong database theo email và password
@@ -87,9 +91,13 @@ public class LoginServlet extends HttpServlet {
                     // Set session attribute để biết user đã đăng nhập
                     session.setAttribute("isLoggedIn", true);
                     
-                    // Redirect về trang chủ sau khi đăng nhập thành công
-                    response.sendRedirect(request.getContextPath() + "/");
-                    return;
+                    // Đảm bảo response chưa được commit
+                    if (!response.isCommitted()) {
+                        // Redirect về trang chủ sau khi đăng nhập thành công
+                        // Sử dụng redirect để URL thay đổi thành "/" thay vì "/login"
+                        response.sendRedirect(request.getContextPath() + "/");
+                        return;
+                    }
                     
                 } else {
                     // Đăng nhập thất bại - email hoặc password không đúng
@@ -111,6 +119,17 @@ public class LoginServlet extends HttpServlet {
         
         // Forward về trang chủ (hoặc trang login nếu có)
         // Trang index.jsp sẽ hiển thị modal đăng nhập với thông báo lỗi
-        request.getRequestDispatcher("/").forward(request, response);
+        // Sử dụng IndexServlet để xử lý và hiển thị trang chủ
+        request.getRequestDispatcher("/index").forward(request, response);
+    }
+    
+    /**
+     * Kiểm tra định dạng email có hợp lệ không
+     * @param email Email cần kiểm tra
+     * @return true nếu email hợp lệ, false nếu không
+     */
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return email != null && email.matches(emailRegex);
     }
 }

@@ -7,35 +7,136 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>nntruong.listener.AppContextListener</listener-class>
+    </listener>
     
-    <!-- Login Servlet -->
+    <!-- Login Servlet - Phải đặt trước DispatcherServlet để được ưu tiên -->
     <servlet>
         <servlet-name>loginServlet</servlet-name>
         <servlet-class>nntruong.servlet.LoginServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>loginServlet</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
     
-    <!-- Register Servlet -->
+    <!-- Register Servlet - Phải đặt trước DispatcherServlet để được ưu tiên -->
     <servlet>
         <servlet-name>registerServlet</servlet-name>
         <servlet-class>nntruong.servlet.RegisterServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>registerServlet</servlet-name>
         <url-pattern>/register</url-pattern>
     </servlet-mapping>
     
-    <!-- Logout Servlet -->
+    <!-- Logout Servlet - Phải đặt trước DispatcherServlet để được ưu tiên -->
     <servlet>
         <servlet-name>logoutServlet</servlet-name>
         <servlet-class>nntruong.servlet.LogoutServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>logoutServlet</servlet-name>
         <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Default Servlet - Xử lý static resources (CSS, JS, images) -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.css</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.js</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.png</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.jpg</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.jpeg</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.gif</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>*.ico</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/css/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/js/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/static/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/images/*</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Index Servlet - Xử lý trang chủ và lấy danh sách xe nổi bật -->
+    <servlet>
+        <servlet-name>indexServlet</servlet-name>
+        <servlet-class>nntruong.servlet.IndexServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>indexServlet</servlet-name>
+        <url-pattern>/index</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>indexServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    
+    <!-- JSP Forward Servlet - Xử lý các trang JSP -->
+    <servlet>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <servlet-class>nntruong.servlet.JspForwardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <url-pattern>/xemay.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <url-pattern>/xeoto.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <url-pattern>/datxe.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <url-pattern>/timkiem.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <url-pattern>/lichsu.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <url-pattern>/trangcanhan.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>jspForwardServlet</servlet-name>
+        <url-pattern>/yeuthich.jsp</url-pattern>
     </servlet-mapping>
     
     <!-- Booking Servlet - Comment out vì chưa có class
@@ -49,7 +150,11 @@
     </servlet-mapping>
     -->
     
-    <!-- Spring DispatcherServlet - Xử lý root path và tất cả requests -->
+    <!-- Spring DispatcherServlet - Comment out vì không cần thiết -->
+    <!-- Các trang JSP đã được xử lý bởi JspForwardServlet -->
+    <!-- Root path "/" đã được IndexServlet xử lý -->
+    <!-- Có thể uncomment nếu cần sử dụng Spring MVC trong tương lai -->
+    <!--
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -57,12 +162,13 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>/WEB-INF/dispatcher-servlet.xml</param-value>
         </init-param>
-        <load-on-startup>1</load-on-startup>
+        <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+    -->
     
     <session-config>
         <session-timeout>30</session-timeout>

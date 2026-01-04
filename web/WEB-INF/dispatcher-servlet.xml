@@ -13,8 +13,7 @@
         <property name="order" value="0"/>
         <property name="mappings">
             <props>
-                <!-- Root path trỏ đến index controller -->
-                <prop key="/">indexController</prop>
+                <!-- Root path "/" đã được IndexServlet xử lý, không cần mapping ở đây -->
                 <prop key="/index.jsp">indexController</prop>
                 <prop key="/datxe.jsp">datxeController</prop>
                 <prop key="/timkiem.jsp">timkiemController</prop>
@@ -50,6 +49,10 @@
     <bean id="defaultServletHandler" class="org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler"/>
 
     <!-- Controllers -->
+    <!-- Controller để forward root path "/" đến IndexServlet -->
+    <bean name="indexRedirectController"
+          class="nntruong.controller.IndexController"/>
+    
     <bean name="indexController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName" value="index"/>

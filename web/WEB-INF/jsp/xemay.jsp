@@ -729,6 +729,9 @@
             }, 1000);
         });
 
+        // Wrap all DOM-related code in DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+
         // Mobile Menu
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
@@ -1071,6 +1074,7 @@
                 }
             });
         });
+        }); // End of DOMContentLoaded
     </script>
 </body>
 </html>

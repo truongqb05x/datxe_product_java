@@ -58,11 +58,15 @@ public class RegisterServlet extends HttpServlet {
         String errorMessage = null;
         String successMessage = null;
         
-        // Validation: Kiểm tra các trường bắt buộc
+        // Validation: Kiểm tra các trường bắt buộc và định dạng
         if (fullName == null || fullName.trim().isEmpty()) {
             errorMessage = "Vui lòng nhập họ và tên";
+        } else if (fullName.trim().length() < 3) {
+            errorMessage = "Họ và tên phải có ít nhất 3 ký tự";
         } else if (phone == null || phone.trim().isEmpty()) {
             errorMessage = "Vui lòng nhập số điện thoại";
+        } else if (!isValidPhoneNumber(phone.trim())) {
+            errorMessage = "Số điện thoại không hợp lệ (phải có 10 số)";
         } else if (email == null || email.trim().isEmpty()) {
             errorMessage = "Vui lòng nhập email";
         } else if (!isValidEmail(email.trim())) {
@@ -71,6 +75,8 @@ public class RegisterServlet extends HttpServlet {
             errorMessage = "Vui lòng nhập mật khẩu";
         } else if (password.length() < 6) {
             errorMessage = "Mật khẩu phải có ít nhất 6 ký tự";
+        } else if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+            errorMessage = "Vui lòng xác nhận mật khẩu";
         } else if (!password.equals(confirmPassword)) {
             errorMessage = "Mật khẩu xác nhận không khớp";
         } else {
@@ -133,18 +139,30 @@ public class RegisterServlet extends HttpServlet {
         request.setAttribute("registerPhone", phone);
         request.setAttribute("registerEmail", email);
         
-        // Forward về trang chủ (modal đăng ký sẽ hiển thị với thông báo lỗi)
-        request.getRequestDispatcher("/").forward(request, response);
+        // Forward về index.jsp (modal đăng ký sẽ hiển thị với thông báo lỗi)
+        // Sử dụng IndexServlet để xử lý và hiển thị trang chủ
+        request.getRequestDispatcher("/index").forward(request, response);
     }
     
     /**
-     * Kiểm tra định dạng email có hợp lệ không (validation đơn giản)
+     * Kiểm tra định dạng email có hợp lệ không
      * @param email Email cần kiểm tra
-     * @return true nếu email hợp lệ, false nếu không hợp lệ
+     * @return true nếu email hợp lệ, false nếu không
      */
     private boolean isValidEmail(String email) {
-        // Regex pattern để kiểm tra email
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email != null && email.matches(emailRegex);
+    }
+    
+    /**
+     * Kiểm tra định dạng số điện thoại có hợp lệ không (Việt Nam)
+     * @param phone Số điện thoại cần kiểm tra
+     * @return true nếu hợp lệ, false nếu không
+     */
+    private boolean isValidPhoneNumber(String phone) {
+        // Kiểm tra số điện thoại Việt Nam: 10 số, bắt đầu từ 0
+        // Hoặc: +84 hoặc 0 theo sau 9 số
+        String phoneRegex = "^(0|\\+84)[0-9]{9}$";
+        return phone != null && phone.matches(phoneRegex);
     }
 }

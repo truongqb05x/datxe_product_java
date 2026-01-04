@@ -5,6 +5,7 @@
         <group>
             <file>file:/D:/java/datxe_product/web/WEB-INF/jsp/index.jsp</file>
             <file>file:/D:/java/datxe_product/nbproject/build-impl.xml</file>
+            <file>file:/D:/java/datxe_product/src/java/nntruong/utils/DatabaseConnection.java</file>
         </group>
     </open-files>
 </project-private>
