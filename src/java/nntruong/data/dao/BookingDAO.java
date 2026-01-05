@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -223,6 +225,57 @@ public class BookingDAO {
                 }
             }
             return null;
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+    }
+    
+    /**
+     * Lấy danh sách booking của một user
+     * @param userId ID của user
+     * @return List<Booking> danh sách booking
+     */
+    public List<Booking> getBookingsByUserId(int userId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Booking> bookings = new ArrayList<>();
+        
+        try {
+            conn = dbConnection.getConnection();
+            
+            // Lấy danh sách booking của user, sắp xếp mới nhất lên đầu
+            String sql = "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC";
+            
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Booking booking = mapResultSetToBooking(rs);
+                
+                // Lấy thông tin vehicle cho mỗi booking
+                Vehicle vehicle = vehicleDAO.findById(booking.getVehicleId());
+                booking.setVehicle(vehicle);
+                
+                bookings.add(booking);
+            }
+            
+            conn.commit();
+            return bookings;
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy danh sách booking của user: " + e.getMessage());
+            e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return new ArrayList<>(); // Trả về list rỗng nếu lỗi
         } finally {
             closeResources(conn, stmt, rs);
         }

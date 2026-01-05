@@ -81,7 +81,6 @@
                     <li><a href="${pageContext.request.contextPath}/" class="active">Trang chủ</a></li>
                     <li><a href="${pageContext.request.contextPath}/xemay.jsp">Thuê Xe máy</a></li>
                     <li><a href="${pageContext.request.contextPath}/xeoto.jsp">Thuê Ô tô</a></li>
-                    <li><a href="${pageContext.request.contextPath}/datxe.jsp">Đặt Xe</a></li>
                 </ul>
             </nav>
             <!-- Auth Buttons - Ẩn nếu đã đăng nhập -->

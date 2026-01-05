@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.util.Locale;
+import nntruong.data.model.Vehicle;
 
 /**
  * Model class đại diện cho bảng bookings trong database
@@ -22,6 +23,9 @@ public class Booking {
     private Integer vehicleId;
     private Integer pickupLocationId;
     private Integer returnLocationId;
+    
+    // Linked object
+    private Vehicle vehicle;
     
     // Thông tin thời gian
     private Timestamp pickupDate;
@@ -139,6 +143,14 @@ public class Booking {
     
     public void setReturnDate(Timestamp returnDate) {
         this.returnDate = returnDate;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
     
     public Integer getTotalDays() {
