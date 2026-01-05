@@ -118,8 +118,15 @@
         <servlet-name>jspForwardServlet</servlet-name>
         <url-pattern>/xeoto.jsp</url-pattern>
     </servlet-mapping>
+    
+    <!-- DatXe Servlet - Xử lý trang đặt xe với thông tin xe -->
+    <servlet>
+        <servlet-name>datXeServlet</servlet-name>
+        <servlet-class>nntruong.servlet.DatXeServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
     <servlet-mapping>
-        <servlet-name>jspForwardServlet</servlet-name>
+        <servlet-name>datXeServlet</servlet-name>
         <url-pattern>/datxe.jsp</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
@@ -139,16 +146,16 @@
         <url-pattern>/yeuthich.jsp</url-pattern>
     </servlet-mapping>
     
-    <!-- Booking Servlet - Comment out vì chưa có class
+    <!-- Booking Servlet - Xử lý đặt xe -->
     <servlet>
         <servlet-name>bookingServlet</servlet-name>
         <servlet-class>nntruong.servlet.BookingServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>bookingServlet</servlet-name>
-        <url-pattern>/api/booking/create</url-pattern>
+        <url-pattern>/booking</url-pattern>
     </servlet-mapping>
-    -->
     
     <!-- Spring DispatcherServlet - Comment out vì không cần thiết -->
     <!-- Các trang JSP đã được xử lý bởi JspForwardServlet -->

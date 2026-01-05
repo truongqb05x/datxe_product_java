@@ -1,4 +1,45 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="javax.servlet.http.HttpSession" %>
+<%
+    // Kiểm tra session để xác định user đã đăng nhập chưa
+    HttpSession sessionObj = request.getSession(false);
+    boolean isLoggedIn = false;
+    String userName = null;
+    String userEmail = null;
+    Integer userId = null;
+    
+    // Kiểm tra session và các attribute
+    if (sessionObj != null) {
+        Object isLoggedInObj = sessionObj.getAttribute("isLoggedIn");
+        if (isLoggedInObj != null && isLoggedInObj instanceof Boolean) {
+            isLoggedIn = (Boolean) isLoggedInObj;
+            if (isLoggedIn) {
+                userName = (String) sessionObj.getAttribute("userName");
+                userEmail = (String) sessionObj.getAttribute("userEmail");
+                userId = (Integer) sessionObj.getAttribute("userId");
+            }
+        }
+    }
+    
+    // Lấy các thông báo lỗi/thành công từ request attributes (từ servlet)
+    String loginError = (String) request.getAttribute("loginError");
+    String registerError = (String) request.getAttribute("registerError");
+    String registerSuccess = (String) request.getAttribute("registerSuccess");
+    
+    // Lấy các giá trị đã nhập để giữ lại trong form khi có lỗi
+    String loginEmailValue = (String) request.getAttribute("loginEmail");
+    String registerFullNameValue = (String) request.getAttribute("registerFullName");
+    String registerPhoneValue = (String) request.getAttribute("registerPhone");
+    String registerEmailValue = (String) request.getAttribute("registerEmail");
+    
+    // Xác định modal nào cần mở (nếu có lỗi)
+    String openModal = null;
+    if (loginError != null) {
+        openModal = "login";
+    } else if (registerError != null) {
+        openModal = "register";
+    }
+%>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -36,14 +77,21 @@
                     <li><a href="${pageContext.request.contextPath}/timkiem.jsp">Tìm Kiếm</a></li>
                 </ul>
             </nav>
-            <div class="auth-buttons" id="authButtons">
+            <!-- Auth Buttons - Ẩn nếu đã đăng nhập -->
+            <div class="auth-buttons" id="authButtons"<% if (isLoggedIn) { %> style="display: none;"<% } else { %> style="display: flex;"<% } %>>
                 <button class="btn btn-outline" id="loginBtn">Đăng nhập</button>
                 <button class="btn btn-primary" id="registerBtn">Đăng ký</button>
             </div>
             
-            <!-- User Avatar (hidden by default) -->
-            <div class="user-avatar" id="userAvatar" style="display: none;">
-                <div class="avatar-placeholder" id="avatarPlaceholder">U</div>
+            <!-- User Avatar - Hiển thị nếu đã đăng nhập -->
+            <div class="user-avatar" id="userAvatar"<% if (isLoggedIn) { %> style="display: block;"<% } else { %> style="display: none;"<% } %>>
+                <div class="avatar-placeholder" id="avatarPlaceholder"><% 
+                    if (userName != null && !userName.isEmpty()) { 
+                        out.print(userName.substring(0, 1).toUpperCase());
+                    } else {
+                        out.print("U");
+                    }
+                %></div>
                 <div class="user-dropdown">
                     <ul>
                         <li><a href="${pageContext.request.contextPath}/trangcanhan.jsp"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
@@ -70,14 +118,22 @@
                 <li><a href="${pageContext.request.contextPath}/timkiem.jsp">Tìm Kiếm</a></li>
                 <li><a href="${pageContext.request.contextPath}/yeuthich.jsp">Yêu Thích</a></li>
                 <li>
-                    <div class="auth-buttons-mobile" id="authButtonsMobile">
+                    <!-- Auth Buttons Mobile - Ẩn nếu đã đăng nhập -->
+                    <div class="auth-buttons-mobile" id="authButtonsMobile"<% if (isLoggedIn) { %> style="display: none;"<% } else { %> style="display: block;"<% } %>>
                         <button class="btn btn-outline" id="loginBtnMobile" style="width: 100%; margin-bottom: 0.5rem;">Đăng nhập</button>
                         <button class="btn btn-primary" id="registerBtnMobile" style="width: 100%;">Đăng ký</button>
                     </div>
-                    <div class="user-avatar-mobile" id="userAvatarMobile" style="display: none;">
-                        <div class="avatar-placeholder">U</div>
+                    <!-- User Avatar Mobile - Hiển thị nếu đã đăng nhập -->
+                    <div class="user-avatar-mobile" id="userAvatarMobile"<% if (isLoggedIn) { %> style="display: block;"<% } else { %> style="display: none;"<% } %>>
+                        <div class="avatar-placeholder"><% 
+                            if (userName != null && !userName.isEmpty()) { 
+                                out.print(userName.substring(0, 1).toUpperCase());
+                            } else {
+                                out.print("U");
+                            }
+                        %></div>
                         <div class="user-info">
-                            <p>Xin chào, <span id="mobileUserName">Người dùng</span></p>
+                            <p>Xin chào, <span id="mobileUserName"><%= userName != null ? userName : "Người dùng" %></span></p>
                             <a href="${pageContext.request.contextPath}/logout" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;">Đăng xuất</a>
                         </div>
                     </div>
@@ -100,9 +156,16 @@
             </div>
             
             <form class="auth-form active" id="loginForm" action="${pageContext.request.contextPath}/login" method="POST">
+                <!-- Hiển thị thông báo lỗi đăng nhập -->
+                <% if (loginError != null) { %>
+                <div class="auth-message auth-error" id="loginError" style="background-color: #fee; color: #c33; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #fcc;">
+                    <i class="fas fa-exclamation-circle"></i> <%= loginError %>
+                </div>
+                <% } %>
+                
                 <div class="form-group">
                     <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" name="email" placeholder="Nhập email của bạn" required>
+                    <input type="email" id="loginEmail" name="email" placeholder="Nhập email của bạn" value="<%= loginEmailValue != null ? loginEmailValue : "" %>" required>
                 </div>
                 
                 <div class="form-group">
@@ -127,21 +190,35 @@
             
             <!-- Form đăng ký với layout 2 cột -->
             <form class="auth-form" id="registerForm" action="${pageContext.request.contextPath}/register" method="POST">
+                <!-- Hiển thị thông báo lỗi đăng ký -->
+                <% if (registerError != null) { %>
+                <div class="auth-message auth-error" id="registerError" style="background-color: #fee; color: #c33; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #fcc;">
+                    <i class="fas fa-exclamation-circle"></i> <%= registerError %>
+                </div>
+                <% } %>
+                
+                <!-- Hiển thị thông báo thành công đăng ký -->
+                <% if (registerSuccess != null) { %>
+                <div class="auth-message auth-success" id="registerSuccess" style="background-color: #efe; color: #3c3; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #cfc;">
+                    <i class="fas fa-check-circle"></i> <%= registerSuccess %>
+                </div>
+                <% } %>
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="registerName">Họ và tên</label>
-                        <input type="text" id="registerName" name="fullName" placeholder="Nhập họ và tên" required>
+                        <input type="text" id="registerName" name="fullName" placeholder="Nhập họ và tên" value="<%= registerFullNameValue != null ? registerFullNameValue : "" %>" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="registerPhone">Số điện thoại</label>
-                        <input type="tel" id="registerPhone" name="phone" placeholder="Nhập số điện thoại" required>
+                        <input type="tel" id="registerPhone" name="phone" placeholder="Nhập số điện thoại" value="<%= registerPhoneValue != null ? registerPhoneValue : "" %>" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="registerEmail">Email</label>
-                    <input type="email" id="registerEmail" name="email" placeholder="Nhập email của bạn" required>
+                    <input type="email" id="registerEmail" name="email" placeholder="Nhập email của bạn" value="<%= registerEmailValue != null ? registerEmailValue : "" %>" required>
                 </div>
                 
                 <div class="form-row">
@@ -277,7 +354,7 @@
                     <div class="car-price">850.000đ <span>/ngày</span></div>
                     
                     <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="openVehicleModal('toyota-vios')">Chi tiết xe</button>
-                    <button class="btn btn-outline" style="width: 100%;" onclick="location.href='${pageContext.request.contextPath}/pages/datxe.jsp'">Thuê ngay</button>
+                    <button class="btn btn-outline" style="width: 100%;" onclick="checkLoginAndRent('toyota-vios')">Thuê ngay</button>
                     
                     <!-- Social Features -->
                     <div class="social-features">
@@ -327,7 +404,7 @@
                     <div class="car-price">1.200.000đ <span>/ngày</span></div>
                     
                     <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="openVehicleModal('honda-crv')">Chi tiết xe</button>
-                    <button class="btn btn-outline" style="width: 100%;" onclick="location.href='${pageContext.request.contextPath}/pages/datxe.jsp'">Thuê ngay</button>
+                    <button class="btn btn-outline" style="width: 100%;" onclick="checkLoginAndRent('honda-crv')">Thuê ngay</button>
                     
                     <div class="social-features">
                         <button class="btn-share">
@@ -376,7 +453,7 @@
                     <div class="car-price">2.500.000đ <span>/ngày</span></div>
                     
                     <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="openVehicleModal('mercedes-c200')">Chi tiết xe</button>
-                    <button class="btn btn-outline" style="width: 100%;" onclick="location.href='${pageContext.request.contextPath}/pages/datxe.jsp'">Thuê ngay</button>
+                    <button class="btn btn-outline" style="width: 100%;" onclick="checkLoginAndRent('mercedes-c200')">Thuê ngay</button>
                     
                     <div class="social-features">
                         <button class="btn-share">
@@ -425,7 +502,7 @@
                     <div class="car-price">1.800.000đ <span>/ngày</span></div>
                     
                     <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="openVehicleModal('ford-ranger')">Chi tiết xe</button>
-                    <button class="btn btn-outline" style="width: 100%;" onclick="location.href='${pageContext.request.contextPath}/pages/datxe.jsp'">Thuê ngay</button>
+                    <button class="btn btn-outline" style="width: 100%;" onclick="checkLoginAndRent('ford-ranger')">Thuê ngay</button>
                     
                     <div class="social-features">
                         <button class="btn-share">
@@ -474,7 +551,7 @@
                     <div class="car-price">650.000đ <span>/ngày</span></div>
                     
                     <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="openVehicleModal('hyundai-grandi10')">Chi tiết xe</button>
-                    <button class="btn btn-outline" style="width: 100%;" onclick="location.href='${pageContext.request.contextPath}/pages/datxe.jsp'">Thuê ngay</button>
+                    <button class="btn btn-outline" style="width: 100%;" onclick="checkLoginAndRent('hyundai-grandi10')">Thuê ngay</button>
                     
                     <div class="social-features">
                         <button class="btn-share">
@@ -523,7 +600,7 @@
                     <div class="car-price">3.200.000đ <span>/ngày</span></div>
                     
                     <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem;" onclick="openVehicleModal('bmw-x5')">Chi tiết xe</button>
-                    <button class="btn btn-outline" style="width: 100%;" onclick="location.href='${pageContext.request.contextPath}/pages/datxe.jsp'">Thuê ngay</button>
+                    <button class="btn btn-outline" style="width: 100%;" onclick="checkLoginAndRent('bmw-x5')">Thuê ngay</button>
                     
                     <div class="social-features">
                         <button class="btn-share">
@@ -669,7 +746,7 @@
                     
                     <div class="modal-actions">
                         <button class="btn btn-outline">Thêm vào yêu thích</button>
-                        <button class="btn btn-primary" onclick="location.href='${pageContext.request.contextPath}/pages/datxe.jsp'">Thuê ngay</button>
+                        <button class="btn btn-primary" id="rentNowModalBtn">Thuê ngay</button>
                     </div>
                 </div>
             </div>
@@ -724,6 +801,59 @@
     </footer>
 
     <script>
+        // Global variables
+        var userLoggedIn = <%= isLoggedIn ? "true" : "false" %>;
+        var currentUser = null;
+        var currentVehicleId = null; // Lưu vehicleId hiện tại trong modal
+        
+        // Nếu đã đăng nhập, lấy thông tin từ session
+        <% if (isLoggedIn && userName != null) { %>
+        currentUser = {
+            id: <%= userId != null ? userId : "null" %>,
+            name: '<%= userName != null ? userName.replace("'", "\\'") : "" %>',
+            email: '<%= userEmail != null ? userEmail.replace("'", "\\'") : "" %>'
+        };
+        <% } %>
+        
+        // Hàm mở modal đăng nhập - Phải ở global scope
+        function openAuthModalGlobal(formType) {
+            // Đợi DOM load xong
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    openAuthModalGlobal(formType);
+                });
+                return;
+            }
+            
+            const authModal = document.getElementById('authModal');
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            
+            if (authModal) {
+                authModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                if (formType === 'login' && loginTab) {
+                    loginTab.click();
+                } else if (formType === 'register' && registerTab) {
+                    registerTab.click();
+                }
+            }
+        }
+        
+        // Hàm kiểm tra đăng nhập và chuyển đến trang đặt xe
+        function checkLoginAndRent(vehicleId) {
+            if (!userLoggedIn) {
+                // Chưa đăng nhập, mở modal đăng nhập
+                openAuthModalGlobal('login');
+                // Lưu vehicleId để sau khi đăng nhập có thể redirect
+                sessionStorage.setItem('pendingRentVehicleId', vehicleId);
+            } else {
+                // Đã đăng nhập, chuyển đến trang đặt xe
+                window.location.href = '${pageContext.request.contextPath}/datxe.jsp?vehicleId=' + vehicleId;
+            }
+        }
+        
         // Full Page Loading
         window.addEventListener('load', function() {
             setTimeout(function() {
@@ -763,13 +893,7 @@
         const userAvatar = document.getElementById('userAvatar');
         const authButtonsMobile = document.getElementById('authButtonsMobile');
         const userAvatarMobile = document.getElementById('userAvatarMobile');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const logoutBtnMobile = document.getElementById('logoutBtnMobile');
         const avatarPlaceholder = document.getElementById('avatarPlaceholder');
-
-        // Check if user is logged in (for demo purposes)
-        let isLoggedIn = false;
-        let currentUser = null;
 
         function openAuthModal(formType) {
             authModal.classList.add('active');
@@ -788,88 +912,119 @@
             mobileMenu.classList.remove('active');
         }
 
-        loginBtn.addEventListener('click', () => openAuthModal('login'));
-        registerBtn.addEventListener('click', () => openAuthModal('register'));
-        loginBtnMobile.addEventListener('click', () => openAuthModal('login'));
-        registerBtnMobile.addEventListener('click', () => openAuthModal('register'));
+        // Chỉ thêm event listener nếu phần tử tồn tại
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => openAuthModal('login'));
+        }
+        if (registerBtn) {
+            registerBtn.addEventListener('click', () => openAuthModal('register'));
+        }
+        if (loginBtnMobile) {
+            loginBtnMobile.addEventListener('click', () => openAuthModal('login'));
+        }
+        if (registerBtnMobile) {
+            registerBtnMobile.addEventListener('click', () => openAuthModal('register'));
+        }
         
-        closeAuth.addEventListener('click', closeAuthModal);
+        if (closeAuth) {
+            closeAuth.addEventListener('click', closeAuthModal);
+        }
         
-        loginTab.addEventListener('click', () => {
-            loginTab.classList.add('active');
-            registerTab.classList.remove('active');
-            loginForm.classList.add('active');
-            registerForm.classList.remove('active');
-            authTitle.textContent = 'Đăng nhập';
-        });
+        if (loginTab) {
+            loginTab.addEventListener('click', () => {
+                loginTab.classList.add('active');
+                if (registerTab) registerTab.classList.remove('active');
+                if (loginForm) loginForm.classList.add('active');
+                if (registerForm) registerForm.classList.remove('active');
+                if (authTitle) authTitle.textContent = 'Đăng nhập';
+            });
+        }
         
-        registerTab.addEventListener('click', () => {
-            registerTab.classList.add('active');
-            loginTab.classList.remove('active');
-            registerForm.classList.add('active');
-            loginForm.classList.remove('active');
-            authTitle.textContent = 'Đăng ký';
-        });
+        if (registerTab) {
+            registerTab.addEventListener('click', () => {
+                registerTab.classList.add('active');
+                if (loginTab) loginTab.classList.remove('active');
+                if (registerForm) registerForm.classList.add('active');
+                if (loginForm) loginForm.classList.remove('active');
+                if (authTitle) authTitle.textContent = 'Đăng ký';
+            });
+        }
         
-        switchToRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            registerTab.click();
-        });
+        if (switchToRegister) {
+            switchToRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (registerTab) registerTab.click();
+            });
+        }
         
-        switchToLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginTab.click();
-        });
+        if (switchToLogin) {
+            switchToLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (loginTab) loginTab.click();
+            });
+        }
         
-        window.addEventListener('click', (e) => {
-            if (e.target === authModal) {
-                closeAuthModal();
-            }
-        });
+        if (authModal) {
+            window.addEventListener('click', (e) => {
+                if (e.target === authModal) {
+                    closeAuthModal();
+                }
+            });
+        }
 
         // Form Submission
-        loginForm.addEventListener('submit', (e) => {
-            // Let the form submit normally to the server
-            // Server-side validation will handle authentication
-        });
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                // Let the form submit normally to the server
+                // Server-side validation will handle authentication
+            });
+        }
         
-        registerForm.addEventListener('submit', (e) => {
-            // Let the form submit normally to the server
-            // Server-side validation will handle registration
-        });
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => {
+                // Let the form submit normally to the server
+                // Server-side validation will handle registration
+            });
+        }
 
-        // Update UI after login
+        // Cập nhật UI dựa trên trạng thái đăng nhập
         function updateUIAfterLogin() {
-            if (isLoggedIn && currentUser) {
-                // Update avatar placeholder with first letter of name
-                avatarPlaceholder.textContent = currentUser.name.charAt(0).toUpperCase();
+            if (userLoggedIn && currentUser) {
+                // Cập nhật avatar placeholder với chữ cái đầu của tên
+                if (avatarPlaceholder) {
+                    avatarPlaceholder.textContent = currentUser.name.charAt(0).toUpperCase();
+                }
                 
-                // Show user avatar, hide auth buttons
-                userAvatar.style.display = 'block';
-                authButtons.style.display = 'none';
+                // Hiển thị user avatar, ẩn auth buttons
+                if (userAvatar) userAvatar.style.display = 'block';
+                if (authButtons) authButtons.style.display = 'none';
                 
-                // Update mobile menu
-                userAvatarMobile.style.display = 'block';
-                authButtonsMobile.style.display = 'none';
-                document.getElementById('mobileUserName').textContent = currentUser.name;
+                // Cập nhật mobile menu
+                if (userAvatarMobile) userAvatarMobile.style.display = 'block';
+                if (authButtonsMobile) authButtonsMobile.style.display = 'none';
+                const mobileUserNameEl = document.getElementById('mobileUserName');
+                if (mobileUserNameEl) mobileUserNameEl.textContent = currentUser.name;
+                
+                // Kiểm tra nếu có vehicleId đang chờ (sau khi đăng nhập)
+                const pendingVehicleId = sessionStorage.getItem('pendingRentVehicleId');
+                if (pendingVehicleId) {
+                    // Xóa vehicleId khỏi sessionStorage
+                    sessionStorage.removeItem('pendingRentVehicleId');
+                    // Redirect đến trang đặt xe
+                    window.location.href = '${pageContext.request.contextPath}/datxe.jsp?vehicleId=' + pendingVehicleId;
+                    return; // Dừng lại để không cập nhật UI nữa vì sẽ redirect
+                }
+            } else {
+                // Ẩn user avatar, hiển thị auth buttons
+                if (userAvatar) userAvatar.style.display = 'none';
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userAvatarMobile) userAvatarMobile.style.display = 'none';
+                if (authButtonsMobile) authButtonsMobile.style.display = 'block';
             }
         }
-
-        // Logout functionality
-        function logout() {
-            // Redirect to logout servlet
-            window.location.href = '${pageContext.request.contextPath}/logout';
-        }
-
-        logoutBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
-
-        logoutBtnMobile.addEventListener('click', (e) => {
-            e.preventDefault();
-            logout();
-        });
+        
+        // Gọi hàm cập nhật UI khi trang load
+        updateUIAfterLogin();
 
         // Wishlist Toggle
         document.querySelectorAll('.btn-wishlist').forEach(button => {
@@ -886,20 +1041,145 @@
         // Vehicle Modal Functions
         const vehicleModal = document.getElementById('vehicleModal');
         const closeModal = document.getElementById('closeModal');
+        const rentNowModalBtn = document.getElementById('rentNowModalBtn');
         
-        function openVehicleModal(vehicleId) {
+        function changeMainImage(src) {
+            document.getElementById('mainImage').src = src;
+        }
+        
+        function playVideo(video) {
+            const mainImage = document.getElementById('mainImage');
+            const videoContainer = document.createElement('div');
+            videoContainer.className = 'main-image';
+            videoContainer.innerHTML = `
+                <video controls autoplay style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
+                    <source src="${video.querySelector('source').src}" type="video/mp4">
+                </video>
+            `;
+            mainImage.parentNode.replaceChild(videoContainer, mainImage);
+        }
+        
+        // Thêm event listener cho nút "Thuê ngay" trong modal
+        if (rentNowModalBtn) {
+            rentNowModalBtn.addEventListener('click', function() {
+                if (currentVehicleId) {
+                    checkLoginAndRent(currentVehicleId);
+                }
+            });
+        }
+        
+        if (closeModal && vehicleModal) {
+            closeModal.addEventListener('click', () => {
+                vehicleModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === vehicleModal) {
+                    vehicleModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+
+        // Filter Functionality
+        const brandFilter = document.getElementById('brand-filter');
+        const typeFilter = document.getElementById('type-filter');
+        const priceFilter = document.getElementById('price-filter');
+        const seatsFilter = document.getElementById('seats-filter');
+        const sortBy = document.getElementById('sort-by');
+
+        function applyFilters() {
+            // Logic for filtering and sorting cars
+            console.log('Applying filters...');
+            // In a real application, this would make an API call or filter the displayed items
+        }
+
+        if (brandFilter) brandFilter.addEventListener('change', applyFilters);
+        if (typeFilter) typeFilter.addEventListener('change', applyFilters);
+        if (priceFilter) priceFilter.addEventListener('change', applyFilters);
+        if (seatsFilter) seatsFilter.addEventListener('change', applyFilters);
+        if (sortBy) sortBy.addEventListener('change', applyFilters);
+
+        // Pagination
+        document.querySelectorAll('.pagination button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.pagination button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                // In a real application, this would load the corresponding page
+            });
+        });
+
+        // Share functionality
+        document.querySelectorAll('.btn-share').forEach(button => {
+            button.addEventListener('click', function() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Thuê xe ô tô - RentCar',
+                        text: 'Xem xe ô tô chất lượng cao tại RentCar',
+                        url: window.location.href,
+                    })
+                    .then(() => console.log('Successful share'))
+                    .catch((error) => console.log('Error sharing:', error));
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    alert('Chia sẻ: ' + window.location.href);
+                }
+            });
+        });
+        
+        // Tự động mở modal nếu có lỗi từ servlet
+        <% if (openModal != null) { %>
+        window.addEventListener('load', function() {
+            // Đợi một chút để đảm bảo DOM đã load xong
+            setTimeout(function() {
+                <% if (openModal.equals("login")) { %>
+                openAuthModal('login');
+                <% } else if (openModal.equals("register")) { %>
+                openAuthModal('register');
+                <% } %>
+            }, 100);
+        });
+        <% } %>
+        
+        // Xóa thông báo lỗi khi user bắt đầu nhập lại
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginErrorDiv = document.getElementById('loginError');
+        if (loginEmailInput && loginErrorDiv) {
+            loginEmailInput.addEventListener('input', function() {
+                loginErrorDiv.style.display = 'none';
+            });
+        }
+        
+        const registerEmailInput = document.getElementById('registerEmail');
+        const registerErrorDiv = document.getElementById('registerError');
+        if (registerEmailInput && registerErrorDiv) {
+            registerEmailInput.addEventListener('input', function() {
+                registerErrorDiv.style.display = 'none';
+            });
+        }
+        
+        // Giữ lại hàm openVehicleModal từ code gốc
+        window.openVehicleModal = function(vehicleId) {
+            currentVehicleId = vehicleId; // Lưu vehicleId vào biến global
+            
             // Hiển thị loading trong modal
-            vehicleModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
+            if (vehicleModal) {
+                vehicleModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
             
             // Giả lập loading 2 giây
             setTimeout(() => {
                 // Cập nhật thông tin xe dựa trên vehicleId
                 updateModalContent(vehicleId);
             }, 2000);
-        }
+        };
         
-        function updateModalContent(vehicleId) {
+        // Giữ lại hàm updateModalContent từ code gốc
+        window.updateModalContent = function(vehicleId) {
             const vehicleData = {
                 'toyota-vios': {
                     name: 'Toyota Vios 2023',
@@ -1002,84 +1282,10 @@
                 document.getElementById('totalPrice').textContent = data.totalPrice;
                 document.getElementById('mainImage').src = data.mainImage;
             }
-        }
-        
-        function changeMainImage(src) {
-            document.getElementById('mainImage').src = src;
-        }
-        
-        function playVideo(video) {
-            const mainImage = document.getElementById('mainImage');
-            const videoContainer = document.createElement('div');
-            videoContainer.className = 'main-image';
-            videoContainer.innerHTML = `
-                <video controls autoplay style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
-                    <source src="${video.querySelector('source').src}" type="video/mp4">
-                </video>
-            `;
-            mainImage.parentNode.replaceChild(videoContainer, mainImage);
-        }
-        
-        closeModal.addEventListener('click', () => {
-            vehicleModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
-        
-        window.addEventListener('click', (e) => {
-            if (e.target === vehicleModal) {
-                vehicleModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-
-        // Filter Functionality
-        const brandFilter = document.getElementById('brand-filter');
-        const typeFilter = document.getElementById('type-filter');
-        const priceFilter = document.getElementById('price-filter');
-        const seatsFilter = document.getElementById('seats-filter');
-        const sortBy = document.getElementById('sort-by');
-
-        function applyFilters() {
-            // Logic for filtering and sorting cars
-            console.log('Applying filters...');
-            // In a real application, this would make an API call or filter the displayed items
-        }
-
-        brandFilter.addEventListener('change', applyFilters);
-        typeFilter.addEventListener('change', applyFilters);
-        priceFilter.addEventListener('change', applyFilters);
-        seatsFilter.addEventListener('change', applyFilters);
-        sortBy.addEventListener('change', applyFilters);
-
-        // Pagination
-        document.querySelectorAll('.pagination button').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.pagination button').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                this.classList.add('active');
-                // In a real application, this would load the corresponding page
-            });
-        });
-
-        // Share functionality
-        document.querySelectorAll('.btn-share').forEach(button => {
-            button.addEventListener('click', function() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Thuê xe ô tô - RentCar',
-                        text: 'Xem xe ô tô chất lượng cao tại RentCar',
-                        url: window.location.href,
-                    })
-                    .then(() => console.log('Successful share'))
-                    .catch((error) => console.log('Error sharing:', error));
-                } else {
-                    // Fallback for browsers that don't support Web Share API
-                    alert('Chia sẻ: ' + window.location.href);
-                }
-            });
-        });
+        };
         }); // End of DOMContentLoaded
+        
+        
     </script>
 </body>
 </html>
