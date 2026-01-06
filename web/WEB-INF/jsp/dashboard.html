@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar Admin - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../../css/pages/dashboard.css">
+    </head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-car"></i>
+            <h2>RentCar Admin</h2>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link dropdown-toggle" data-target="vehicle-submenu">
+                    <i class="fas fa-car"></i>
+                    <span>Quản lý xe</span>
+                </a>
+                <ul class="nav-dropdown" id="vehicle-submenu">
+                    <li><a href="#" class="nav-link"><i class="fas fa-list"></i> Tất cả xe</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-plus"></i> Thêm xe mới</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-map-marker-alt"></i> Vị trí xe</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-tags"></i> Danh mục</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-copyright"></i> Thương hiệu</a></li>
+                </ul>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link dropdown-toggle" data-target="booking-submenu">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Đơn đặt xe</span>
+                </a>
+                <ul class="nav-dropdown" id="booking-submenu">
+                    <li><a href="#" class="nav-link"><i class="fas fa-list"></i> Tất cả đơn</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-clock"></i> Đang chờ</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-check-circle"></i> Đã xác nhận</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-times-circle"></i> Đã hủy</a></li>
+                </ul>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link dropdown-toggle" data-target="user-submenu">
+                    <i class="fas fa-users"></i>
+                    <span>Quản lý người dùng</span>
+                </a>
+                <ul class="nav-dropdown" id="user-submenu">
+                    <li><a href="#" class="nav-link"><i class="fas fa-user-friends"></i> Tất cả người dùng</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-user-plus"></i> Thêm người dùng</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-id-card"></i> Xác thực giấy tờ</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-comments"></i> Phản hồi & Đánh giá</a></li>
+                </ul>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Thanh toán</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link dropdown-toggle" data-target="report-submenu">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Báo cáo & Thống kê</span>
+                </a>
+                <ul class="nav-dropdown" id="report-submenu">
+                    <li><a href="#" class="nav-link"><i class="fas fa-chart-line"></i> Doanh thu</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-chart-pie"></i> Phân tích</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-file-export"></i> Xuất báo cáo</a></li>
+                </ul>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link dropdown-toggle" data-target="content-submenu">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Nội dung</span>
+                </a>
+                <ul class="nav-dropdown" id="content-submenu">
+                    <li><a href="#" class="nav-link"><i class="fas fa-blog"></i> Bài viết</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-envelope"></i> Liên hệ</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-comments"></i> Chatbot</a></li>
+                </ul>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Cài đặt</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div>
+                    <h4>Admin User</h4>
+                    <p>Quản trị viên</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Dashboard</h1>
+                <p>Xin chào Admin, đây là tổng quan hệ thống</p>
+            </div>
+            
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm...">
+                </div>
+                
+                <div class="notification">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">5</span>
+                </div>
+                
+                <div class="user-avatar">A</div>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon icon-revenue">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>DOANH THU THÁNG</h3>
+                    <div class="stat-value">42.5M ₫</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12.5% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-bookings">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>ĐƠN ĐẶT XE</h3>
+                    <div class="stat-value">187</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8.2% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-vehicles">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>XE ĐANG HOẠT ĐỘNG</h3>
+                    <div class="stat-value">45</div>
+                    <div class="stat-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>2 xe đang bảo trì</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-users">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>NGƯỜI DÙNG MỚI</h3>
+                    <div class="stat-value">68</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>23.6% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Recent Activities -->
+        <div class="charts-row">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>DOANH THU THEO THÁNG</h3>
+                    <div class="chart-actions">
+                        <button class="chart-btn active" data-chart="monthly">Tháng</button>
+                        <button class="chart-btn" data-chart="quarterly">Quý</button>
+                        <button class="chart-btn" data-chart="yearly">Năm</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="recent-container">
+                <div class="recent-header">
+                    <h3>HOẠT ĐỘNG GẦN ĐÂY</h3>
+                </div>
+                <ul class="recent-list">
+                    <li class="recent-item">
+                        <div class="recent-icon icon-booking">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="recent-info">
+                            <h4>Đơn đặt mới #RENT20230045</h4>
+                            <p>Nguyễn Văn A - Toyota Vios</p>
+                        </div>
+                        <div class="recent-time">10 phút trước</div>
+                    </li>
+                    <li class="recent-item">
+                        <div class="recent-icon icon-payment">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="recent-info">
+                            <h4>Thanh toán thành công</h4>
+                            <p>Trần Thị B - 2.150.000 ₫</p>
+                        </div>
+                        <div class="recent-time">1 giờ trước</div>
+                    </li>
+                    <li class="recent-item">
+                        <div class="recent-icon icon-review">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="recent-info">
+                            <h4>Đánh giá mới 5 sao</h4>
+                            <p>Lê Văn C - Honda Vision</p>
+                        </div>
+                        <div class="recent-time">2 giờ trước</div>
+                    </li>
+                    <li class="recent-item">
+                        <div class="recent-icon icon-booking">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="recent-info">
+                            <h4>Đơn đặt hoàn thành</h4>
+                            <p>#RENT20230039 - 3 ngày thuê</p>
+                        </div>
+                        <div class="recent-time">3 giờ trước</div>
+                    </li>
+                    <li class="recent-item">
+                        <div class="recent-icon icon-booking">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="recent-info">
+                            <h4>Người dùng mới đăng ký</h4>
+                            <p>phamthid@gmail.com</p>
+                        </div>
+                        <div class="recent-time">5 giờ trước</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tables -->
+        <div class="tables-row">
+            <div class="table-container">
+                <h3>ĐƠN ĐẶT XE GẦN ĐÂY</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Xe</th>
+                            <th>Ngày thuê</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#RENT20230045</td>
+                            <td>Nguyễn Văn A</td>
+                            <td>Toyota Vios</td>
+                            <td>15-20/12/2023</td>
+                            <td>3.750.000 ₫</td>
+                            <td><span class="status-badge status-confirmed">Đã xác nhận</span></td>
+                            <td><button class="btn-view">Xem</button></td>
+                        </tr>
+                        <tr>
+                            <td>#RENT20230044</td>
+                            <td>Trần Thị B</td>
+                            <td>Honda Vision</td>
+                            <td>12-15/12/2023</td>
+                            <td>600.000 ₫</td>
+                            <td><span class="status-badge status-completed">Hoàn thành</span></td>
+                            <td><button class="btn-view">Xem</button></td>
+                        </tr>
+                        <tr>
+                            <td>#RENT20230043</td>
+                            <td>Lê Văn C</td>
+                            <td>Yamaha Exciter</td>
+                            <td>10-12/12/2023</td>
+                            <td>480.000 ₫</td>
+                            <td><span class="status-badge status-pending">Chờ xác nhận</span></td>
+                            <td><button class="btn-view">Xem</button></td>
+                        </tr>
+                        <tr>
+                            <td>#RENT20230042</td>
+                            <td>Phạm Thị D</td>
+                            <td>Vinfast Klara</td>
+                            <td>05-10/12/2023</td>
+                            <td>800.000 ₫</td>
+                            <td><span class="status-badge status-cancelled">Đã hủy</span></td>
+                            <td><button class="btn-view">Xem</button></td>
+                        </tr>
+                        <tr>
+                            <td>#RENT20230041</td>
+                            <td>Hoàng Văn E</td>
+                            <td>Toyota Vios</td>
+                            <td>01-05/12/2023</td>
+                            <td>3.000.000 ₫</td>
+                            <td><span class="status-badge status-completed">Hoàn thành</span></td>
+                            <td><button class="btn-view">Xem</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="table-container">
+                <h3>XE ĐƯỢC THUÊ NHIỀU NHẤT</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Xe</th>
+                            <th>Số lần thuê</th>
+                            <th>Doanh thu</th>
+                            <th>Đánh giá</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Toyota Vios</strong><br>
+                                <small>Biển số: 51A-12345</small>
+                            </td>
+                            <td>28</td>
+                            <td>42.5M ₫</td>
+                            <td>⭐ 4.8 (156)</td>
+                            <td><span class="status-badge status-confirmed">Đang hoạt động</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Honda Vision</strong><br>
+                                <small>Biển số: 51B-67890</small>
+                            </td>
+                            <td>45</td>
+                            <td>18.9M ₫</td>
+                            <td>⭐ 4.5 (128)</td>
+                            <td><span class="status-badge status-confirmed">Đang hoạt động</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Yamaha Exciter</strong><br>
+                                <small>Biển số: 51C-11223</small>
+                            </td>
+                            <td>32</td>
+                            <td>15.2M ₫</td>
+                            <td>⭐ 4.7 (167)</td>
+                            <td><span class="status-badge status-confirmed">Đang hoạt động</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Vinfast Klara</strong><br>
+                                <small>Biển số: 51D-44556</small>
+                            </td>
+                            <td>19</td>
+                            <td>7.6M ₫</td>
+                            <td>⭐ 4.0 (96)</td>
+                            <td><span class="status-badge status-pending">Bảo trì</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Honda Wave</strong><br>
+                                <small>Biển số: 51E-77889</small>
+                            </td>
+                            <td>38</td>
+                            <td>16.3M ₫</td>
+                            <td>⭐ 4.3 (205)</td>
+                            <td><span class="status-badge status-confirmed">Đang hoạt động</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2023 RentCar Admin Dashboard. Phiên bản 1.0.0 | <span id="currentDateTime"></span></p>
+        </footer>
+    </main>
+
+    <script>
+        // Initialize data
+        const dashboardData = {
+    // Revenue data for chart
+    monthlyRevenue: [32.5, 35.2, 38.7, 40.1, 39.8, 42.5, 45.2, 44.8, 47.3, 46.5, 48.2, 50.5], // 12 months in millions
+    quarterlyRevenue: [106.4, 124.3, 142.1, 155.2], // 4 quarters in millions
+    
+    // ✅ Sửa cấu trúc yearlyRevenue
+    yearlyRevenue: {
+        2019: 380.5,
+        2020: 410.2,
+        2021: 485.7,
+        2022: 520.3,
+        2023: 580.1
+    },
+
+    // Recent bookings
+    recentBookings: [
+        {id: 'RENT20230045', customer: 'Nguyễn Văn A', vehicle: 'Toyota Vios', days: '15-20/12/2023', amount: '3.750.000', status: 'confirmed'},
+        {id: 'RENT20230044', customer: 'Trần Thị B', vehicle: 'Honda Vision', days: '12-15/12/2023', amount: '600.000', status: 'completed'},
+        {id: 'RENT20230043', customer: 'Lê Văn C', vehicle: 'Yamaha Exciter', days: '10-12/12/2023', amount: '480.000', status: 'pending'},
+        {id: 'RENT20230042', customer: 'Phạm Thị D', vehicle: 'Vinfast Klara', days: '05-10/12/2023', amount: '800.000', status: 'cancelled'},
+        {id: 'RENT20230041', customer: 'Hoàng Văn E', vehicle: 'Toyota Vios', days: '01-05/12/2023', amount: '3.000.000', status: 'completed'}
+    ],
+
+    // Popular vehicles
+    popularVehicles: [
+        {name: 'Toyota Vios', plate: '51A-12345', rentals: 28, revenue: '42.5M', rating: 4.8, reviews: 156, status: 'active'},
+        {name: 'Honda Vision', plate: '51B-67890', rentals: 45, revenue: '18.9M', rating: 4.5, reviews: 128, status: 'active'},
+        {name: 'Yamaha Exciter', plate: '51C-11223', rentals: 32, revenue: '15.2M', rating: 4.7, reviews: 167, status: 'active'},
+        {name: 'Vinfast Klara', plate: '51D-44556', rentals: 19, revenue: '7.6M', rating: 4.0, reviews: 96, status: 'maintenance'},
+        {name: 'Honda Wave', plate: '51E-77889', rentals: 38, revenue: '16.3M', rating: 4.3, reviews: 205, status: 'active'}
+    ],
+
+    // Recent activities
+    recentActivities: [
+        {type: 'booking', title: 'Đơn đặt mới #RENT20230045', details: 'Nguyễn Văn A - Toyota Vios', time: '10 phút trước'},
+        {type: 'payment', title: 'Thanh toán thành công', details: 'Trần Thị B - 2.150.000 ₫', time: '1 giờ trước'},
+        {type: 'review', title: 'Đánh giá mới 5 sao', details: 'Lê Văn C - Honda Vision', time: '2 giờ trước'},
+        {type: 'booking', title: 'Đơn đặt hoàn thành', details: '#RENT20230039 - 3 ngày thuê', time: '3 giờ trước'},
+        {type: 'user', title: 'Người dùng mới đăng ký', details: 'phamthid@gmail.com', time: '5 giờ trước'}
+    ]
+};
+
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+        const chartBtns = document.querySelectorAll('.chart-btn');
+        const currentDateTime = document.getElementById('currentDateTime');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Dropdown toggle
+        dropdownToggles.forEach(toggle => {
+            toggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = toggle.getAttribute('data-target');
+                const dropdown = document.getElementById(targetId);
+                
+                toggle.classList.toggle('collapsed');
+                dropdown.classList.toggle('show');
+            });
+        });
+
+        // Chart initialization
+        let revenueChart;
+        
+        function initChart(chartType = 'monthly') {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+            
+            let labels, data, label;
+            
+            switch(chartType) {
+                case 'monthly':
+                    labels = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
+                    data = dashboardData.monthlyRevenue;
+                    label = 'Doanh thu theo tháng (triệu VNĐ)';
+                    break;
+                case 'quarterly':
+                    labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+                    data = dashboardData.quarterlyRevenue;
+                    label = 'Doanh thu theo quý (triệu VNĐ)';
+                    break;
+                case 'yearly':
+                    labels = ['2019', '2020', '2021', '2022', '2023'];
+                    data = Object.values(dashboardData.yearlyRevenue);
+                    label = 'Doanh thu theo năm (triệu VNĐ)';
+                    break;
+            }
+            
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Chart type switcher
+        chartBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                chartBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                initChart(btn.getAttribute('data-chart'));
+            });
+        });
+
+        // Update current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            currentDateTime.textContent = now.toLocaleDateString('vi-VN', options);
+        }
+
+        // Simulate real-time updates
+        function simulateRealTimeUpdates() {
+            // Update stats every 30 seconds
+            setInterval(() => {
+                const statValues = document.querySelectorAll('.stat-value');
+                
+                // Randomly update booking count
+                const bookingStat = statValues[1];
+                let currentBookings = parseInt(bookingStat.textContent);
+                if (Math.random() > 0.7) { // 30% chance to add a booking
+                    currentBookings += 1;
+                    bookingStat.textContent = currentBookings;
+                    
+                    // Add notification
+                    const notificationBadge = document.querySelector('.notification-badge');
+                    let currentNotif = parseInt(notificationBadge.textContent);
+                    notificationBadge.textContent = currentNotif + 1;
+                }
+                
+                // Update revenue slightly
+                const revenueStat = statValues[0];
+                let currentRevenue = parseFloat(revenueStat.textContent);
+                if (Math.random() > 0.5) { // 50% chance to increase revenue
+                    const increase = Math.random() * 0.5 + 0.1; // 0.1-0.6M increase
+                    currentRevenue = Math.round((currentRevenue + increase) * 10) / 10;
+                    revenueStat.textContent = currentRevenue.toFixed(1) + 'M ₫';
+                }
+            }, 30000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize chart
+            initChart();
+            
+            // Update date/time
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Start real-time simulation
+            simulateRealTimeUpdates();
+            
+            // Add click event to notification bell
+            document.querySelector('.notification').addEventListener('click', () => {
+                alert('Bạn có 5 thông báo chưa đọc:\n\n1. Đơn đặt mới #RENT20230045\n2. Thanh toán thành công 2.150.000 ₫\n3. Đánh giá mới 5 sao\n4. Người dùng mới đăng ký\n5. Xe Vinfast Klara cần bảo trì');
+                document.querySelector('.notification-badge').textContent = '0';
+            });
+            
+            // Add click events to view buttons
+            document.querySelectorAll('.btn-view').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const row = e.target.closest('tr');
+                    const bookingId = row.cells[0].textContent;
+                    alert(`Xem chi tiết đơn đặt: ${bookingId}\n\nChức năng này sẽ chuyển đến trang chi tiết đơn đặt.`);
+                });
+            });
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 992) {
+                if (!sidebar.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

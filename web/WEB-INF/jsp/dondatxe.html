@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar Admin - Quản lý đơn đặt xe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="../../css/pages/dondatxe.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-car"></i>
+            <h2>RentCar Admin</h2>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="vehicles.html" class="nav-link">
+                    <i class="fas fa-car"></i>
+                    <span>Quản lý xe</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Đơn đặt xe</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Người dùng</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Báo cáo</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div>
+                    <h4>Admin User</h4>
+                    <p>Quản trị viên</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-calendar-alt"></i> Quản lý đơn đặt xe</h1>
+                <p>Quản lý tất cả đơn đặt xe trong hệ thống</p>
+            </div>
+            
+            <div class="header-right">
+                <button class="btn btn-primary" id="createBookingBtn">
+                    <i class="fas fa-plus"></i> Tạo đơn đặt mới
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon icon-total">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Tổng đơn đặt</h3>
+                    <div class="stat-value" id="totalBookings">187</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Chờ xác nhận</h3>
+                    <div class="stat-value" id="pendingBookings">12</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-confirmed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Đã xác nhận</h3>
+                    <div class="stat-value" id="confirmedBookings">45</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-active">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Đang hoạt động</h3>
+                    <div class="stat-value" id="activeBookings">8</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-completed">
+                    <i class="fas fa-flag-checkered"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Đã hoàn thành</h3>
+                    <div class="stat-value" id="completedBookings">115</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-cancelled">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Đã hủy</h3>
+                    <div class="stat-value" id="cancelledBookings">7</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <section class="calendar-view" id="calendarView">
+            <div class="calendar-header">
+                <h3><i class="fas fa-calendar"></i> Lịch đặt xe tháng 12/2023</h3>
+                <div class="calendar-nav">
+                    <button class="btn btn-outline" id="prevMonth">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-outline" id="todayBtn">Hôm nay</button>
+                    <button class="btn btn-outline" id="nextMonth">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Calendar will be generated dynamically -->
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filters-section">
+            <div class="filters-header">
+                <h3><i class="fas fa-filter"></i> Bộ lọc đơn đặt</h3>
+                <div class="quick-actions">
+                    <button class="action-btn active" data-status="all">
+                        <i class="fas fa-list"></i> Tất cả
+                    </button>
+                    <button class="action-btn" data-status="pending">
+                        <i class="fas fa-clock"></i> Chờ xác nhận
+                    </button>
+                    <button class="action-btn" data-status="confirmed">
+                        <i class="fas fa-check-circle"></i> Đã xác nhận
+                    </button>
+                    <button class="action-btn" data-status="active">
+                        <i class="fas fa-car"></i> Đang hoạt động
+                    </button>
+                    <button class="action-btn" data-status="completed">
+                        <i class="fas fa-flag-checkered"></i> Đã hoàn thành
+                    </button>
+                    <button class="action-btn" data-status="cancelled">
+                        <i class="fas fa-times-circle"></i> Đã hủy
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="filterDateRange">Khoảng thời gian</label>
+                    <input type="text" id="filterDateRange" placeholder="Chọn khoảng thời gian...">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterCustomer">Khách hàng</label>
+                    <select id="filterCustomer">
+                        <option value="">Tất cả khách hàng</option>
+                        <option value="1">Nguyễn Văn A</option>
+                        <option value="2">Trần Thị B</option>
+                        <option value="3">Lê Văn C</option>
+                        <option value="4">Phạm Thị D</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterVehicle">Xe</label>
+                    <select id="filterVehicle">
+                        <option value="">Tất cả xe</option>
+                        <option value="1">Toyota Vios</option>
+                        <option value="2">Honda Vision</option>
+                        <option value="3">Yamaha Exciter</option>
+                        <option value="4">Vinfast Klara</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterPayment">Trạng thái thanh toán</label>
+                    <select id="filterPayment">
+                        <option value="">Tất cả</option>
+                        <option value="paid">Đã thanh toán</option>
+                        <option value="partial">Thanh toán một phần</option>
+                        <option value="unpaid">Chưa thanh toán</option>
+                        <option value="refunded">Đã hoàn tiền</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="btn btn-primary" id="applyFilters">
+                    <i class="fas fa-search"></i> Áp dụng bộ lọc
+                </button>
+                <button class="btn btn-outline" id="resetFilters">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </button>
+                <button class="btn btn-success" id="exportBookingsBtn">
+                    <i class="fas fa-file-export"></i> Xuất báo cáo
+                </button>
+                <button class="btn btn-warning" id="sendRemindersBtn">
+                    <i class="fas fa-bell"></i> Gửi nhắc nhở
+                </button>
+            </div>
+        </section>
+
+        <!-- Bookings Table -->
+        <div class="bookings-table-container">
+            <div class="table-toolbar">
+                <div class="table-info">
+                    Hiển thị <span id="tableCount">10</span> trên tổng số <span id="tableTotal">187</span> đơn đặt
+                </div>
+                <div class="table-actions">
+                    <button class="btn btn-outline" id="printSelectedBtn">
+                        <i class="fas fa-print"></i> In hợp đồng
+                    </button>
+                    <button class="btn btn-danger" id="cancelSelectedBtn">
+                        <i class="fas fa-ban"></i> Hủy đã chọn
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table id="bookingsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">
+                                <input type="checkbox" class="select-checkbox" id="selectAllCheckbox">
+                            </th>
+                            <th style="width: 120px;">Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Xe</th>
+                            <th style="width: 150px;">Thời gian thuê</th>
+                            <th style="width: 120px;">Tổng tiền</th>
+                            <th style="width: 120px;">Trạng thái</th>
+                            <th style="width: 120px;">Thanh toán</th>
+                            <th style="width: 100px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <!-- Table rows will be dynamically generated -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Booking Detail Modal -->
+        <div class="modal" id="bookingDetailModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalBookingTitle">Đơn đặt #RENT20230045</h3>
+                    <button class="close-modal" id="closeDetailModal">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="booking-detail-grid">
+                        <div>
+                            <div class="detail-section">
+                                <h4>Thông tin đơn đặt</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Mã đơn</div>
+                                        <div class="info-value booking-code" id="detailBookingCode">RENT20230045</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Ngày đặt</div>
+                                        <div class="info-value" id="detailBookingDate">05/12/2023 14:30</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Trạng thái</div>
+                                        <div class="info-value">
+                                            <span class="status-badge status-confirmed" id="detailBookingStatus">Đã xác nhận</span>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Trạng thái thanh toán</div>
+                                        <div class="info-value">
+                                            <span class="payment-badge payment-paid" id="detailPaymentStatus">Đã thanh toán</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Thông tin khách hàng</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Họ tên</div>
+                                        <div class="info-value" id="detailCustomerName">Nguyễn Văn A</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Số điện thoại</div>
+                                        <div class="info-value" id="detailCustomerPhone">0912345678</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Email</div>
+                                        <div class="info-value" id="detailCustomerEmail">nguyenvana@email.com</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Số CMND/CCCD</div>
+                                        <div class="info-value" id="detailCustomerId">025123456789</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Bằng lái xe</div>
+                                        <div class="info-value" id="detailCustomerLicense">A1234567 - Hạng B2</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Địa chỉ</div>
+                                        <div class="info-value" id="detailCustomerAddress">123 Đường ABC, Quận 1, TP.HCM</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Thông tin xe</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Xe</div>
+                                        <div class="info-value" id="detailVehicleName">Toyota Vios 2023</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Biển số</div>
+                                        <div class="info-value" id="detailVehiclePlate">51A-12345</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Màu sắc</div>
+                                        <div class="info-value" id="detailVehicleColor">Trắng</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Loại nhiên liệu</div>
+                                        <div class="info-value" id="detailVehicleFuel">Xăng</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Thời gian & Địa điểm</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Ngày nhận xe</div>
+                                        <div class="info-value" id="detailPickupDate">15/12/2023 08:00</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Ngày trả xe</div>
+                                        <div class="info-value" id="detailReturnDate">20/12/2023 18:00</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Tổng số ngày</div>
+                                        <div class="info-value" id="detailTotalDays">5 ngày</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Điểm nhận xe</div>
+                                        <div class="info-value" id="detailPickupLocation">123 Đường ABC, Quận 1, TP.HCM</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Điểm trả xe</div>
+                                        <div class="info-value" id="detailReturnLocation">456 Đường XYZ, Quận 3, TP.HCM</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="detail-section">
+                                <h4>Tiến trình đơn hàng</h4>
+                                <div class="timeline">
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot active">
+                                            <i class="fas fa-calendar-plus"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Đơn đặt được tạo</div>
+                                            <div class="timeline-time" id="timelineCreated">05/12/2023 14:30</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot active">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Đơn đặt đã xác nhận</div>
+                                            <div class="timeline-time" id="timelineConfirmed">05/12/2023 16:15</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot">
+                                            <i class="fas fa-money-check-alt"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Thanh toán</div>
+                                            <div class="timeline-time" id="timelinePayment">Chờ thanh toán</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot">
+                                            <i class="fas fa-car"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Nhận xe</div>
+                                            <div class="timeline-time" id="timelinePickup">15/12/2023 08:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-dot">
+                                            <i class="fas fa-flag-checkered"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <div class="timeline-title">Hoàn thành</div>
+                                            <div class="timeline-time" id="timelineCompleted">20/12/2023 18:00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Chi tiết thanh toán</h4>
+                                <div class="price-breakdown">
+                                    <div class="price-item">
+                                        <span>Giá thuê cơ bản (5 ngày):</span>
+                                        <span id="priceBase">3.000.000 ₫</span>
+                                    </div>
+                                    <div class="price-item">
+                                        <span>Phí bảo hiểm:</span>
+                                        <span id="priceInsurance">500.000 ₫</span>
+                                    </div>
+                                    <div class="price-item">
+                                        <span>Phí dịch vụ:</span>
+                                        <span id="priceService">100.000 ₫</span>
+                                    </div>
+                                    <div class="price-item">
+                                        <span>Phụ phí (nếu có):</span>
+                                        <span id="priceExtra">0 ₫</span>
+                                    </div>
+                                    <div class="price-item">
+                                        <span>Giảm giá:</span>
+                                        <span id="priceDiscount">-150.000 ₫</span>
+                                    </div>
+                                    <div class="price-total">
+                                        Tổng cộng: <span id="priceTotal">3.450.000 ₫</span>
+                                    </div>
+                                    <div class="price-item" style="margin-top: 1rem;">
+                                        <span>Tiền cọc:</span>
+                                        <span id="priceDeposit">5.000.000 ₫</span>
+                                    </div>
+                                    <div class="price-item">
+                                        <span>Số tiền đã thanh toán:</span>
+                                        <span id="pricePaid">3.450.000 ₫</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Ghi chú & Điều khoản</h4>
+                                <div id="bookingNotes" style="background: #f8f9fa; padding: 1rem; border-radius: 6px; font-size: 0.9rem; color: #666;">
+                                    Khách hàng yêu cầu chuẩn bị xe sạch sẽ, đầy đủ nhiên liệu. Giao xe tại địa điểm đã thỏa thuận.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="printContractBtn">
+                        <i class="fas fa-print"></i> In hợp đồng
+                    </button>
+                    <button class="btn btn-warning" id="editBookingBtn">
+                        <i class="fas fa-edit"></i> Chỉnh sửa
+                    </button>
+                    <button class="btn btn-primary" id="confirmBookingBtn">
+                        <i class="fas fa-check-circle"></i> Xác nhận đơn
+                    </button>
+                    <button class="btn btn-danger" id="cancelBookingBtn">
+                        <i class="fas fa-ban"></i> Hủy đơn
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create/Edit Booking Modal -->
+        <div class="modal" id="bookingFormModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalFormTitle">Tạo đơn đặt mới</h3>
+                    <button class="close-modal" id="closeFormModal">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div>
+                                <div class="detail-section">
+                                    <h4>Thông tin khách hàng</h4>
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <label for="customerSelect">Chọn khách hàng *</label>
+                                            <select id="customerSelect" required>
+                                                <option value="">Chọn khách hàng</option>
+                                                <option value="1">Nguyễn Văn A (0912345678)</option>
+                                                <option value="2">Trần Thị B (0923456789)</option>
+                                                <option value="3">Lê Văn C (0934567890)</option>
+                                            </select>
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="newCustomerBtn">Hoặc tạo mới</label>
+                                            <button type="button" class="btn btn-outline" id="newCustomerBtn" style="width: 100%;">
+                                                <i class="fas fa-user-plus"></i> Thêm khách hàng mới
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h4>Thông tin xe</h4>
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <label for="vehicleSelect">Chọn xe *</label>
+                                            <select id="vehicleSelect" required>
+                                                <option value="">Chọn xe</option>
+                                                <option value="1">Toyota Vios (51A-12345) - 600.000 ₫/ngày</option>
+                                                <option value="2">Honda Vision (51B-67890) - 150.000 ₫/ngày</option>
+                                                <option value="3">Yamaha Exciter (51C-11223) - 180.000 ₫/ngày</option>
+                                            </select>
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="vehicleAvailability">Tình trạng</label>
+                                            <input type="text" id="vehicleAvailability" value="Có sẵn" readonly style="background: #f5f5f5;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h4>Thời gian thuê</h4>
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <label for="pickupDate">Ngày nhận xe *</label>
+                                            <input type="datetime-local" id="pickupDate" required>
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="returnDate">Ngày trả xe *</label>
+                                            <input type="datetime-local" id="returnDate" required>
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="totalDays">Tổng số ngày</label>
+                                            <input type="text" id="totalDays" value="0 ngày" readonly style="background: #f5f5f5;">
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="totalHours">Tổng số giờ</label>
+                                            <input type="text" id="totalHours" value="0 giờ" readonly style="background: #f5f5f5;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="detail-section">
+                                    <h4>Địa điểm</h4>
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <label for="pickupLocation">Điểm nhận xe *</label>
+                                            <select id="pickupLocation" required>
+                                                <option value="">Chọn điểm nhận xe</option>
+                                                <option value="1">123 Đường ABC, Quận 1, TP.HCM</option>
+                                                <option value="2">456 Đường XYZ, Quận 3, TP.HCM</option>
+                                                <option value="3">Chi nhánh sân bay Tân Sơn Nhất</option>
+                                            </select>
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="returnLocation">Điểm trả xe *</label>
+                                            <select id="returnLocation" required>
+                                                <option value="">Chọn điểm trả xe</option>
+                                                <option value="1">123 Đường ABC, Quận 1, TP.HCM</option>
+                                                <option value="2">456 Đường XYZ, Quận 3, TP.HCM</option>
+                                                <option value="3">Chi nhánh sân bay Tân Sơn Nhất</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h4>Tính toán giá</h4>
+                                    <div class="price-breakdown">
+                                        <div class="price-item">
+                                            <span>Giá thuê cơ bản:</span>
+                                            <span id="calcBasePrice">0 ₫</span>
+                                        </div>
+                                        <div class="price-item">
+                                            <span>Phí bảo hiểm (20%):</span>
+                                            <span id="calcInsurance">0 ₫</span>
+                                        </div>
+                                        <div class="price-item">
+                                            <span>Phí dịch vụ:</span>
+                                            <span id="calcService">20.000 ₫</span>
+                                        </div>
+                                        <div class="price-item">
+                                            <label for="discountCode">Mã giảm giá</label>
+                                            <div style="display: flex; gap: 0.5rem;">
+                                                <input type="text" id="discountCode" placeholder="Nhập mã" style="flex: 1;">
+                                                <button type="button" class="btn btn-outline" id="applyDiscount">Áp dụng</button>
+                                            </div>
+                                        </div>
+                                        <div class="price-item">
+                                            <span>Giảm giá:</span>
+                                            <span id="calcDiscount">0 ₫</span>
+                                        </div>
+                                        <div class="price-total">
+                                            Tổng cộng: <span id="calcTotalPrice">0 ₫</span>
+                                        </div>
+                                        <div class="price-item" style="margin-top: 1rem;">
+                                            <span>Tiền cọc:</span>
+                                            <span id="calcDeposit">0 ₫</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h4>Thanh toán</h4>
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <label for="paymentMethod">Phương thức thanh toán *</label>
+                                            <select id="paymentMethod" required>
+                                                <option value="">Chọn phương thức</option>
+                                                <option value="cash">Tiền mặt</option>
+                                                <option value="bank_transfer">Chuyển khoản</option>
+                                                <option value="credit_card">Thẻ tín dụng</option>
+                                                <option value="momo">Ví MoMo</option>
+                                            </select>
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="paymentStatus">Trạng thái thanh toán *</label>
+                                            <select id="paymentStatus" required>
+                                                <option value="unpaid">Chưa thanh toán</option>
+                                                <option value="partial">Thanh toán một phần</option>
+                                                <option value="paid">Đã thanh toán</option>
+                                            </select>
+                                        </div>
+                                        <div class="info-item">
+                                            <label for="paidAmount">Số tiền đã thanh toán</label>
+                                            <input type="number" id="paidAmount" min="0" value="0">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-section">
+                                    <h4>Ghi chú</h4>
+                                    <textarea id="bookingNotesField" rows="4" placeholder="Ghi chú về đơn đặt..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelFormBtn">Hủy</button>
+                    <button class="btn btn-primary" id="saveBookingBtn">Lưu đơn đặt</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal" id="confirmationModal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3 id="confirmationTitle"><i class="fas fa-exclamation-circle"></i> Xác nhận</h3>
+                    <button class="close-modal" id="closeConfirmationModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmationMessage">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelConfirmationBtn">Hủy</button>
+                    <button class="btn btn-primary" id="confirmActionBtn">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+    <script>
+        // Mock data for bookings
+        const mockBookings = [
+            {
+                id: 1,
+                booking_code: "RENT20230045",
+                customer: {
+                    id: 1,
+                    name: "Nguyễn Văn A",
+                    phone: "0912345678",
+                    email: "nguyenvana@email.com",
+                    id_card: "025123456789",
+                    license: "A1234567 - Hạng B2"
+                },
+                vehicle: {
+                    id: 1,
+                    name: "Toyota Vios",
+                    plate: "51A-12345",
+                    color: "Trắng",
+                    fuel: "Xăng",
+                    daily_rate: 600000
+                },
+                pickup_date: "2023-12-15 08:00",
+                return_date: "2023-12-20 18:00",
+                total_days: 5,
+                total_hours: 130,
+                pickup_location: "123 Đường ABC, Quận 1, TP.HCM",
+                return_location: "456 Đường XYZ, Quận 3, TP.HCM",
+                base_amount: 3000000,
+                insurance_fee: 500000,
+                service_fee: 100000,
+                discount_amount: 150000,
+                total_amount: 3450000,
+                deposit_amount: 5000000,
+                status: "confirmed",
+                payment_status: "paid",
+                payment_method: "bank_transfer",
+                paid_amount: 3450000,
+                notes: "Khách hàng yêu cầu chuẩn bị xe sạch sẽ, đầy đủ nhiên liệu.",
+                created_at: "2023-12-05 14:30",
+                confirmed_at: "2023-12-05 16:15",
+                timeline: [
+                    { action: "created", time: "2023-12-05 14:30", title: "Đơn đặt được tạo" },
+                    { action: "confirmed", time: "2023-12-05 16:15", title: "Đơn đặt đã xác nhận" },
+                    { action: "payment", time: "2023-12-06 10:00", title: "Đã thanh toán" }
+                ]
+            },
+            {
+                id: 2,
+                booking_code: "RENT20230044",
+                customer: {
+                    id: 2,
+                    name: "Trần Thị B",
+                    phone: "0923456789",
+                    email: "tranthib@email.com",
+                    id_card: "025234567890",
+                    license: "B2345678 - Hạng A1"
+                },
+                vehicle: {
+                    id: 2,
+                    name: "Honda Vision",
+                    plate: "51B-67890",
+                    color: "Đen",
+                    fuel: "Xăng",
+                    daily_rate: 150000
+                },
+                pickup_date: "2023-12-12 09:00",
+                return_date: "2023-12-15 17:00",
+                total_days: 3,
+                total_hours: 80,
+                pickup_location: "456 Đường XYZ, Quận 3, TP.HCM",
+                return_location: "456 Đường XYZ, Quận 3, TP.HCM",
+                base_amount: 450000,
+                insurance_fee: 75000,
+                service_fee: 50000,
+                discount_amount: 0,
+                total_amount: 575000,
+                deposit_amount: 1000000,
+                status: "completed",
+                payment_status: "paid",
+                payment_method: "cash",
+                paid_amount: 575000,
+                notes: "",
+                created_at: "2023-12-10 11:20",
+                confirmed_at: "2023-12-10 14:00",
+                completed_at: "2023-12-15 17:30",
+                timeline: [
+                    { action: "created", time: "2023-12-10 11:20", title: "Đơn đặt được tạo" },
+                    { action: "confirmed", time: "2023-12-10 14:00", title: "Đơn đặt đã xác nhận" },
+                    { action: "payment", time: "2023-12-11 09:15", title: "Đã thanh toán" },
+                    { action: "pickup", time: "2023-12-12 09:00", title: "Đã nhận xe" },
+                    { action: "completed", time: "2023-12-15 17:30", title: "Đã hoàn thành" }
+                ]
+            },
+            {
+                id: 3,
+                booking_code: "RENT20230043",
+                customer: {
+                    id: 3,
+                    name: "Lê Văn C",
+                    phone: "0934567890",
+                    email: "levanc@email.com",
+                    id_card: "025345678901",
+                    license: "C3456789 - Hạng A2"
+                },
+                vehicle: {
+                    id: 3,
+                    name: "Yamaha Exciter",
+                    plate: "51C-11223",
+                    color: "Xanh",
+                    fuel: "Xăng",
+                    daily_rate: 180000
+                },
+                pickup_date: "2023-12-10 10:00",
+                return_date: "2023-12-12 18:00",
+                total_days: 2,
+                total_hours: 56,
+                pickup_location: "789 Đường LMN, Quận Bình Thạnh",
+                return_location: "789 Đường LMN, Quận Bình Thạnh",
+                base_amount: 360000,
+                insurance_fee: 60000,
+                service_fee: 40000,
+                discount_amount: 20000,
+                total_amount: 440000,
+                deposit_amount: 1200000,
+                status: "pending",
+                payment_status: "unpaid",
+                payment_method: "",
+                paid_amount: 0,
+                notes: "Cần kiểm tra bằng lái xe trước khi giao xe.",
+                created_at: "2023-12-08 16:45",
+                timeline: [
+                    { action: "created", time: "2023-12-08 16:45", title: "Đơn đặt được tạo" }
+                ]
+            },
+            {
+                id: 4,
+                booking_code: "RENT20230042",
+                customer: {
+                    id: 4,
+                    name: "Phạm Thị D",
+                    phone: "0945678901",
+                    email: "phamthid@email.com",
+                    id_card: "025456789012",
+                    license: "D4567890 - Hạng B1"
+                },
+                vehicle: {
+                    id: 4,
+                    name: "Vinfast Klara",
+                    plate: "51D-44556",
+                    color: "Trắng",
+                    fuel: "Điện",
+                    daily_rate: 120000
+                },
+                pickup_date: "2023-12-05 08:00",
+                return_date: "2023-12-10 20:00",
+                total_days: 5,
+                total_hours: 132,
+                pickup_location: "321 Đường PQR, Quận Tân Bình",
+                return_location: "321 Đường PQR, Quận Tân Bình",
+                base_amount: 600000,
+                insurance_fee: 100000,
+                service_fee: 80000,
+                discount_amount: 50000,
+                total_amount: 730000,
+                deposit_amount: 800000,
+                status: "cancelled",
+                payment_status: "refunded",
+                payment_method: "momo",
+                paid_amount: 730000,
+                notes: "Khách hàng hủy do thay đổi kế hoạch.",
+                created_at: "2023-12-01 09:15",
+                confirmed_at: "2023-12-01 11:30",
+                cancelled_at: "2023-12-03 14:20",
+                timeline: [
+                    { action: "created", time: "2023-12-01 09:15", title: "Đơn đặt được tạo" },
+                    { action: "confirmed", time: "2023-12-01 11:30", title: "Đơn đặt đã xác nhận" },
+                    { action: "cancelled", time: "2023-12-03 14:20", title: "Đơn đặt đã hủy" },
+                    { action: "refunded", time: "2023-12-04 10:00", title: "Đã hoàn tiền" }
+                ]
+            },
+            {
+                id: 5,
+                booking_code: "RENT20230041",
+                customer: {
+                    id: 5,
+                    name: "Hoàng Văn E",
+                    phone: "0956789012",
+                    email: "hoangvane@email.com",
+                    id_card: "025567890123",
+                    license: "E5678901 - Hạng B2"
+                },
+                vehicle: {
+                    id: 1,
+                    name: "Toyota Vios",
+                    plate: "51A-12345",
+                    color: "Trắng",
+                    fuel: "Xăng",
+                    daily_rate: 600000
+                },
+                pickup_date: "2023-12-01 07:00",
+                return_date: "2023-12-05 19:00",
+                total_days: 4,
+                total_hours: 108,
+                pickup_location: "Chi nhánh sân bay Tân Sơn Nhất",
+                return_location: "Chi nhánh sân bay Tân Sơn Nhất",
+                base_amount: 2400000,
+                insurance_fee: 400000,
+                service_fee: 100000,
+                discount_amount: 100000,
+                total_amount: 2800000,
+                deposit_amount: 5000000,
+                status: "active",
+                payment_status: "partial",
+                payment_method: "credit_card",
+                paid_amount: 1500000,
+                notes: "Khách thuê đi công tác, cần xe sạch sẽ.",
+                created_at: "2023-11-28 13:20",
+                confirmed_at: "2023-11-28 15:45",
+                pickup_at: "2023-12-01 07:15",
+                timeline: [
+                    { action: "created", time: "2023-11-28 13:20", title: "Đơn đặt được tạo" },
+                    { action: "confirmed", time: "2023-11-28 15:45", title: "Đơn đặt đã xác nhận" },
+                    { action: "payment", time: "2023-11-29 11:30", title: "Thanh toán một phần" },
+                    { action: "pickup", time: "2023-12-01 07:15", title: "Đã nhận xe" }
+                ]
+            }
+        ];
+
+        // Additional mock data for calendar
+        const mockCalendarBookings = [
+            { id: 1, code: "RENT20230045", vehicle: "Toyota Vios", customer: "Nguyễn Văn A", 
+              start: "2023-12-15", end: "2023-12-20", status: "confirmed" },
+            { id: 2, code: "RENT20230044", vehicle: "Honda Vision", customer: "Trần Thị B", 
+              start: "2023-12-12", end: "2023-12-15", status: "completed" },
+            { id: 5, code: "RENT20230041", vehicle: "Toyota Vios", customer: "Hoàng Văn E", 
+              start: "2023-12-01", end: "2023-12-05", status: "active" },
+            { id: 6, code: "RENT20230040", vehicle: "Honda Wave", customer: "Đỗ Thị F", 
+              start: "2023-12-08", end: "2023-12-10", status: "completed" },
+            { id: 7, code: "RENT20230039", vehicle: "Toyota Innova", customer: "Võ Văn G", 
+              start: "2023-12-03", end: "2023-12-07", status: "completed" },
+            { id: 8, code: "RENT20230038", vehicle: "Yamaha Exciter", customer: "Ngô Thị H", 
+              start: "2023-12-22", end: "2023-12-25", status: "confirmed" },
+            { id: 9, code: "RENT20230037", vehicle: "Vinfast Fadil", customer: "Lý Văn I", 
+              start: "2023-12-18", end: "2023-12-22", status: "pending" }
+        ];
+
+        // DOM Elements
+        const bookingsTableBody = document.getElementById('bookingsTableBody');
+        const bookingDetailModal = document.getElementById('bookingDetailModal');
+        const bookingFormModal = document.getElementById('bookingFormModal');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const calendarGrid = document.getElementById('calendarGrid');
+        let currentBookingId = null;
+        let selectedBookings = new Set();
+        let currentMonth = 11; // December (0-indexed)
+        let currentYear = 2023;
+        let currentAction = null;
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(amount);
+        }
+
+        // Format date
+        function formatDate(dateString, includeTime = true) {
+            const date = new Date(dateString);
+            const options = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            };
+            
+            if (includeTime) {
+                options.hour = '2-digit';
+                options.minute = '2-digit';
+            }
+            
+            return date.toLocaleDateString('vi-VN', options);
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'pending': '<span class="status-badge status-pending">Chờ xác nhận</span>',
+                'confirmed': '<span class="status-badge status-confirmed">Đã xác nhận</span>',
+                'active': '<span class="status-badge status-active">Đang hoạt động</span>',
+                'completed': '<span class="status-badge status-completed">Đã hoàn thành</span>',
+                'cancelled': '<span class="status-badge status-cancelled">Đã hủy</span>'
+            };
+            return badges[status] || badges['pending'];
+        }
+
+        // Get status text
+        function getStatusText(status) {
+            const texts = {
+                'pending': 'Chờ xác nhận',
+                'confirmed': 'Đã xác nhận',
+                'active': 'Đang hoạt động',
+                'completed': 'Đã hoàn thành',
+                'cancelled': 'Đã hủy'
+            };
+            return texts[status] || 'Không xác định';
+        }
+
+        // Get payment badge
+        function getPaymentBadge(paymentStatus) {
+            const badges = {
+                'paid': '<span class="payment-badge payment-paid">Đã thanh toán</span>',
+                'partial': '<span class="payment-badge payment-partial">Thanh toán một phần</span>',
+                'unpaid': '<span class="payment-badge payment-unpaid">Chưa thanh toán</span>',
+                'refunded': '<span class="payment-badge payment-refunded">Đã hoàn tiền</span>'
+            };
+            return badges[paymentStatus] || badges['unpaid'];
+        }
+
+        // Get payment text
+        function getPaymentText(paymentStatus) {
+            const texts = {
+                'paid': 'Đã thanh toán',
+                'partial': 'Thanh toán một phần',
+                'unpaid': 'Chưa thanh toán',
+                'refunded': 'Đã hoàn tiền'
+            };
+            return texts[paymentStatus] || 'Không xác định';
+        }
+
+        // Calculate days between dates
+        function calculateDays(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        // Calculate hours between dates
+        function calculateHours(startDate, endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffTime = Math.abs(end - start);
+            const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+            return diffHours;
+        }
+
+        // Update stats
+        function updateStats() {
+            const total = mockBookings.length;
+            const pending = mockBookings.filter(b => b.status === 'pending').length;
+            const confirmed = mockBookings.filter(b => b.status === 'confirmed').length;
+            const active = mockBookings.filter(b => b.status === 'active').length;
+            const completed = mockBookings.filter(b => b.status === 'completed').length;
+            const cancelled = mockBookings.filter(b => b.status === 'cancelled').length;
+            
+            document.getElementById('totalBookings').textContent = total;
+            document.getElementById('pendingBookings').textContent = pending;
+            document.getElementById('confirmedBookings').textContent = confirmed;
+            document.getElementById('activeBookings').textContent = active;
+            document.getElementById('completedBookings').textContent = completed;
+            document.getElementById('cancelledBookings').textContent = cancelled;
+        }
+
+        // Render bookings table
+        function renderBookingsTable(bookings = mockBookings) {
+            bookingsTableBody.innerHTML = '';
+            
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="select-checkbox select-booking" data-id="${booking.id}">
+                    </td>
+                    <td>
+                        <div class="booking-code">${booking.booking_code}</div>
+                        <div style="font-size: 0.8rem; color: #666;">${formatDate(booking.created_at)}</div>
+                    </td>
+                    <td class="customer-info">
+                        <div class="customer-name">${booking.customer.name}</div>
+                        <div class="customer-contact">${booking.customer.phone}</div>
+                        <div class="customer-contact">${booking.customer.email}</div>
+                    </td>
+                    <td class="vehicle-info">
+                        <div class="vehicle-name">${booking.vehicle.name}</div>
+                        <div class="vehicle-details">${booking.vehicle.plate} • ${booking.vehicle.color}</div>
+                        <div class="vehicle-details">${formatCurrency(booking.vehicle.daily_rate)}/ngày</div>
+                    </td>
+                    <td class="date-info">
+                        <div class="date-range">${formatDate(booking.pickup_date, false)} → ${formatDate(booking.return_date, false)}</div>
+                        <div class="days-count">${booking.total_days} ngày (${booking.total_hours} giờ)</div>
+                    </td>
+                    <td class="amount-info">
+                        <div class="amount-total">${formatCurrency(booking.total_amount)}</div>
+                        <div class="amount-breakdown">Cọc: ${formatCurrency(booking.deposit_amount)}</div>
+                    </td>
+                    <td>
+                        ${getStatusBadge(booking.status)}
+                    </td>
+                    <td>
+                        ${getPaymentBadge(booking.payment_status)}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn-small view-booking" data-id="${booking.id}" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn-small edit-booking" data-id="${booking.id}" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${booking.status === 'pending' ? `
+                                <button class="action-btn-small confirm-booking" data-id="${booking.id}" title="Xác nhận đơn">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            ` : ''}
+                            ${booking.status !== 'cancelled' && booking.status !== 'completed' ? `
+                                <button class="action-btn-small delete-booking" data-id="${booking.id}" title="Hủy đơn">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                bookingsTableBody.appendChild(row);
+            });
+            
+            // Add event listeners
+            document.querySelectorAll('.select-booking').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const id = parseInt(e.target.dataset.id);
+                    if (e.target.checked) {
+                        selectedBookings.add(id);
+                    } else {
+                        selectedBookings.delete(id);
+                    }
+                    updateSelectedCount();
+                });
+            });
+            
+            document.querySelectorAll('.view-booking').forEach(btn => {
+                btn.addEventListener('click', () => viewBookingDetail(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.edit-booking').forEach(btn => {
+                btn.addEventListener('click', () => editBooking(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.confirm-booking').forEach(btn => {
+                btn.addEventListener('click', () => confirmBookingAction(btn.dataset.id, 'confirm'));
+            });
+            
+            document.querySelectorAll('.delete-booking').forEach(btn => {
+                btn.addEventListener('click', () => confirmBookingAction(btn.dataset.id, 'cancel'));
+            });
+            
+            // Update counts
+            document.getElementById('tableCount').textContent = bookings.length;
+            document.getElementById('tableTotal').textContent = mockBookings.length;
+            
+            updateSelectedCount();
+        }
+
+        // Update selected count
+        function updateSelectedCount() {
+            const cancelBtn = document.getElementById('cancelSelectedBtn');
+            const printBtn = document.getElementById('printSelectedBtn');
+            
+            if (selectedBookings.size > 0) {
+                cancelBtn.textContent = `Hủy (${selectedBookings.size})`;
+                printBtn.textContent = `In (${selectedBookings.size})`;
+            } else {
+                cancelBtn.textContent = 'Hủy đã chọn';
+                printBtn.textContent = 'In hợp đồng';
+            }
+        }
+
+        // View booking detail
+        function viewBookingDetail(id) {
+            const booking = mockBookings.find(b => b.id === parseInt(id));
+            if (!booking) return;
+            
+            currentBookingId = booking.id;
+            
+            // Update modal title
+            document.getElementById('modalBookingTitle').textContent = `Đơn đặt ${booking.booking_code}`;
+            
+            // Update booking info
+            document.getElementById('detailBookingCode').textContent = booking.booking_code;
+            document.getElementById('detailBookingDate').textContent = formatDate(booking.created_at);
+            document.getElementById('detailBookingStatus').textContent = getStatusText(booking.status);
+            document.getElementById('detailBookingStatus').className = `status-badge status-${booking.status}`;
+            document.getElementById('detailPaymentStatus').textContent = getPaymentText(booking.payment_status);
+            document.getElementById('detailPaymentStatus').className = `payment-badge payment-${booking.payment_status}`;
+            
+            // Update customer info
+            document.getElementById('detailCustomerName').textContent = booking.customer.name;
+            document.getElementById('detailCustomerPhone').textContent = booking.customer.phone;
+            document.getElementById('detailCustomerEmail').textContent = booking.customer.email;
+            document.getElementById('detailCustomerId').textContent = booking.customer.id_card;
+            document.getElementById('detailCustomerLicense').textContent = booking.customer.license;
+            document.getElementById('detailCustomerAddress').textContent = booking.pickup_location;
+            
+            // Update vehicle info
+            document.getElementById('detailVehicleName').textContent = booking.vehicle.name;
+            document.getElementById('detailVehiclePlate').textContent = booking.vehicle.plate;
+            document.getElementById('detailVehicleColor').textContent = booking.vehicle.color;
+            document.getElementById('detailVehicleFuel').textContent = booking.vehicle.fuel;
+            
+            // Update date info
+            document.getElementById('detailPickupDate').textContent = formatDate(booking.pickup_date);
+            document.getElementById('detailReturnDate').textContent = formatDate(booking.return_date);
+            document.getElementById('detailTotalDays').textContent = `${booking.total_days} ngày (${booking.total_hours} giờ)`;
+            document.getElementById('detailPickupLocation').textContent = booking.pickup_location;
+            document.getElementById('detailReturnLocation').textContent = booking.return_location;
+            
+            // Update timeline
+            const timeline = booking.timeline || [];
+            const timelineActions = ['created', 'confirmed', 'payment', 'pickup', 'completed', 'cancelled', 'refunded'];
+            
+            timelineActions.forEach(action => {
+                const timelineItem = timeline.find(t => t.action === action);
+                const element = document.getElementById(`timeline${action.charAt(0).toUpperCase() + action.slice(1)}`);
+                if (element) {
+                    if (timelineItem) {
+                        element.textContent = formatDate(timelineItem.time);
+                    } else {
+                        element.textContent = action === 'created' ? formatDate(booking.created_at) : 'Chờ...';
+                    }
+                }
+            });
+            
+            // Update price breakdown
+            document.getElementById('priceBase').textContent = formatCurrency(booking.base_amount);
+            document.getElementById('priceInsurance').textContent = formatCurrency(booking.insurance_fee);
+            document.getElementById('priceService').textContent = formatCurrency(booking.service_fee);
+            document.getElementById('priceExtra').textContent = '0 ₫';
+            document.getElementById('priceDiscount').textContent = `-${formatCurrency(booking.discount_amount)}`;
+            document.getElementById('priceTotal').textContent = formatCurrency(booking.total_amount);
+            document.getElementById('priceDeposit').textContent = formatCurrency(booking.deposit_amount);
+            document.getElementById('pricePaid').textContent = formatCurrency(booking.paid_amount);
+            
+            // Update notes
+            document.getElementById('bookingNotes').textContent = booking.notes || 'Không có ghi chú.';
+            
+            // Update action buttons
+            const confirmBtn = document.getElementById('confirmBookingBtn');
+            const cancelBtn = document.getElementById('cancelBookingBtn');
+            const editBtn = document.getElementById('editBookingBtn');
+            
+            if (booking.status === 'pending') {
+                confirmBtn.style.display = 'inline-flex';
+                cancelBtn.style.display = 'inline-flex';
+                editBtn.style.display = 'inline-flex';
+            } else if (booking.status === 'confirmed') {
+                confirmBtn.style.display = 'none';
+                cancelBtn.style.display = 'inline-flex';
+                editBtn.style.display = 'inline-flex';
+            } else {
+                confirmBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                editBtn.style.display = 'inline-flex';
+            }
+            
+            bookingDetailModal.classList.add('active');
+        }
+
+        // Edit booking
+        function editBooking(id) {
+            const booking = mockBookings.find(b => b.id === parseInt(id));
+            if (!booking) return;
+            
+            currentBookingId = booking.id;
+            document.getElementById('modalFormTitle').textContent = `Chỉnh sửa đơn đặt ${booking.booking_code}`;
+            
+            // Fill form with booking data
+            document.getElementById('customerSelect').value = booking.customer.id;
+            document.getElementById('vehicleSelect').value = booking.vehicle.id;
+            document.getElementById('vehicleAvailability').value = 'Có sẵn';
+            
+            // Format dates for datetime-local input
+            const pickupDate = new Date(booking.pickup_date);
+            const returnDate = new Date(booking.return_date);
+            
+            document.getElementById('pickupDate').value = pickupDate.toISOString().slice(0, 16);
+            document.getElementById('returnDate').value = returnDate.toISOString().slice(0, 16);
+            document.getElementById('totalDays').value = `${booking.total_days} ngày`;
+            document.getElementById('totalHours').value = `${booking.total_hours} giờ`;
+            
+            document.getElementById('pickupLocation').value = '1'; // Default
+            document.getElementById('returnLocation').value = '2'; // Default
+            
+            // Calculate and display prices
+            calculatePrices();
+            
+            document.getElementById('paymentMethod').value = booking.payment_method;
+            document.getElementById('paymentStatus').value = booking.payment_status;
+            document.getElementById('paidAmount').value = booking.paid_amount;
+            document.getElementById('bookingNotesField').value = booking.notes || '';
+            
+            bookingFormModal.classList.add('active');
+        }
+
+        // Create new booking
+        function createNewBooking() {
+            currentBookingId = null;
+            document.getElementById('modalFormTitle').textContent = 'Tạo đơn đặt mới';
+            document.getElementById('bookingForm').reset();
+            
+            // Set default values
+            document.getElementById('vehicleAvailability').value = 'Có sẵn';
+            document.getElementById('totalDays').value = '0 ngày';
+            document.getElementById('totalHours').value = '0 giờ';
+            document.getElementById('paymentStatus').value = 'unpaid';
+            document.getElementById('paidAmount').value = '0';
+            
+            // Set default dates (tomorrow and day after tomorrow)
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(8, 0, 0, 0);
+            
+            const dayAfterTomorrow = new Date(tomorrow);
+            dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 3);
+            dayAfterTomorrow.setHours(18, 0, 0, 0);
+            
+            document.getElementById('pickupDate').value = tomorrow.toISOString().slice(0, 16);
+            document.getElementById('returnDate').value = dayAfterTomorrow.toISOString().slice(0, 16);
+            
+            calculatePrices();
+            
+            bookingFormModal.classList.add('active');
+        }
+
+        // Calculate prices based on selection
+        function calculatePrices() {
+            const vehicleSelect = document.getElementById('vehicleSelect');
+            const pickupDate = document.getElementById('pickupDate').value;
+            const returnDate = document.getElementById('returnDate').value;
+            
+            if (!vehicleSelect.value || !pickupDate || !returnDate) {
+                resetPrices();
+                return;
+            }
+            
+            // Get vehicle daily rate (simplified)
+            const dailyRate = 600000; // Default rate
+            
+            // Calculate days and hours
+            const startDate = new Date(pickupDate);
+            const endDate = new Date(returnDate);
+            
+            if (startDate >= endDate) {
+                resetPrices();
+                return;
+            }
+            
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+            
+            document.getElementById('totalDays').value = `${diffDays} ngày`;
+            document.getElementById('totalHours').value = `${diffHours} giờ`;
+            
+            // Calculate prices
+            const baseAmount = dailyRate * diffDays;
+            const insuranceFee = baseAmount * 0.2; // 20%
+            const serviceFee = 20000;
+            const discount = 0;
+            const totalAmount = baseAmount + insuranceFee + serviceFee - discount;
+            const depositAmount = dailyRate * 3; // 3 days deposit
+            
+            // Update display
+            document.getElementById('calcBasePrice').textContent = formatCurrency(baseAmount);
+            document.getElementById('calcInsurance').textContent = formatCurrency(insuranceFee);
+            document.getElementById('calcService').textContent = formatCurrency(serviceFee);
+            document.getElementById('calcDiscount').textContent = formatCurrency(discount);
+            document.getElementById('calcTotalPrice').textContent = formatCurrency(totalAmount);
+            document.getElementById('calcDeposit').textContent = formatCurrency(depositAmount);
+        }
+
+        function resetPrices() {
+            document.getElementById('calcBasePrice').textContent = '0 ₫';
+            document.getElementById('calcInsurance').textContent = '0 ₫';
+            document.getElementById('calcService').textContent = '20.000 ₫';
+            document.getElementById('calcDiscount').textContent = '0 ₫';
+            document.getElementById('calcTotalPrice').textContent = '0 ₫';
+            document.getElementById('calcDeposit').textContent = '0 ₫';
+        }
+
+        // Confirm booking action (confirm/cancel)
+        function confirmBookingAction(id, action) {
+            currentBookingId = parseInt(id);
+            currentAction = action;
+            
+            const booking = mockBookings.find(b => b.id === currentBookingId);
+            if (!booking) return;
+            
+            let message = '';
+            let title = '';
+            
+            if (action === 'confirm') {
+                title = 'Xác nhận đơn đặt';
+                message = `Bạn có chắc chắn muốn xác nhận đơn đặt ${booking.booking_code}?`;
+            } else if (action === 'cancel') {
+                title = 'Hủy đơn đặt';
+                message = `Bạn có chắc chắn muốn hủy đơn đặt ${booking.booking_code}? Hành động này không thể hoàn tác.`;
+            }
+            
+            document.getElementById('confirmationTitle').innerHTML = `<i class="fas fa-exclamation-circle"></i> ${title}`;
+            document.getElementById('confirmationMessage').textContent = message;
+            
+            confirmationModal.classList.add('active');
+        }
+
+        // Execute confirmed action
+        function executeAction() {
+            if (!currentBookingId || !currentAction) return;
+            
+            const booking = mockBookings.find(b => b.id === currentBookingId);
+            if (!booking) return;
+            
+            if (currentAction === 'confirm') {
+                booking.status = 'confirmed';
+                booking.confirmed_at = new Date().toISOString();
+                booking.timeline.push({
+                    action: 'confirmed',
+                    time: new Date().toISOString(),
+                    title: 'Đơn đặt đã xác nhận'
+                });
+                alert(`Đã xác nhận đơn đặt ${booking.booking_code}`);
+            } else if (currentAction === 'cancel') {
+                booking.status = 'cancelled';
+                booking.cancelled_at = new Date().toISOString();
+                booking.timeline.push({
+                    action: 'cancelled',
+                    time: new Date().toISOString(),
+                    title: 'Đơn đặt đã hủy'
+                });
+                alert(`Đã hủy đơn đặt ${booking.booking_code}`);
+            }
+            
+            // Refresh views
+            renderBookingsTable();
+            updateStats();
+            renderCalendar();
+            
+            confirmationModal.classList.remove('active');
+            bookingDetailModal.classList.remove('active');
+        }
+
+        // Cancel selected bookings
+        function cancelSelectedBookings() {
+            if (selectedBookings.size === 0) {
+                alert('Vui lòng chọn ít nhất một đơn đặt để hủy.');
+                return;
+            }
+            
+            if (confirm(`Bạn có chắc chắn muốn hủy ${selectedBookings.size} đơn đặt đã chọn?`)) {
+                // In real app, this would make API call
+                selectedBookings.forEach(id => {
+                    const booking = mockBookings.find(b => b.id === id);
+                    if (booking) {
+                        booking.status = 'cancelled';
+                        booking.cancelled_at = new Date().toISOString();
+                    }
+                });
+                
+                alert(`Đã hủy ${selectedBookings.size} đơn đặt thành công!`);
+                
+                selectedBookings.clear();
+                updateSelectedCount();
+                
+                // Refresh views
+                renderBookingsTable();
+                updateStats();
+                renderCalendar();
+            }
+        }
+
+        // Print selected contracts
+        function printSelectedContracts() {
+            if (selectedBookings.size === 0) {
+                alert('Vui lòng chọn ít nhất một đơn đặt để in hợp đồng.');
+                return;
+            }
+            
+            alert(`Đang tải ${selectedBookings.size} hợp đồng...`);
+            // In real app, this would generate and download PDFs
+        }
+
+        // Generate calendar
+        function renderCalendar() {
+            const monthNames = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+                              "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
+            
+            const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+            
+            // Update calendar header
+            document.querySelector('#calendarView h3').innerHTML = 
+                `<i class="fas fa-calendar"></i> Lịch đặt xe ${monthNames[currentMonth]}/${currentYear}`;
+            
+            // Clear calendar
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            dayNames.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            // Get first day of month
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            
+            // Calculate starting day (0 = Sunday, 1 = Monday, etc.)
+            let startDay = firstDay.getDay();
+            
+            // Add empty cells for days before the first day of month
+            for (let i = 0; i < startDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days of month
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+            
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day';
+                
+                // Check if today
+                if (isCurrentMonth && day === today.getDate()) {
+                    dayCell.classList.add('today');
+                }
+                
+                // Check if weekend
+                const dayOfWeek = new Date(currentYear, currentMonth, day).getDay();
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    dayCell.classList.add('weekend');
+                }
+                
+                // Add day number
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = day;
+                dayCell.appendChild(dayNumber);
+                
+                // Add events for this day
+                const dateStr = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const events = mockCalendarBookings.filter(event => {
+                    const eventStart = new Date(event.start);
+                    const eventEnd = new Date(event.end);
+                    const currentDate = new Date(dateStr);
+                    return currentDate >= eventStart && currentDate <= eventEnd;
+                });
+                
+                events.forEach(event => {
+                    const eventElement = document.createElement('div');
+                    eventElement.className = `calendar-event ${event.status}`;
+                    eventElement.textContent = event.vehicle;
+                    eventElement.title = `${event.code} - ${event.customer} (${event.status})`;
+                    eventElement.addEventListener('click', () => viewBookingDetail(event.id));
+                    dayCell.appendChild(eventElement);
+                });
+                
+                calendarGrid.appendChild(dayCell);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize views
+            renderBookingsTable();
+            updateStats();
+            renderCalendar();
+            
+            // Initialize Flatpickr for date range
+            flatpickr("#filterDateRange", {
+                mode: "range",
+                locale: "vn",
+                dateFormat: "d/m/Y",
+                placeholder: "Chọn khoảng thời gian..."
+            });
+            
+            // Initialize Select2
+            $('#filterCustomer, #filterVehicle, #filterPayment').select2({
+                width: '100%',
+                placeholder: 'Chọn...'
+            });
+            
+            // Quick actions
+            document.querySelectorAll('.quick-actions .action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.quick-actions .action-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const status = this.dataset.status;
+                    if (status === 'all') {
+                        renderBookingsTable();
+                    } else {
+                        const filtered = mockBookings.filter(b => b.status === status);
+                        renderBookingsTable(filtered);
+                    }
+                });
+            });
+            
+            // Create new booking button
+            document.getElementById('createBookingBtn').addEventListener('click', createNewBooking);
+            
+            // Date change listeners for booking form
+            document.getElementById('pickupDate').addEventListener('change', calculatePrices);
+            document.getElementById('returnDate').addEventListener('change', calculatePrices);
+            document.getElementById('vehicleSelect').addEventListener('change', calculatePrices);
+            
+            // Apply discount button
+            document.getElementById('applyDiscount').addEventListener('click', () => {
+                const discountCode = document.getElementById('discountCode').value;
+                if (discountCode === 'RENTCAR10') {
+                    document.getElementById('calcDiscount').textContent = '-150.000 ₫';
+                    calculatePrices();
+                    alert('Áp dụng mã giảm giá thành công!');
+                } else {
+                    alert('Mã giảm giá không hợp lệ.');
+                }
+            });
+            
+            // Calendar navigation
+            document.getElementById('prevMonth').addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar();
+            });
+            
+            document.getElementById('nextMonth').addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar();
+            });
+            
+            document.getElementById('todayBtn').addEventListener('click', () => {
+                const today = new Date();
+                currentMonth = today.getMonth();
+                currentYear = today.getFullYear();
+                renderCalendar();
+            });
+            
+            // Modal close buttons
+            document.getElementById('closeDetailModal').addEventListener('click', () => {
+                bookingDetailModal.classList.remove('active');
+            });
+            
+            document.getElementById('closeFormModal').addEventListener('click', () => {
+                bookingFormModal.classList.remove('active');
+            });
+            
+            document.getElementById('closeConfirmationModal').addEventListener('click', () => {
+                confirmationModal.classList.remove('active');
+            });
+            
+            document.getElementById('cancelFormBtn').addEventListener('click', () => {
+                bookingFormModal.classList.remove('active');
+            });
+            
+            document.getElementById('cancelConfirmationBtn').addEventListener('click', () => {
+                confirmationModal.classList.remove('active');
+            });
+            
+            // Form submission
+            document.getElementById('saveBookingBtn').addEventListener('click', () => {
+                if (document.getElementById('bookingForm').checkValidity()) {
+                    if (currentBookingId) {
+                        alert('Cập nhật đơn đặt thành công!');
+                    } else {
+                        alert('Tạo đơn đặt mới thành công!');
+                    }
+                    bookingFormModal.classList.remove('active');
+                } else {
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc (*)');
+                }
+            });
+            
+            // Action buttons in detail modal
+            document.getElementById('confirmBookingBtn').addEventListener('click', () => {
+                confirmBookingAction(currentBookingId, 'confirm');
+            });
+            
+            document.getElementById('cancelBookingBtn').addEventListener('click', () => {
+                confirmBookingAction(currentBookingId, 'cancel');
+            });
+            
+            document.getElementById('printContractBtn').addEventListener('click', () => {
+                alert('Đang tải hợp đồng...');
+            });
+            
+            // Confirmation modal action
+            document.getElementById('confirmActionBtn').addEventListener('click', executeAction);
+            
+            // Bulk actions
+            document.getElementById('cancelSelectedBtn').addEventListener('click', cancelSelectedBookings);
+            document.getElementById('printSelectedBtn').addEventListener('click', printSelectedContracts);
+            
+            // Select all checkbox
+            document.getElementById('selectAllCheckbox').addEventListener('change', (e) => {
+                const checkboxes = document.querySelectorAll('.select-booking');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                
+                checkboxes.forEach(cb => {
+                    cb.checked = !allChecked;
+                    const id = parseInt(cb.dataset.id);
+                    if (!allChecked) {
+                        selectedBookings.add(id);
+                    } else {
+                        selectedBookings.delete(id);
+                    }
+                });
+                
+                updateSelectedCount();
+            });
+            
+            // Filter buttons
+            document.getElementById('applyFilters').addEventListener('click', () => {
+                const dateRange = document.getElementById('filterDateRange').value;
+                const customer = document.getElementById('filterCustomer').value;
+                const vehicle = document.getElementById('filterVehicle').value;
+                const payment = document.getElementById('filterPayment').value;
+                
+                // Simple filtering for demo
+                let filtered = mockBookings;
+                
+                if (customer) {
+                    filtered = filtered.filter(b => b.customer.id === parseInt(customer));
+                }
+                
+                if (vehicle) {
+                    filtered = filtered.filter(b => b.vehicle.id === parseInt(vehicle));
+                }
+                
+                if (payment) {
+                    filtered = filtered.filter(b => b.payment_status === payment);
+                }
+                
+                renderBookingsTable(filtered);
+            });
+            
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                document.getElementById('filterDateRange').value = '';
+                document.getElementById('filterCustomer').value = '';
+                document.getElementById('filterVehicle').value = '';
+                document.getElementById('filterPayment').value = '';
+                $('.select2').val(null).trigger('change');
+                renderBookingsTable();
+            });
+            
+            // Export and reminder buttons
+            document.getElementById('exportBookingsBtn').addEventListener('click', () => {
+                alert('Xuất báo cáo thành công!');
+            });
+            
+            document.getElementById('sendRemindersBtn').addEventListener('click', () => {
+                alert('Đã gửi nhắc nhở đến khách hàng có đơn đặt sắp tới!');
+            });
+            
+            // Close modals when clicking outside
+            [bookingDetailModal, bookingFormModal, confirmationModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

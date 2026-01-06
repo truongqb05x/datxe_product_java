@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar Admin - Quản lý người dùng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="../../css/pages/user.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-car"></i>
+            <h2>RentCar Admin</h2>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="vehicles.html" class="nav-link">
+                    <i class="fas fa-car"></i>
+                    <span>Quản lý xe</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="bookings.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Đơn đặt xe</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-users"></i>
+                    <span>Quản lý người dùng</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Báo cáo & Thống kê</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div>
+                    <h4>Admin User</h4>
+                    <p>Quản trị viên</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-users"></i> Quản lý người dùng</h1>
+                <p>Quản lý tất cả người dùng và khách hàng trong hệ thống</p>
+            </div>
+            
+            <div class="header-right">
+                <button class="btn btn-primary" id="addUserBtn">
+                    <i class="fas fa-user-plus"></i> Thêm người dùng mới
+                </button>
+                <button class="btn btn-success" id="exportUsersBtn">
+                    <i class="fas fa-file-export"></i> Xuất danh sách
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon icon-total">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Tổng người dùng</h3>
+                    <div class="stat-value" id="totalUsers">1,245</div>
+                    <div class="stat-change">+68 tháng này</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-active">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Đang hoạt động</h3>
+                    <div class="stat-value" id="activeUsers">1,128</div>
+                    <div class="stat-change">90.6% tổng số</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-verified">
+                    <i class="fas fa-id-card"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Đã xác thực</h3>
+                    <div class="stat-value" id="verifiedUsers">892</div>
+                    <div class="stat-change">71.6% tổng số</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-unverified">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Chờ xác thực</h3>
+                    <div class="stat-value" id="pendingUsers">353</div>
+                    <div class="stat-change">28.4% tổng số</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon icon-suspended">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Đã khóa</h3>
+                    <div class="stat-value" id="suspendedUsers">117</div>
+                    <div class="stat-change">9.4% tổng số</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Filters -->
+        <section class="user-filters">
+            <div class="filters-header">
+                <h3><i class="fas fa-filter"></i> Bộ lọc người dùng</h3>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <span style="font-size: 0.9rem; color: #666;">Tìm kiếm nâng cao</span>
+                    <div class="loading-spinner" id="filterLoading" style="display: none;">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="filterStatus">Trạng thái</label>
+                    <select id="filterStatus">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="active">Đang hoạt động</option>
+                        <option value="inactive">Không hoạt động</option>
+                        <option value="pending">Chờ xác thực</option>
+                        <option value="suspended">Đã khóa</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterVerification">Xác thực</label>
+                    <select id="filterVerification">
+                        <option value="">Tất cả</option>
+                        <option value="verified">Đã xác thực</option>
+                        <option value="unverified">Chưa xác thực</option>
+                        <option value="pending">Đang xử lý</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterLicense">Bằng lái xe</label>
+                    <select id="filterLicense">
+                        <option value="">Tất cả</option>
+                        <option value="has_license">Có bằng lái</option>
+                        <option value="no_license">Không có bằng lái</option>
+                        <option value="expired">Bằng hết hạn</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filterSearch">Tìm kiếm</label>
+                    <input type="text" id="filterSearch" placeholder="Tên, email, số điện thoại...">
+                </div>
+            </div>
+            
+            <div class="user-types">
+                <button class="type-btn active" data-type="all">
+                    <i class="fas fa-users"></i> Tất cả
+                </button>
+                <button class="type-btn" data-type="customer">
+                    <i class="fas fa-user"></i> Khách hàng
+                </button>
+                <button class="type-btn" data-type="renter">
+                    <i class="fas fa-car"></i> Người thuê xe
+                </button>
+                <button class="type-btn" data-type="driver">
+                    <i class="fas fa-id-card"></i> Có bằng lái
+                </button>
+                <button class="type-btn" data-type="new">
+                    <i class="fas fa-star"></i> Người dùng mới
+                </button>
+                <button class="type-btn" data-type="vip">
+                    <i class="fas fa-crown"></i> VIP
+                </button>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="btn btn-primary" id="applyFilters">
+                    <i class="fas fa-search"></i> Áp dụng bộ lọc
+                </button>
+                <button class="btn btn-outline" id="resetFilters">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </button>
+                <button class="btn btn-success" id="sendBulkEmail">
+                    <i class="fas fa-envelope"></i> Gửi email hàng loạt
+                </button>
+                <button class="btn btn-warning" id="verifySelected">
+                    <i class="fas fa-check-circle"></i> Xác thực đã chọn
+                </button>
+            </div>
+        </section>
+
+        <!-- Users Table -->
+        <div class="users-table-container">
+            <div class="table-toolbar">
+                <div class="table-info">
+                    Hiển thị <span id="tableCount">25</span> trên tổng số <span id="tableTotal">1,245</span> người dùng
+                </div>
+                <div class="table-actions">
+                    <button class="btn btn-outline" id="selectAllBtn">
+                        <i class="fas fa-check-square"></i> Chọn tất cả
+                    </button>
+                    <button class="btn btn-danger" id="deleteSelectedBtn">
+                        <i class="fas fa-trash"></i> Xóa đã chọn
+                    </button>
+                    <button class="btn btn-warning" id="suspendSelectedBtn">
+                        <i class="fas fa-ban"></i> Khóa tài khoản
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">
+                                <input type="checkbox" class="select-checkbox" id="selectAllCheckbox">
+                            </th>
+                            <th style="width: 60px;"></th>
+                            <th>Thông tin người dùng</th>
+                            <th style="width: 150px;">Thống kê</th>
+                            <th style="width: 100px;">Trạng thái</th>
+                            <th style="width: 100px;">Xác thực</th>
+                            <th style="width: 100px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users data will be dynamically generated -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- User Detail Modal -->
+        <div class="modal" id="userDetailModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalUserName">Nguyễn Văn A</h3>
+                    <button class="close-modal" id="closeDetailModal">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="user-detail-grid">
+                        <div>
+                            <div class="detail-section">
+                                <div class="user-avatar-large" id="detailUserAvatar">
+                                    <div style="width: 100%; height: 100%; background: var(--secondary); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: bold;">
+                                        N
+                                    </div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <h4 id="detailUserName">Nguyễn Văn A</h4>
+                                    <p style="color: #666; margin-bottom: 1rem;" id="detailUserRole">Khách hàng • Thành viên từ 05/2022</p>
+                                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                        <span class="status-badge status-active" id="detailUserStatus">Đang hoạt động</span>
+                                        <span class="verification-badge verified" id="detailUserVerification">Đã xác thực</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Thông tin liên hệ</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Email</div>
+                                        <div class="info-value" id="detailUserEmail">nguyenvana@email.com</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Số điện thoại</div>
+                                        <div class="info-value" id="detailUserPhone">0912345678</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Ngày sinh</div>
+                                        <div class="info-value" id="detailUserDob">15/05/1990</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Giới tính</div>
+                                        <div class="info-value" id="detailUserGender">Nam</div>
+                                    </div>
+                                    <div class="info-item full-width">
+                                        <div class="info-label">Địa chỉ</div>
+                                        <div class="info-value" id="detailUserAddress">123 Đường ABC, Quận 1, TP.HCM</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="detail-section">
+                                <h4>Giấy tờ tùy thân</h4>
+                                <div class="document-grid">
+                                    <div class="document-item">
+                                        <div class="document-header">
+                                            <h5 style="color: var(--primary);">CMND/CCCD</h5>
+                                            <span class="verification-badge verified">Đã xác thực</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Số CMND</div>
+                                            <div class="info-value" id="detailUserIdNumber">025123456789</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Ngày cấp</div>
+                                            <div class="info-value" id="detailIdIssueDate">15/05/2015</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Nơi cấp</div>
+                                            <div class="info-value" id="detailIdIssuePlace">CA TP.HCM</div>
+                                        </div>
+                                        <div class="document-actions">
+                                            <button class="action-btn view-document" data-type="id_card" title="Xem hình ảnh">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn verify-document" title="Xác thực">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="document-item">
+                                        <div class="document-header">
+                                            <h5 style="color: var(--primary);">Bằng lái xe</h5>
+                                            <span class="verification-badge verified">Đã xác thực</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Số bằng lái</div>
+                                            <div class="info-value" id="detailLicenseNumber">A1234567</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Hạng bằng</div>
+                                            <div class="info-value" id="detailLicenseClass">B2</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Ngày hết hạn</div>
+                                            <div class="info-value" id="detailLicenseExpiry">15/05/2030</div>
+                                        </div>
+                                        <div class="document-actions">
+                                            <button class="action-btn view-document" data-type="license" title="Xem hình ảnh">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="action-btn verify-document" title="Xác thực">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Thống kê hoạt động</h4>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Tổng số đơn đặt</div>
+                                        <div class="info-value" id="detailTotalBookings">8</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Đơn hoàn thành</div>
+                                        <div class="info-value" id="detailCompletedBookings">7</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Tổng chi tiêu</div>
+                                        <div class="info-value" id="detailTotalSpent">12.5M ₫</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Đánh giá trung bình</div>
+                                        <div class="info-value">
+                                            <span style="color: #f39c12;">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                                4.5
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Ngày đăng ký</div>
+                                        <div class="info-value" id="detailJoinDate">15/05/2022</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Lần đăng nhập cuối</div>
+                                        <div class="info-value" id="detailLastLogin">05/12/2023 14:30</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h4>Hoạt động gần đây</h4>
+                                <div class="activity-timeline" id="userActivityTimeline">
+                                    <!-- Activity items will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="printUserReport">
+                        <i class="fas fa-print"></i> In hồ sơ
+                    </button>
+                    <button class="btn btn-warning" id="editUserBtn">
+                        <i class="fas fa-edit"></i> Chỉnh sửa
+                    </button>
+                    <button class="btn btn-danger" id="suspendUserBtn">
+                        <i class="fas fa-ban"></i> Khóa tài khoản
+                    </button>
+                    <button class="btn btn-success" id="verifyUserBtn">
+                        <i class="fas fa-check-circle"></i> Xác thực
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit User Modal -->
+        <div class="modal" id="userFormModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalFormTitle">Thêm người dùng mới</h3>
+                    <button class="close-modal" id="closeFormModal">&times;</button>
+                </div>
+                
+                <div class="modal-body">
+                    <form id="userForm">
+                        <div class="user-form-grid">
+                            <div class="form-group">
+                                <label for="userFullName">Họ và tên *</label>
+                                <input type="text" id="userFullName" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userEmail">Email *</label>
+                                <input type="email" id="userEmail" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userPhone">Số điện thoại *</label>
+                                <input type="tel" id="userPhone" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userPassword">Mật khẩu *</label>
+                                <input type="password" id="userPassword" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userDateOfBirth">Ngày sinh</label>
+                                <input type="date" id="userDateOfBirth">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userGender">Giới tính</label>
+                                <select id="userGender">
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="male">Nam</option>
+                                    <option value="female">Nữ</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="userAddress">Địa chỉ</label>
+                                <textarea id="userAddress" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userIdCard">Số CMND/CCCD</label>
+                                <input type="text" id="userIdCard">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userIdIssueDate">Ngày cấp CMND</label>
+                                <input type="date" id="userIdIssueDate">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userIdIssuePlace">Nơi cấp CMND</label>
+                                <input type="text" id="userIdIssuePlace" placeholder="Cơ quan cấp...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userLicenseNumber">Số bằng lái xe</label>
+                                <input type="text" id="userLicenseNumber">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userLicenseClass">Hạng bằng lái</label>
+                                <select id="userLicenseClass">
+                                    <option value="">Chọn hạng bằng</option>
+                                    <option value="A1">A1 - Xe máy dưới 175cc</option>
+                                    <option value="A2">A2 - Xe máy trên 175cc</option>
+                                    <option value="B1">B1 - Ô tô số tự động</option>
+                                    <option value="B2">B2 - Ô tô dưới 9 chỗ</option>
+                                    <option value="C">C - Xe tải</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userLicenseExpiry">Ngày hết hạn bằng lái</label>
+                                <input type="date" id="userLicenseExpiry">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userStatus">Trạng thái tài khoản</label>
+                                <select id="userStatus">
+                                    <option value="active">Đang hoạt động</option>
+                                    <option value="inactive">Không hoạt động</option>
+                                    <option value="pending">Chờ xác thực</option>
+                                    <option value="suspended">Đã khóa</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userVerification">Trạng thái xác thực</label>
+                                <select id="userVerification">
+                                    <option value="unverified">Chưa xác thực</option>
+                                    <option value="pending">Đang xử lý</option>
+                                    <option value="verified">Đã xác thực</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="userRole">Vai trò</label>
+                                <select id="userRole">
+                                    <option value="customer">Khách hàng</option>
+                                    <option value="vip_customer">Khách hàng VIP</option>
+                                    <option value="renter">Người thuê xe</option>
+                                    <option value="driver">Tài xế</option>
+                                    <option value="staff">Nhân viên</option>
+                                    <option value="admin">Quản trị viên</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label>Ảnh đại diện</label>
+                                <div class="avatar-upload" id="avatarUpload">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Kéo thả ảnh vào đây hoặc click để chọn</p>
+                                    <p><small>Định dạng: JPG, PNG. Tối đa 2MB</small></p>
+                                    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="userNotes">Ghi chú</label>
+                                <textarea id="userNotes" rows="3" placeholder="Ghi chú về người dùng..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelFormBtn">Hủy</button>
+                    <button class="btn btn-primary" id="saveUserBtn">Lưu thông tin</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Preview Modal -->
+        <div class="modal document-preview-modal" id="documentPreviewModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="documentPreviewTitle">Xem CMND/CCCD</h3>
+                    <button class="close-modal" id="closeDocumentModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="document-preview" id="documentPreviewContent">
+                        <img src="https://via.placeholder.com/600x400/3498db/ffffff?text=CMND+Front" alt="CMND Mặt trước">
+                        <div style="margin-top: 1rem; color: #666;">
+                            <p>CMND số: 025123456789 • Người dùng: Nguyễn Văn A</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="rejectDocument">Từ chối</button>
+                    <button class="btn btn-primary" id="approveDocument">Phê duyệt</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div class="modal" id="confirmationModal">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3 id="confirmationTitle"><i class="fas fa-exclamation-circle"></i> Xác nhận</h3>
+                    <button class="close-modal" id="closeConfirmationModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmationMessage">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelConfirmationBtn">Hủy</button>
+                    <button class="btn btn-primary" id="confirmActionBtn">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="modal" id="loadingModal" style="background: rgba(255, 255, 255, 0.9);">
+            <div class="modal-content" style="max-width: 400px; background: transparent; box-shadow: none;">
+                <div class="modal-body" style="text-align: center;">
+                    <div class="spinner" style="width: 60px; height: 60px; border-width: 6px; margin: 0 auto 1.5rem;"></div>
+                    <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Đang xử lý...</h3>
+                    <p style="color: #666;">Vui lòng đợi trong giây lát</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+    <script>
+        // Mock data for users
+        const mockUsers = [
+            {
+                id: 1,
+                full_name: "Nguyễn Văn A",
+                email: "nguyenvana@email.com",
+                phone: "0912345678",
+                date_of_birth: "1990-05-15",
+                gender: "male",
+                address: "123 Đường ABC, Quận 1, TP.HCM",
+                avatar_color: "#3498db",
+                status: "active",
+                verification: "verified",
+                role: "customer",
+                id_card: "025123456789",
+                id_issue_date: "2015-05-15",
+                id_issue_place: "CA TP.HCM",
+                license_number: "A1234567",
+                license_class: "B2",
+                license_expiry: "2030-05-15",
+                total_bookings: 8,
+                completed_bookings: 7,
+                total_spent: 12500000,
+                avg_rating: 4.5,
+                join_date: "2022-05-15",
+                last_login: "2023-12-05 14:30",
+                notes: "Khách hàng trung thành, thường xuyên thuê xe đi công tác."
+            },
+            {
+                id: 2,
+                full_name: "Trần Thị B",
+                email: "tranthib@email.com",
+                phone: "0923456789",
+                date_of_birth: "1992-08-22",
+                gender: "female",
+                address: "456 Đường XYZ, Quận 3, TP.HCM",
+                avatar_color: "#e74c3c",
+                status: "active",
+                verification: "verified",
+                role: "vip_customer",
+                id_card: "025234567890",
+                id_issue_date: "2016-08-20",
+                id_issue_place: "CA Hà Nội",
+                license_number: "B2345678",
+                license_class: "A1",
+                license_expiry: "2026-08-20",
+                total_bookings: 12,
+                completed_bookings: 12,
+                total_spent: 8900000,
+                avg_rating: 4.8,
+                join_date: "2021-03-10",
+                last_login: "2023-12-04 09:15",
+                notes: "Khách hàng VIP, ưu tiên xe mới và sạch sẽ."
+            },
+            {
+                id: 3,
+                full_name: "Lê Văn C",
+                email: "levanc@email.com",
+                phone: "0934567890",
+                date_of_birth: "1988-12-30",
+                gender: "male",
+                address: "789 Đường LMN, Quận Bình Thạnh, TP.HCM",
+                avatar_color: "#2ecc71",
+                status: "pending",
+                verification: "unverified",
+                role: "renter",
+                id_card: "025345678901",
+                id_issue_date: "2014-11-15",
+                id_issue_place: "CA Đà Nẵng",
+                license_number: "",
+                license_class: "",
+                license_expiry: "",
+                total_bookings: 5,
+                completed_bookings: 5,
+                total_spent: 15600000,
+                avg_rating: 4.2,
+                join_date: "2023-08-25",
+                last_login: "2023-12-03 16:45",
+                notes: "Cần xác thực giấy tờ và bằng lái xe."
+            },
+            {
+                id: 4,
+                full_name: "Phạm Thị D",
+                email: "phamthid@email.com",
+                phone: "0945678901",
+                date_of_birth: "1995-03-18",
+                gender: "female",
+                address: "321 Đường PQR, Quận Tân Bình, TP.HCM",
+                avatar_color: "#9b59b6",
+                status: "suspended",
+                verification: "pending",
+                role: "customer",
+                id_card: "025456789012",
+                id_issue_date: "2018-04-22",
+                id_issue_place: "CA Cần Thơ",
+                license_number: "D4567890",
+                license_class: "B1",
+                license_expiry: "2028-04-22",
+                total_bookings: 7,
+                completed_bookings: 6,
+                total_spent: 7300000,
+                avg_rating: 3.8,
+                join_date: "2022-11-05",
+                last_login: "2023-11-28 11:20",
+                notes: "Tài khoản bị khóa do vi phạm điều khoản."
+            },
+            {
+                id: 5,
+                full_name: "Hoàng Văn E",
+                email: "hoangvane@email.com",
+                phone: "0956789012",
+                date_of_birth: "1985-07-08",
+                gender: "male",
+                address: "654 Đường UVW, Quận Phú Nhuận, TP.HCM",
+                avatar_color: "#f39c12",
+                status: "active",
+                verification: "verified",
+                role: "driver",
+                id_card: "025567890123",
+                id_issue_date: "2013-06-10",
+                id_issue_place: "CA Hải Phòng",
+                license_number: "E5678901",
+                license_class: "B2",
+                license_expiry: "2023-12-31",
+                total_bookings: 6,
+                completed_bookings: 6,
+                total_spent: 11200000,
+                avg_rating: 4.7,
+                join_date: "2023-01-15",
+                last_login: "2023-12-05 08:45",
+                notes: "Tài xế chuyên nghiệp, cần gia hạn bằng lái."
+            },
+            {
+                id: 6,
+                full_name: "Đỗ Thị F",
+                email: "dothif@email.com",
+                phone: "0967890123",
+                date_of_birth: "1993-09-25",
+                gender: "female",
+                address: "987 Đường XYZ, Quận 2, TP.HCM",
+                avatar_color: "#1abc9c",
+                status: "inactive",
+                verification: "unverified",
+                role: "customer",
+                id_card: "",
+                id_issue_date: "",
+                id_issue_place: "",
+                license_number: "",
+                license_class: "",
+                license_expiry: "",
+                total_bookings: 0,
+                completed_bookings: 0,
+                total_spent: 0,
+                avg_rating: 0,
+                join_date: "2023-11-20",
+                last_login: "2023-11-20 14:10",
+                notes: "Người dùng mới, chưa hoàn thiện hồ sơ."
+            },
+            {
+                id: 7,
+                full_name: "Võ Văn G",
+                email: "vovang@email.com",
+                phone: "0978901234",
+                date_of_birth: "1991-02-14",
+                gender: "male",
+                address: "159 Đường ABC, Quận 10, TP.HCM",
+                avatar_color: "#34495e",
+                status: "active",
+                verification: "pending",
+                role: "renter",
+                id_card: "025678901234",
+                id_issue_date: "2019-07-30",
+                id_issue_place: "CA Bình Dương",
+                license_number: "G6789012",
+                license_class: "A2",
+                license_expiry: "2029-07-30",
+                total_bookings: 3,
+                completed_bookings: 3,
+                total_spent: 4500000,
+                avg_rating: 4.9,
+                join_date: "2023-06-18",
+                last_login: "2023-12-04 19:30",
+                notes: "Cần xác thực CMND và bằng lái."
+            },
+            {
+                id: 8,
+                full_name: "Ngô Thị H",
+                email: "ngothih@email.com",
+                phone: "0989012345",
+                date_of_birth: "1994-11-03",
+                gender: "female",
+                address: "753 Đường DEF, Quận Gò Vấp, TP.HCM",
+                avatar_color: "#d35400",
+                status: "active",
+                verification: "verified",
+                role: "staff",
+                id_card: "025789012345",
+                id_issue_date: "2017-09-15",
+                id_issue_place: "CA Đồng Nai",
+                license_number: "H7890123",
+                license_class: "B2",
+                license_expiry: "2027-09-15",
+                total_bookings: 15,
+                completed_bookings: 14,
+                total_spent: 18500000,
+                avg_rating: 4.6,
+                join_date: "2020-08-12",
+                last_login: "2023-12-05 07:45",
+                notes: "Nhân viên công ty, thuê xe thường xuyên."
+            }
+        ];
+
+        // Mock activity data
+        const mockActivities = {
+            1: [
+                { action: "booking_created", title: "Đơn đặt mới #RENT20230045", time: "2023-12-05 14:30" },
+                { action: "payment_success", title: "Thanh toán thành công 3.45M ₫", time: "2023-12-05 16:15" },
+                { action: "license_verified", title: "Bằng lái xe đã được xác thực", time: "2023-11-20 10:45" },
+                { action: "profile_updated", title: "Cập nhật thông tin cá nhân", time: "2023-11-15 09:20" }
+            ],
+            3: [
+                { action: "account_created", title: "Tạo tài khoản thành công", time: "2023-08-25 16:30" },
+                { action: "booking_created", title: "Đơn đặt mới #RENT20230043", time: "2023-12-08 16:45" },
+                { action: "document_uploaded", title: "Đã tải lên CMND mặt trước", time: "2023-12-01 11:15" }
+            ],
+            5: [
+                { action: "license_expiring", title: "Bằng lái sắp hết hạn (31/12/2023)", time: "2023-12-01 09:00" },
+                { action: "booking_completed", title: "Hoàn thành đơn #RENT20230041", time: "2023-12-05 19:30" },
+                { action: "review_received", title: "Nhận đánh giá 5 sao từ chủ xe", time: "2023-11-28 14:20" }
+            ]
+        };
+
+        // DOM Elements
+        const usersTableBody = document.getElementById('usersTableBody');
+        const userDetailModal = document.getElementById('userDetailModal');
+        const userFormModal = document.getElementById('userFormModal');
+        const documentPreviewModal = document.getElementById('documentPreviewModal');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const loadingModal = document.getElementById('loadingModal');
+        
+        let currentUserId = null;
+        let selectedUsers = new Set();
+        let currentAction = null;
+        let currentDocumentType = null;
+
+        // Format date
+        function formatDate(dateString, includeTime = false) {
+            if (!dateString) return 'Chưa cập nhật';
+            
+            const date = new Date(dateString);
+            const options = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            };
+            
+            if (includeTime) {
+                options.hour = '2-digit';
+                options.minute = '2-digit';
+            }
+            
+            return date.toLocaleDateString('vi-VN', options);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            if (!amount) return '0 ₫';
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(amount);
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'active': '<span class="status-badge status-active">Đang hoạt động</span>',
+                'inactive': '<span class="status-badge status-inactive">Không hoạt động</span>',
+                'pending': '<span class="status-badge status-pending">Chờ xác thực</span>',
+                'suspended': '<span class="status-badge status-suspended">Đã khóa</span>'
+            };
+            return badges[status] || badges['inactive'];
+        }
+
+        // Get verification badge
+        function getVerificationBadge(verification) {
+            const badges = {
+                'verified': '<span class="verification-badge verified">Đã xác thực</span>',
+                'unverified': '<span class="verification-badge unverified">Chưa xác thực</span>',
+                'pending': '<span class="verification-badge pending">Đang xử lý</span>'
+            };
+            return badges[verification] || badges['unverified'];
+        }
+
+        // Get status text
+        function getStatusText(status) {
+            const texts = {
+                'active': 'Đang hoạt động',
+                'inactive': 'Không hoạt động',
+                'pending': 'Chờ xác thực',
+                'suspended': 'Đã khóa'
+            };
+            return texts[status] || 'Không xác định';
+        }
+
+        // Get verification text
+        function getVerificationText(verification) {
+            const texts = {
+                'verified': 'Đã xác thực',
+                'unverified': 'Chưa xác thực',
+                'pending': 'Đang xử lý'
+            };
+            return texts[verification] || 'Chưa xác thực';
+        }
+
+        // Get role text
+        function getRoleText(role) {
+            const texts = {
+                'customer': 'Khách hàng',
+                'vip_customer': 'Khách hàng VIP',
+                'renter': 'Người thuê xe',
+                'driver': 'Tài xế',
+                'staff': 'Nhân viên',
+                'admin': 'Quản trị viên'
+            };
+            return texts[role] || 'Khách hàng';
+        }
+
+        // Get initials for avatar
+        function getInitials(name) {
+            if (!name) return '?';
+            return name.split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+
+        // Show loading
+        function showLoading() {
+            loadingModal.classList.add('active');
+        }
+
+        // Hide loading
+        function hideLoading() {
+            loadingModal.classList.remove('active');
+        }
+
+        // Update stats
+        function updateStats() {
+            const total = mockUsers.length;
+            const active = mockUsers.filter(u => u.status === 'active').length;
+            const verified = mockUsers.filter(u => u.verification === 'verified').length;
+            const pending = mockUsers.filter(u => u.verification === 'unverified' || u.verification === 'pending').length;
+            const suspended = mockUsers.filter(u => u.status === 'suspended').length;
+            
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('activeUsers').textContent = active;
+            document.getElementById('verifiedUsers').textContent = verified;
+            document.getElementById('pendingUsers').textContent = pending;
+            document.getElementById('suspendedUsers').textContent = suspended;
+        }
+
+        // Render users table
+        function renderUsersTable(users = mockUsers) {
+            usersTableBody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                // Calculate time since join
+                const joinDate = new Date(user.join_date);
+                const now = new Date();
+                const monthsDiff = (now.getFullYear() - joinDate.getFullYear()) * 12 + (now.getMonth() - joinDate.getMonth());
+                const membershipText = monthsDiff < 1 ? 'Thành viên mới' : 
+                                    monthsDiff < 12 ? `Thành viên ${monthsDiff} tháng` : 
+                                    `Thành viên ${Math.floor(monthsDiff/12)} năm`;
+                
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="select-checkbox select-user" data-id="${user.id}">
+                    </td>
+                    <td class="user-avatar-cell">
+                        <div class="user-avatar" style="background: ${user.avatar_color};">
+                            ${getInitials(user.full_name)}
+                        </div>
+                    </td>
+                    <td class="user-info">
+                        <div class="user-name">${user.full_name}</div>
+                        <div class="user-email">${user.email}</div>
+                        <div class="user-phone">${user.phone}</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.2rem;">
+                            ${getRoleText(user.role)} • ${membershipText}
+                        </div>
+                    </td>
+                    <td class="user-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-calendar-check" style="color: #3498db;"></i>
+                            <span>${user.total_bookings} đơn</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-money-bill-wave" style="color: #2ecc71;"></i>
+                            <span>${formatCurrency(user.total_spent)}</span>
+                        </div>
+                        ${user.license_number ? `
+                            <div class="stat-item">
+                                <i class="fas fa-id-card" style="color: #9b59b6;"></i>
+                                <span>${user.license_class}</span>
+                            </div>
+                        ` : ''}
+                    </td>
+                    <td>
+                        ${getStatusBadge(user.status)}
+                    </td>
+                    <td>
+                        ${getVerificationBadge(user.verification)}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn view-user" data-id="${user.id}" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn edit-user" data-id="${user.id}" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.verification !== 'verified' ? `
+                                <button class="action-btn verify-user" data-id="${user.id}" title="Xác thực">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            ` : ''}
+                            ${user.status !== 'suspended' ? `
+                                <button class="action-btn suspend-user" data-id="${user.id}" title="Khóa tài khoản">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                usersTableBody.appendChild(row);
+            });
+            
+            // Add event listeners
+            document.querySelectorAll('.select-user').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const id = parseInt(e.target.dataset.id);
+                    if (e.target.checked) {
+                        selectedUsers.add(id);
+                    } else {
+                        selectedUsers.delete(id);
+                    }
+                    updateSelectedCount();
+                });
+            });
+            
+            document.querySelectorAll('.view-user').forEach(btn => {
+                btn.addEventListener('click', () => viewUserDetail(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.edit-user').forEach(btn => {
+                btn.addEventListener('click', () => editUser(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.verify-user').forEach(btn => {
+                btn.addEventListener('click', () => confirmUserAction(btn.dataset.id, 'verify'));
+            });
+            
+            document.querySelectorAll('.suspend-user').forEach(btn => {
+                btn.addEventListener('click', () => confirmUserAction(btn.dataset.id, 'suspend'));
+            });
+            
+            // Update counts
+            document.getElementById('tableCount').textContent = users.length;
+            document.getElementById('tableTotal').textContent = mockUsers.length;
+            
+            updateSelectedCount();
+        }
+
+        // Update selected count
+        function updateSelectedCount() {
+            const deleteBtn = document.getElementById('deleteSelectedBtn');
+            const suspendBtn = document.getElementById('suspendSelectedBtn');
+            
+            if (selectedUsers.size > 0) {
+                deleteBtn.textContent = `Xóa (${selectedUsers.size})`;
+                suspendBtn.textContent = `Khóa (${selectedUsers.size})`;
+            } else {
+                deleteBtn.textContent = 'Xóa đã chọn';
+                suspendBtn.textContent = 'Khóa tài khoản';
+            }
+        }
+
+        // View user detail
+        function viewUserDetail(id) {
+            const user = mockUsers.find(u => u.id === parseInt(id));
+            if (!user) return;
+            
+            currentUserId = user.id;
+            
+            // Update modal title
+            document.getElementById('modalUserName').textContent = user.full_name;
+            
+            // Update avatar
+            const avatarDiv = document.getElementById('detailUserAvatar');
+            avatarDiv.innerHTML = `
+                <div style="width: 100%; height: 100%; background: ${user.avatar_color}; display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: bold;">
+                    ${getInitials(user.full_name)}
+                </div>
+            `;
+            
+            // Update user info
+            document.getElementById('detailUserName').textContent = user.full_name;
+            document.getElementById('detailUserRole').textContent = 
+                `${getRoleText(user.role)} • Thành viên từ ${formatDate(user.join_date)}`;
+            document.getElementById('detailUserStatus').textContent = getStatusText(user.status);
+            document.getElementById('detailUserStatus').className = `status-badge status-${user.status}`;
+            document.getElementById('detailUserVerification').textContent = getVerificationText(user.verification);
+            document.getElementById('detailUserVerification').className = `verification-badge ${user.verification}`;
+            
+            document.getElementById('detailUserEmail').textContent = user.email;
+            document.getElementById('detailUserPhone').textContent = user.phone;
+            document.getElementById('detailUserDob').textContent = formatDate(user.date_of_birth);
+            document.getElementById('detailUserGender').textContent = user.gender === 'male' ? 'Nam' : 
+                                                                      user.gender === 'female' ? 'Nữ' : 'Khác';
+            document.getElementById('detailUserAddress').textContent = user.address;
+            
+            // Update ID card info
+            document.getElementById('detailUserIdNumber').textContent = user.id_card || 'Chưa cập nhật';
+            document.getElementById('detailIdIssueDate').textContent = formatDate(user.id_issue_date);
+            document.getElementById('detailIdIssuePlace').textContent = user.id_issue_place || 'Chưa cập nhật';
+            
+            // Update license info
+            document.getElementById('detailLicenseNumber').textContent = user.license_number || 'Chưa cập nhật';
+            document.getElementById('detailLicenseClass').textContent = user.license_class || 'Chưa cập nhật';
+            document.getElementById('detailLicenseExpiry').textContent = formatDate(user.license_expiry);
+            
+            // Update stats
+            document.getElementById('detailTotalBookings').textContent = user.total_bookings;
+            document.getElementById('detailCompletedBookings').textContent = user.completed_bookings;
+            document.getElementById('detailTotalSpent').textContent = formatCurrency(user.total_spent);
+            document.getElementById('detailJoinDate').textContent = formatDate(user.join_date);
+            document.getElementById('detailLastLogin').textContent = formatDate(user.last_login, true);
+            
+            // Update activity timeline
+            const activityTimeline = document.getElementById('userActivityTimeline');
+            activityTimeline.innerHTML = '';
+            
+            const activities = mockActivities[id] || [
+                { action: 'account_created', title: 'Tạo tài khoản thành công', time: user.join_date }
+            ];
+            
+            activities.forEach(activity => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.innerHTML = `
+                    <div class="timeline-dot">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">${activity.title}</div>
+                        <div class="timeline-time">${formatDate(activity.time, true)}</div>
+                    </div>
+                `;
+                activityTimeline.appendChild(timelineItem);
+            });
+            
+            // Update action buttons
+            const suspendBtn = document.getElementById('suspendUserBtn');
+            const verifyBtn = document.getElementById('verifyUserBtn');
+            
+            if (user.status === 'suspended') {
+                suspendBtn.innerHTML = '<i class="fas fa-unlock"></i> Mở khóa tài khoản';
+                suspendBtn.className = 'btn btn-success';
+            } else {
+                suspendBtn.innerHTML = '<i class="fas fa-ban"></i> Khóa tài khoản';
+                suspendBtn.className = 'btn btn-danger';
+            }
+            
+            if (user.verification === 'verified') {
+                verifyBtn.style.display = 'none';
+            } else {
+                verifyBtn.style.display = 'inline-flex';
+            }
+            
+            userDetailModal.classList.add('active');
+        }
+
+        // Edit user
+        function editUser(id) {
+            const user = mockUsers.find(u => u.id === parseInt(id));
+            if (!user) return;
+            
+            currentUserId = user.id;
+            document.getElementById('modalFormTitle').textContent = `Chỉnh sửa: ${user.full_name}`;
+            
+            // Fill form with user data
+            document.getElementById('userFullName').value = user.full_name;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userPhone').value = user.phone;
+            document.getElementById('userDateOfBirth').value = user.date_of_birth;
+            document.getElementById('userGender').value = user.gender;
+            document.getElementById('userAddress').value = user.address;
+            document.getElementById('userStatus').value = user.status;
+            document.getElementById('userVerification').value = user.verification;
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userIdCard').value = user.id_card;
+            document.getElementById('userIdIssueDate').value = user.id_issue_date;
+            document.getElementById('userIdIssuePlace').value = user.id_issue_place;
+            document.getElementById('userLicenseNumber').value = user.license_number;
+            document.getElementById('userLicenseClass').value = user.license_class;
+            document.getElementById('userLicenseExpiry').value = user.license_expiry;
+            document.getElementById('userNotes').value = user.notes;
+            
+            // Set password field as optional for editing
+            document.getElementById('userPassword').required = false;
+            document.getElementById('userPassword').placeholder = 'Để trống nếu không thay đổi';
+            
+            userFormModal.classList.add('active');
+        }
+
+        // Add new user
+        function addNewUser() {
+            currentUserId = null;
+            document.getElementById('modalFormTitle').textContent = 'Thêm người dùng mới';
+            document.getElementById('userForm').reset();
+            
+            // Set default values
+            document.getElementById('userStatus').value = 'active';
+            document.getElementById('userVerification').value = 'unverified';
+            document.getElementById('userRole').value = 'customer';
+            document.getElementById('userPassword').required = true;
+            document.getElementById('userPassword').placeholder = 'Nhập mật khẩu';
+            
+            userFormModal.classList.add('active');
+        }
+
+        // Confirm user action
+        function confirmUserAction(id, action) {
+            currentUserId = parseInt(id);
+            currentAction = action;
+            
+            const user = mockUsers.find(u => u.id === currentUserId);
+            if (!user) return;
+            
+            let message = '';
+            let title = '';
+            
+            switch(action) {
+                case 'verify':
+                    title = 'Xác thực người dùng';
+                    message = `Bạn có chắc chắn muốn xác thực người dùng ${user.full_name}?`;
+                    break;
+                case 'suspend':
+                    if (user.status === 'suspended') {
+                        title = 'Mở khóa tài khoản';
+                        message = `Bạn có chắc chắn muốn mở khóa tài khoản ${user.full_name}?`;
+                    } else {
+                        title = 'Khóa tài khoản';
+                        message = `Bạn có chắc chắn muốn khóa tài khoản ${user.full_name}? Người dùng sẽ không thể đăng nhập.`;
+                    }
+                    break;
+                case 'delete':
+                    title = 'Xóa người dùng';
+                    message = `Bạn có chắc chắn muốn xóa người dùng ${user.full_name}? Hành động này không thể hoàn tác.`;
+                    break;
+            }
+            
+            document.getElementById('confirmationTitle').innerHTML = `<i class="fas fa-exclamation-circle"></i> ${title}`;
+            document.getElementById('confirmationMessage').textContent = message;
+            
+            confirmationModal.classList.add('active');
+        }
+
+        // Execute confirmed action
+        function executeAction() {
+            if (!currentUserId || !currentAction) return;
+            
+            const user = mockUsers.find(u => u.id === currentUserId);
+            if (!user) return;
+            
+            switch(currentAction) {
+                case 'verify':
+                    user.verification = 'verified';
+                    alert(`Đã xác thực người dùng ${user.full_name}`);
+                    break;
+                case 'suspend':
+                    if (user.status === 'suspended') {
+                        user.status = 'active';
+                        alert(`Đã mở khóa tài khoản ${user.full_name}`);
+                    } else {
+                        user.status = 'suspended';
+                        alert(`Đã khóa tài khoản ${user.full_name}`);
+                    }
+                    break;
+                case 'delete':
+                    // In real app, this would remove from array
+                    alert(`Đã xóa người dùng ${user.full_name}`);
+                    break;
+            }
+            
+            // Refresh views
+            renderUsersTable();
+            updateStats();
+            
+            confirmationModal.classList.remove('active');
+            userDetailModal.classList.remove('active');
+        }
+
+        // Delete selected users
+        function deleteSelectedUsers() {
+            if (selectedUsers.size === 0) {
+                alert('Vui lòng chọn ít nhất một người dùng để xóa.');
+                return;
+            }
+            
+            if (confirm(`Bạn có chắc chắn muốn xóa ${selectedUsers.size} người dùng đã chọn?`)) {
+                // In real app, this would make API call
+                selectedUsers.forEach(id => {
+                    const index = mockUsers.findIndex(u => u.id === id);
+                    if (index !== -1) {
+                        mockUsers.splice(index, 1);
+                    }
+                });
+                
+                alert(`Đã xóa ${selectedUsers.size} người dùng thành công!`);
+                
+                selectedUsers.clear();
+                updateSelectedCount();
+                
+                // Refresh views
+                renderUsersTable();
+                updateStats();
+            }
+        }
+
+        // Suspend selected users
+        function suspendSelectedUsers() {
+            if (selectedUsers.size === 0) {
+                alert('Vui lòng chọn ít nhất một người dùng để khóa.');
+                return;
+            }
+            
+            const action = prompt('Chọn hành động:\n1. Khóa tài khoản\n2. Mở khóa tài khoản\n3. Hủy');
+            
+            if (action === '1') {
+                selectedUsers.forEach(id => {
+                    const user = mockUsers.find(u => u.id === id);
+                    if (user) user.status = 'suspended';
+                });
+                alert(`Đã khóa ${selectedUsers.size} tài khoản`);
+            } else if (action === '2') {
+                selectedUsers.forEach(id => {
+                    const user = mockUsers.find(u => u.id === id);
+                    if (user) user.status = 'active';
+                });
+                alert(`Đã mở khóa ${selectedUsers.size} tài khoản`);
+            }
+            
+            selectedUsers.clear();
+            updateSelectedCount();
+            
+            // Refresh views
+            renderUsersTable();
+            updateStats();
+        }
+
+        // Verify selected users
+        function verifySelectedUsers() {
+            if (selectedUsers.size === 0) {
+                alert('Vui lòng chọn ít nhất một người dùng để xác thực.');
+                return;
+            }
+            
+            if (confirm(`Xác thực ${selectedUsers.size} người dùng đã chọn?`)) {
+                selectedUsers.forEach(id => {
+                    const user = mockUsers.find(u => u.id === id);
+                    if (user) user.verification = 'verified';
+                });
+                
+                alert(`Đã xác thực ${selectedUsers.size} người dùng thành công!`);
+                
+                selectedUsers.clear();
+                updateSelectedCount();
+                
+                // Refresh views
+                renderUsersTable();
+                updateStats();
+            }
+        }
+
+        // View document
+        function viewDocument(type) {
+            currentDocumentType = type;
+            
+            let title = '';
+            switch(type) {
+                case 'id_card':
+                    title = 'Xem CMND/CCCD';
+                    break;
+                case 'license':
+                    title = 'Xem bằng lái xe';
+                    break;
+            }
+            
+            document.getElementById('documentPreviewTitle').textContent = title;
+            documentPreviewModal.classList.add('active');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize views
+            renderUsersTable();
+            updateStats();
+            
+            // Initialize Select2
+            $('#filterStatus, #filterVerification, #filterLicense').select2({
+                width: '100%',
+                placeholder: 'Chọn...'
+            });
+            
+            // User type filters
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const type = this.dataset.type;
+                    if (type === 'all') {
+                        renderUsersTable();
+                    } else {
+                        let filtered = [];
+                        switch(type) {
+                            case 'customer':
+                                filtered = mockUsers.filter(u => u.role === 'customer' || u.role === 'vip_customer');
+                                break;
+                            case 'renter':
+                                filtered = mockUsers.filter(u => u.role === 'renter');
+                                break;
+                            case 'driver':
+                                filtered = mockUsers.filter(u => u.license_number);
+                                break;
+                            case 'new':
+                                const oneMonthAgo = new Date();
+                                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                                filtered = mockUsers.filter(u => new Date(u.join_date) > oneMonthAgo);
+                                break;
+                            case 'vip':
+                                filtered = mockUsers.filter(u => u.role === 'vip_customer');
+                                break;
+                        }
+                        renderUsersTable(filtered);
+                    }
+                });
+            });
+            
+            // Add user button
+            document.getElementById('addUserBtn').addEventListener('click', addNewUser);
+            
+            // Avatar upload
+            document.getElementById('avatarUpload').addEventListener('click', () => {
+                document.getElementById('avatarInput').click();
+            });
+            
+            document.getElementById('avatarInput').addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('avatarUpload').innerHTML = `
+                            <img src="${e.target.result}" alt="Avatar Preview" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 1rem;">
+                            <p>Ảnh đã được tải lên</p>
+                            <button type="button" class="btn btn-outline" style="margin-top: 0.5rem;" onclick="document.getElementById('avatarInput').click()">
+                                <i class="fas fa-sync"></i> Đổi ảnh
+                            </button>
+                        `;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // View document buttons
+            document.querySelectorAll('.view-document').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.type;
+                    viewDocument(type);
+                });
+            });
+            
+            // Modal close buttons
+            document.getElementById('closeDetailModal').addEventListener('click', () => {
+                userDetailModal.classList.remove('active');
+            });
+            
+            document.getElementById('closeFormModal').addEventListener('click', () => {
+                userFormModal.classList.remove('active');
+            });
+            
+            document.getElementById('closeDocumentModal').addEventListener('click', () => {
+                documentPreviewModal.classList.remove('active');
+            });
+            
+            document.getElementById('closeConfirmationModal').addEventListener('click', () => {
+                confirmationModal.classList.remove('active');
+            });
+            
+            document.getElementById('cancelFormBtn').addEventListener('click', () => {
+                userFormModal.classList.remove('active');
+            });
+            
+            document.getElementById('cancelConfirmationBtn').addEventListener('click', () => {
+                confirmationModal.classList.remove('active');
+            });
+            
+            // Form submission
+            document.getElementById('saveUserBtn').addEventListener('click', () => {
+                if (document.getElementById('userForm').checkValidity()) {
+                    if (currentUserId) {
+                        alert('Cập nhật người dùng thành công!');
+                    } else {
+                        alert('Thêm người dùng mới thành công!');
+                    }
+                    userFormModal.classList.remove('active');
+                    
+                    // Refresh views
+                    renderUsersTable();
+                    updateStats();
+                } else {
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc (*)');
+                }
+            });
+            
+            // Action buttons in detail modal
+            document.getElementById('editUserBtn').addEventListener('click', () => {
+                if (currentUserId) {
+                    userDetailModal.classList.remove('active');
+                    editUser(currentUserId);
+                }
+            });
+            
+            document.getElementById('suspendUserBtn').addEventListener('click', () => {
+                if (currentUserId) {
+                    const user = mockUsers.find(u => u.id === currentUserId);
+                    if (user) {
+                        const action = user.status === 'suspended' ? 'unsuspend' : 'suspend';
+                        confirmUserAction(currentUserId, 'suspend');
+                    }
+                }
+            });
+            
+            document.getElementById('verifyUserBtn').addEventListener('click', () => {
+                if (currentUserId) {
+                    confirmUserAction(currentUserId, 'verify');
+                }
+            });
+            
+            document.getElementById('printUserReport').addEventListener('click', () => {
+                alert('Đang tải báo cáo người dùng...');
+            });
+            
+            // Confirmation modal action
+            document.getElementById('confirmActionBtn').addEventListener('click', executeAction);
+            
+            // Bulk actions
+            document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelectedUsers);
+            document.getElementById('suspendSelectedBtn').addEventListener('click', suspendSelectedUsers);
+            document.getElementById('verifySelected').addEventListener('click', verifySelectedUsers);
+            
+            // Select all checkbox
+            document.getElementById('selectAllCheckbox').addEventListener('change', (e) => {
+                const checkboxes = document.querySelectorAll('.select-user');
+                const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                
+                checkboxes.forEach(cb => {
+                    cb.checked = !allChecked;
+                    const id = parseInt(cb.dataset.id);
+                    if (!allChecked) {
+                        selectedUsers.add(id);
+                    } else {
+                        selectedUsers.delete(id);
+                    }
+                });
+                
+                updateSelectedCount();
+            });
+            
+            // Filter buttons
+            document.getElementById('applyFilters').addEventListener('click', () => {
+                const status = document.getElementById('filterStatus').value;
+                const verification = document.getElementById('filterVerification').value;
+                const license = document.getElementById('filterLicense').value;
+                const search = document.getElementById('filterSearch').value.toLowerCase();
+                
+                let filtered = mockUsers;
+                
+                if (status) {
+                    filtered = filtered.filter(u => u.status === status);
+                }
+                
+                if (verification) {
+                    filtered = filtered.filter(u => u.verification === verification);
+                }
+                
+                if (license === 'has_license') {
+                    filtered = filtered.filter(u => u.license_number);
+                } else if (license === 'no_license') {
+                    filtered = filtered.filter(u => !u.license_number);
+                } else if (license === 'expired') {
+                    // Mock expired license check
+                    filtered = filtered.filter(u => {
+                        if (!u.license_expiry) return false;
+                        const expiryDate = new Date(u.license_expiry);
+                        return expiryDate < new Date();
+                    });
+                }
+                
+                if (search) {
+                    filtered = filtered.filter(u => 
+                        u.full_name.toLowerCase().includes(search) ||
+                        u.email.toLowerCase().includes(search) ||
+                        u.phone.includes(search) ||
+                        u.id_card?.includes(search)
+                    );
+                }
+                
+                renderUsersTable(filtered);
+            });
+            
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                document.getElementById('filterStatus').value = '';
+                document.getElementById('filterVerification').value = '';
+                document.getElementById('filterLicense').value = '';
+                document.getElementById('filterSearch').value = '';
+                $('.select2').val(null).trigger('change');
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-type="all"]').classList.add('active');
+                renderUsersTable();
+            });
+            
+            // Export and email buttons
+            document.getElementById('exportUsersBtn').addEventListener('click', () => {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    alert('Xuất danh sách người dùng thành công!');
+                }, 1500);
+            });
+            
+            document.getElementById('sendBulkEmail').addEventListener('click', () => {
+                if (selectedUsers.size === 0) {
+                    alert('Vui lòng chọn ít nhất một người dùng để gửi email.');
+                    return;
+                }
+                
+                alert(`Đã gửi email đến ${selectedUsers.size} người dùng!`);
+            });
+            
+            // Document approval
+            document.getElementById('approveDocument').addEventListener('click', () => {
+                alert('Đã phê duyệt tài liệu!');
+                documentPreviewModal.classList.remove('active');
+            });
+            
+            document.getElementById('rejectDocument').addEventListener('click', () => {
+                const reason = prompt('Nhập lý do từ chối:');
+                if (reason) {
+                    alert(`Đã từ chối tài liệu: ${reason}`);
+                    documentPreviewModal.classList.remove('active');
+                }
+            });
+            
+            // Close modals when clicking outside
+            [userDetailModal, userFormModal, documentPreviewModal, confirmationModal, loadingModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

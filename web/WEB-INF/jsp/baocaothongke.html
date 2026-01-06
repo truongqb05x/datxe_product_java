@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentCar Admin - Báo cáo & Thống kê</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../../css/pages/baocaothongke.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-car"></i>
+            <h2>RentCar Admin</h2>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="vehicles.html" class="nav-link">
+                    <i class="fas fa-car"></i>
+                    <span>Quản lý xe</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="bookings.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Đơn đặt xe</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Người dùng</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="#" class="nav-link active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Báo cáo & Thống kê</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div>
+                    <h4>Admin User</h4>
+                    <p>Quản trị viên</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-chart-bar"></i> Báo cáo & Thống kê</h1>
+                <p>Phân tích dữ liệu và xuất báo cáo chi tiết</p>
+            </div>
+            
+            <div class="header-right">
+                <button class="btn btn-primary" id="refreshReports">
+                    <i class="fas fa-sync-alt"></i> Làm mới dữ liệu
+                </button>
+                <button class="btn btn-success" id="exportAllBtn">
+                    <i class="fas fa-file-export"></i> Xuất báo cáo đầy đủ
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-cards">
+            <div class="kpi-card kpi-revenue">
+                <div class="kpi-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>Doanh thu tháng</h3>
+                    <div class="kpi-value" id="kpiRevenue">42.5M ₫</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12.5% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="kpi-card kpi-bookings">
+                <div class="kpi-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>Tổng đơn đặt</h3>
+                    <div class="kpi-value" id="kpiBookings">187</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8.2% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="kpi-card kpi-vehicles">
+                <div class="kpi-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>Tỷ lệ sử dụng xe</h3>
+                    <div class="kpi-value" id="kpiUtilization">78.5%</div>
+                    <div class="kpi-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>2.3% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="kpi-card kpi-users">
+                <div class="kpi-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="kpi-info">
+                    <h3>Khách hàng mới</h3>
+                    <div class="kpi-value" id="kpiNewUsers">68</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>23.6% so với tháng trước</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Filters -->
+        <section class="report-filters">
+            <div class="filters-header">
+                <h3><i class="fas fa-filter"></i> Tùy chỉnh báo cáo</h3>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <span style="font-size: 0.9rem; color: #666;">Dữ liệu tự động cập nhật</span>
+                    <div class="loading-spinner" id="filterLoading" style="display: none;">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="reportPeriod">Kỳ báo cáo</label>
+                    <select id="reportPeriod">
+                        <option value="monthly">Theo tháng</option>
+                        <option value="quarterly">Theo quý</option>
+                        <option value="yearly">Theo năm</option>
+                        <option value="custom">Tùy chỉnh</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="reportDateRange">Khoảng thời gian</label>
+                    <input type="text" id="reportDateRange" placeholder="Chọn khoảng thời gian...">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="reportCategory">Phân loại</label>
+                    <select id="reportCategory">
+                        <option value="all">Tất cả loại xe</option>
+                        <option value="motorcycle">Xe máy</option>
+                        <option value="electric">Xe điện</option>
+                        <option value="car">Ô tô</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="reportMetrics">Chỉ số chính</label>
+                    <select id="reportMetrics">
+                        <option value="revenue">Doanh thu</option>
+                        <option value="bookings">Số đơn đặt</option>
+                        <option value="utilization">Tỷ lệ sử dụng</option>
+                        <option value="customers">Khách hàng</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button class="btn btn-primary" id="generateReport">
+                    <i class="fas fa-chart-line"></i> Tạo báo cáo
+                </button>
+                <button class="btn btn-outline" id="resetFilters">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </button>
+                <button class="btn btn-success" id="saveReportTemplate">
+                    <i class="fas fa-save"></i> Lưu mẫu báo cáo
+                </button>
+                <button class="btn btn-warning" id="scheduleReport">
+                    <i class="fas fa-clock"></i> Lên lịch báo cáo
+                </button>
+            </div>
+        </section>
+
+        <!-- Charts Container -->
+        <div class="charts-container">
+            <!-- Revenue Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-money-bill-wave"></i> Doanh thu theo thời gian</h3>
+                    <div class="chart-actions">
+                        <button class="chart-btn active" data-chart="revenue-monthly">Tháng</button>
+                        <button class="chart-btn" data-chart="revenue-quarterly">Quý</button>
+                        <button class="chart-btn" data-chart="revenue-yearly">Năm</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Bookings Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-calendar-alt"></i> Phân tích đơn đặt</h3>
+                    <div class="chart-actions">
+                        <button class="chart-btn active" data-chart="bookings-status">Theo trạng thái</button>
+                        <button class="chart-btn" data-chart="bookings-category">Theo loại xe</button>
+                        <button class="chart-btn" data-chart="bookings-trend">Xu hướng</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="bookingsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Cards -->
+        <div class="comparison-cards">
+            <!-- Vehicle Performance -->
+            <div class="comparison-card">
+                <div class="comparison-header">
+                    <h3><i class="fas fa-car"></i> Hiệu suất xe</h3>
+                    <span style="font-size: 0.8rem; color: #666;">Top 5 xe được thuê nhiều nhất</span>
+                </div>
+                
+                <div class="comparison-list" id="vehiclePerformanceList">
+                    <!-- Vehicle items will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Customer Analysis -->
+            <div class="comparison-card">
+                <div class="comparison-header">
+                    <h3><i class="fas fa-users"></i> Phân tích khách hàng</h3>
+                    <span style="font-size: 0.8rem; color: #666;">Theo giá trị đơn hàng</span>
+                </div>
+                
+                <div class="comparison-list" id="customerAnalysisList">
+                    <!-- Customer items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Tables -->
+        <div class="report-tables">
+            <!-- Monthly Revenue Table -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3><i class="fas fa-table"></i> Doanh thu chi tiết theo tháng</h3>
+                    <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                        <i class="fas fa-download"></i> Xuất Excel
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table id="revenueTable">
+                        <thead>
+                            <tr>
+                                <th>Tháng</th>
+                                <th>Doanh thu</th>
+                                <th>Tăng trưởng</th>
+                                <th>Số đơn</th>
+                                <th>Trung bình/đơn</th>
+                                <th>Tỷ lệ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenueTableBody">
+                            <!-- Revenue data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Vehicle Category Analysis -->
+            <div class="table-card">
+                <div class="table-header">
+                    <h3><i class="fas fa-chart-pie"></i> Phân tích theo loại xe</h3>
+                    <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                        <i class="fas fa-download"></i> Xuất Excel
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table id="categoryTable">
+                        <thead>
+                            <tr>
+                                <th>Loại xe</th>
+                                <th>Doanh thu</th>
+                                <th>Tỷ lệ</th>
+                                <th>Số đơn</th>
+                                <th>Trung bình/ngày</th>
+                                <th>Tiến độ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTableBody">
+                            <!-- Category data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <section class="insights-section">
+            <div class="insights-header">
+                <h3><i class="fas fa-lightbulb"></i> Insights & Đề xuất</h3>
+            </div>
+            
+            <div class="insights-grid">
+                <div class="insight-card success">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4>Tăng trưởng tích cực</h4>
+                    </div>
+                    <div class="insight-content">
+                        <p>Doanh thu tháng 12 tăng <strong>12.5%</strong> so với tháng trước. Toyota Vios đóng góp 42% tổng doanh thu.</p>
+                        <div class="insight-actions">
+                            <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                                <i class="fas fa-chart-bar"></i> Xem chi tiết
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-card warning">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h4>Cần chú ý</h4>
+                    </div>
+                    <div class="insight-content">
+                        <p>Tỷ lệ sử dụng xe điện giảm <strong>15%</strong>. Xem xét điều chỉnh giá hoặc chương trình khuyến mãi.</p>
+                        <div class="insight-actions">
+                            <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                                <i class="fas fa-cog"></i> Điều chỉnh giá
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insight-card">
+                    <div class="insight-header">
+                        <div class="insight-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h4>Cơ hội kinh doanh</h4>
+                    </div>
+                    <div class="insight-content">
+                        <p><strong>68 khách hàng mới</strong> trong tháng. Tỷ lệ giữ chân khách hàng cũ đạt 85%, cao hơn mục tiêu.</p>
+                        <div class="insight-actions">
+                            <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">
+                                <i class="fas fa-gift"></i> Chương trình loyalty
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Export Section -->
+        <section class="export-section">
+            <div class="export-header">
+                <h3><i class="fas fa-file-export"></i> Xuất báo cáo</h3>
+                <p style="color: #666; margin-top: 0.5rem;">Chọn định dạng và xuất báo cáo chi tiết</p>
+            </div>
+            
+            <div class="export-options">
+                <div class="export-option" data-format="pdf">
+                    <div class="export-icon" style="background: #e74c3c;">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h4>PDF Report</h4>
+                    <p>Báo cáo chuyên nghiệp với biểu đồ và phân tích chi tiết</p>
+                </div>
+                
+                <div class="export-option" data-format="excel">
+                    <div class="export-icon" style="background: #2ecc71;">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <h4>Excel Data</h4>
+                    <p>Dữ liệu thô để phân tích sâu và xử lý thêm</p>
+                </div>
+                
+                <div class="export-option" data-format="csv">
+                    <div class="export-icon" style="background: #3498db;">
+                        <i class="fas fa-file-csv"></i>
+                    </div>
+                    <h4>CSV Export</h4>
+                    <p>Định dạng đơn giản để nhập vào các hệ thống khác</p>
+                </div>
+                
+                <div class="export-option" data-format="presentation">
+                    <div class="export-icon" style="background: #9b59b6;">
+                        <i class="fas fa-file-powerpoint"></i>
+                    </div>
+                    <h4>Presentation</h4>
+                    <p>Bản trình bày với slide đẹp mắt cho meetings</p>
+                </div>
+            </div>
+            
+            <div class="filter-actions" style="margin-top: 2rem;">
+                <button class="btn btn-primary" id="generateCustomReport">
+                    <i class="fas fa-magic"></i> Tạo báo cáo tùy chỉnh
+                </button>
+                <button class="btn btn-outline" id="viewReportHistory">
+                    <i class="fas fa-history"></i> Lịch sử báo cáo
+                </button>
+                <button class="btn btn-success" id="scheduleAutoReport">
+                    <i class="fas fa-robot"></i> Lên lịch tự động
+                </button>
+            </div>
+        </section>
+
+        <!-- Loading Overlay -->
+        <div class="modal" id="loadingModal" style="background: rgba(255, 255, 255, 0.9);">
+            <div class="modal-content" style="max-width: 400px; background: transparent; box-shadow: none;">
+                <div class="modal-body" style="text-align: center;">
+                    <div class="spinner" style="width: 60px; height: 60px; border-width: 6px; margin: 0 auto 1.5rem;"></div>
+                    <h3 style="color: var(--primary); margin-bottom: 0.5rem;">Đang xử lý dữ liệu...</h3>
+                    <p style="color: #666;">Vui lòng đợi trong giây lát</p>
+                    <div id="loadingProgress" style="margin-top: 1rem; font-size: 0.9rem; color: #666;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Report Modal -->
+        <div class="modal" id="customReportModal">
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-magic"></i> Tạo báo cáo tùy chỉnh</h3>
+                    <button class="close-modal" id="closeCustomModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div class="filter-group">
+                            <label>Tên báo cáo *</label>
+                            <input type="text" id="reportName" placeholder="Nhập tên báo cáo..." style="width: 100%;">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Chọn chỉ số</label>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="metrics" value="revenue" checked> Doanh thu
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="metrics" value="bookings" checked> Số đơn đặt
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="metrics" value="vehicles" checked> Hiệu suất xe
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="metrics" value="customers"> Khách hàng
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="metrics" value="utilization"> Tỷ lệ sử dụng
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" name="metrics" value="profit"> Lợi nhuận
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Định dạng xuất</label>
+                            <div style="display: flex; gap: 1rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="radio" name="format" value="pdf" checked> PDF
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="radio" name="format" value="excel"> Excel
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="radio" name="format" value="both"> Cả hai
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Tùy chọn nâng cao</label>
+                            <div style="display: grid; gap: 0.5rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" id="includeCharts"> Bao gồm biểu đồ
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" id="includeInsights"> Bao gồm insights
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" id="scheduleReport"> Lên lịch gửi hàng tuần
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancelCustomReport">Hủy</button>
+                    <button class="btn btn-primary" id="generateCustomReportBtn">Tạo báo cáo</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+    <script>
+        // Mock data for reports
+        const reportData = {
+            // Monthly revenue data
+            monthlyRevenue: [
+                { month: 'Th1', revenue: 32500000, bookings: 145, avgBooking: 224138, growth: 8.2 },
+                { month: 'Th2', revenue: 35200000, bookings: 158, avgBooking: 222785, growth: 8.3 },
+                { month: 'Th3', revenue: 38700000, bookings: 168, avgBooking: 230357, growth: 9.9 },
+                { month: 'Th4', revenue: 40100000, bookings: 172, avgBooking: 233140, growth: 3.6 },
+                { month: 'Th5', revenue: 39800000, bookings: 175, avgBooking: 227429, growth: -0.7 },
+                { month: 'Th6', revenue: 42500000, bookings: 187, avgBooking: 227273, growth: 6.8 },
+                { month: 'Th7', revenue: 45200000, bookings: 195, avgBooking: 231795, growth: 6.4 },
+                { month: 'Th8', revenue: 44800000, bookings: 192, avgBooking: 233333, growth: -0.9 },
+                { month: 'Th9', revenue: 47300000, bookings: 198, avgBooking: 238889, growth: 5.6 },
+                { month: 'Th10', revenue: 46500000, bookings: 205, avgBooking: 226829, growth: -1.7 },
+                { month: 'Th11', revenue: 48200000, bookings: 212, avgBooking: 227358, growth: 3.7 },
+                { month: 'Th12', revenue: 50500000, bookings: 220, avgBooking: 229545, growth: 4.8 }
+            ],
+            
+            // Quarterly revenue data
+            quarterlyRevenue: [
+                { quarter: 'Q1', revenue: 106400000, bookings: 471, avgBooking: 225902, growth: 8.8 },
+                { quarter: 'Q2', revenue: 124300000, bookings: 534, avgBooking: 232772, growth: 16.8 },
+                { quarter: 'Q3', revenue: 142100000, bookings: 585, avgBooking: 242906, growth: 14.3 },
+                { quarter: 'Q4', revenue: 155200000, bookings: 637, avgBooking: 243642, growth: 9.2 }
+            ],
+            
+            // Yearly revenue data
+            yearlyRevenue: [
+                { year: '2019', revenue: 380500000, bookings: 1650, avgBooking: 230606 },
+                { year: '2020', revenue: 410200000, bookings: 1780, avgBooking: 230449 },
+                { year: '2021', revenue: 485700000, bookings: 2050, avgBooking: 236927 },
+                { year: '2022', revenue: 520300000, bookings: 2250, avgBooking: 231244 },
+                { year: '2023', revenue: 580100000, bookings: 2427, avgBooking: 239020 }
+            ],
+            
+            // Booking status distribution
+            bookingStatus: {
+                pending: 12,
+                confirmed: 45,
+                active: 8,
+                completed: 115,
+                cancelled: 7
+            },
+            
+            // Vehicle category distribution
+            vehicleCategories: [
+                { category: 'Xe máy', revenue: 185000000, percentage: 36.6, bookings: 980, avgDaily: 150000 },
+                { category: 'Xe điện', revenue: 65000000, percentage: 12.9, bookings: 320, avgDaily: 120000 },
+                { category: 'Ô tô', revenue: 255000000, percentage: 50.5, bookings: 405, avgDaily: 550000 }
+            ],
+            
+            // Vehicle performance
+            vehiclePerformance: [
+                { name: 'Toyota Vios', revenue: 42500000, bookings: 28, utilization: 92, change: 8.5 },
+                { name: 'Honda Vision', revenue: 18900000, bookings: 45, utilization: 88, change: 12.3 },
+                { name: 'Yamaha Exciter', revenue: 15200000, bookings: 32, utilization: 85, change: 5.7 },
+                { name: 'Toyota Innova', revenue: 12500000, bookings: 15, utilization: 78, change: -2.1 },
+                { name: 'Honda Wave', revenue: 16300000, bookings: 38, utilization: 82, change: 3.4 }
+            ],
+            
+            // Customer analysis
+            customerAnalysis: [
+                { name: 'Nguyễn Văn A', totalSpent: 12500000, bookings: 8, avgSpent: 1562500, loyalty: 95 },
+                { name: 'Trần Thị B', totalSpent: 8900000, bookings: 12, avgSpent: 741667, loyalty: 92 },
+                { name: 'Lê Văn C', totalSpent: 15600000, bookings: 5, avgSpent: 3120000, loyalty: 98 },
+                { name: 'Phạm Thị D', totalSpent: 7300000, bookings: 7, avgSpent: 1042857, loyalty: 85 },
+                { name: 'Hoàng Văn E', totalSpent: 11200000, bookings: 6, avgSpent: 1866667, loyalty: 90 }
+            ]
+        };
+
+        // Chart instances
+        let revenueChart;
+        let bookingsChart;
+        let currentChartType = 'revenue-monthly';
+        let currentBookingsChartType = 'bookings-status';
+
+        // DOM Elements
+        const loadingModal = document.getElementById('loadingModal');
+        const customReportModal = document.getElementById('customReportModal');
+        let isGeneratingReport = false;
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(amount);
+        }
+
+        // Format percentage
+        function formatPercentage(value) {
+            return `${value.toFixed(1)}%`;
+        }
+
+        // Show loading
+        function showLoading(message = 'Đang xử lý...') {
+            loadingModal.classList.add('active');
+            document.getElementById('loadingProgress').textContent = message;
+        }
+
+        // Hide loading
+        function hideLoading() {
+            loadingModal.classList.remove('active');
+        }
+
+        // Simulate data processing
+        function simulateDataProcessing(duration = 2000) {
+            return new Promise(resolve => {
+                showLoading('Đang tải dữ liệu...');
+                setTimeout(() => {
+                    hideLoading();
+                    resolve();
+                }, duration);
+            });
+        }
+
+        // Initialize revenue chart
+        function initRevenueChart(chartType = 'revenue-monthly') {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+            
+            let labels, data, datasetLabel, yAxisLabel;
+            
+            switch(chartType) {
+                case 'revenue-monthly':
+                    labels = reportData.monthlyRevenue.map(item => item.month);
+                    data = reportData.monthlyRevenue.map(item => item.revenue / 1000000); // Convert to millions
+                    datasetLabel = 'Doanh thu (triệu VNĐ)';
+                    yAxisLabel = 'Triệu VNĐ';
+                    break;
+                case 'revenue-quarterly':
+                    labels = reportData.quarterlyRevenue.map(item => item.quarter);
+                    data = reportData.quarterlyRevenue.map(item => item.revenue / 1000000);
+                    datasetLabel = 'Doanh thu (triệu VNĐ)';
+                    yAxisLabel = 'Triệu VNĐ';
+                    break;
+                case 'revenue-yearly':
+                    labels = reportData.yearlyRevenue.map(item => item.year);
+                    data = reportData.yearlyRevenue.map(item => item.revenue / 1000000);
+                    datasetLabel = 'Doanh thu (triệu VNĐ)';
+                    yAxisLabel = 'Triệu VNĐ';
+                    break;
+            }
+            
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: datasetLabel,
+                        data: data,
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderColor: '#3498db',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#3498db',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Doanh thu: ${formatCurrency(context.parsed.y * 1000000)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: yAxisLabel
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value + 'M';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // Initialize bookings chart
+        function initBookingsChart(chartType = 'bookings-status') {
+            const ctx = document.getElementById('bookingsChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (bookingsChart) {
+                bookingsChart.destroy();
+            }
+            
+            let chartConfig;
+            
+            switch(chartType) {
+                case 'bookings-status':
+                    const statusLabels = ['Chờ xác nhận', 'Đã xác nhận', 'Đang hoạt động', 'Đã hoàn thành', 'Đã hủy'];
+                    const statusData = Object.values(reportData.bookingStatus);
+                    const statusColors = ['#f39c12', '#3498db', '#2ecc71', '#95a5a6', '#e74c3c'];
+                    
+                    chartConfig = {
+                        type: 'doughnut',
+                        data: {
+                            labels: statusLabels,
+                            datasets: [{
+                                data: statusData,
+                                backgroundColor: statusColors,
+                                borderWidth: 2,
+                                borderColor: '#ffffff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = statusData.reduce((a, b) => a + b, 0);
+                                            const percentage = Math.round((context.parsed / total) * 100);
+                                            return `${context.label}: ${context.parsed} đơn (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    break;
+                    
+                case 'bookings-category':
+                    const categoryLabels = reportData.vehicleCategories.map(item => item.category);
+                    const categoryData = reportData.vehicleCategories.map(item => item.revenue / 1000000);
+                    const categoryColors = ['#3498db', '#2ecc71', '#e74c3c'];
+                    
+                    chartConfig = {
+                        type: 'bar',
+                        data: {
+                            labels: categoryLabels,
+                            datasets: [{
+                                label: 'Doanh thu (triệu VNĐ)',
+                                data: categoryData,
+                                backgroundColor: categoryColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Triệu VNĐ'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + 'M';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    break;
+                    
+                case 'bookings-trend':
+                    const trendLabels = reportData.monthlyRevenue.map(item => item.month);
+                    const trendData = reportData.monthlyRevenue.map(item => item.bookings);
+                    
+                    chartConfig = {
+                        type: 'line',
+                        data: {
+                            labels: trendLabels,
+                            datasets: [{
+                                label: 'Số đơn đặt',
+                                data: trendData,
+                                borderColor: '#9b59b6',
+                                backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Số đơn'
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    break;
+            }
+            
+            bookingsChart = new Chart(ctx, chartConfig);
+        }
+
+        // Render vehicle performance list
+        function renderVehiclePerformance() {
+            const container = document.getElementById('vehiclePerformanceList');
+            container.innerHTML = '';
+            
+            reportData.vehiclePerformance.forEach(vehicle => {
+                const item = document.createElement('div');
+                item.className = 'comparison-item';
+                
+                // Calculate progress bar width
+                const progressWidth = vehicle.utilization;
+                const progressColor = vehicle.change >= 0 ? 'progress-success' : 'progress-warning';
+                
+                item.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-icon" style="background: #3498db;">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="item-details">
+                            <h4>${vehicle.name}</h4>
+                            <p>${vehicle.bookings} đơn • ${formatPercentage(vehicle.utilization)} sử dụng</p>
+                        </div>
+                    </div>
+                    <div class="item-stats">
+                        <div class="item-value">${formatCurrency(vehicle.revenue)}</div>
+                        <div class="item-change ${vehicle.change >= 0 ? 'positive' : 'negative'}">
+                            <i class="fas fa-${vehicle.change >= 0 ? 'arrow-up' : 'arrow-down'}"></i>
+                            <span>${Math.abs(vehicle.change)}%</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Render customer analysis list
+        function renderCustomerAnalysis() {
+            const container = document.getElementById('customerAnalysisList');
+            container.innerHTML = '';
+            
+            reportData.customerAnalysis.forEach(customer => {
+                const item = document.createElement('div');
+                item.className = 'comparison-item';
+                
+                // Calculate loyalty indicator
+                let loyaltyColor = 'progress-success';
+                if (customer.loyalty < 85) loyaltyColor = 'progress-warning';
+                if (customer.loyalty < 70) loyaltyColor = 'progress-primary';
+                
+                item.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-icon" style="background: #9b59b6;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="item-details">
+                            <h4>${customer.name}</h4>
+                            <p>${customer.bookings} đơn • ${formatCurrency(customer.avgSpent)}/đơn</p>
+                        </div>
+                    </div>
+                    <div class="item-stats">
+                        <div class="item-value">${formatCurrency(customer.totalSpent)}</div>
+                        <div class="progress-bar" style="margin-top: 0.3rem;">
+                            <div class="progress-fill ${loyaltyColor}" style="width: ${customer.loyalty}%"></div>
+                        </div>
+                        <div class="item-change" style="font-size: 0.75rem; color: #666; margin-top: 0.2rem;">
+                            Độ trung thành: ${customer.loyalty}%
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Render revenue table
+        function renderRevenueTable(dataType = 'monthly') {
+            const container = document.getElementById('revenueTableBody');
+            container.innerHTML = '';
+            
+            let data;
+            switch(dataType) {
+                case 'monthly':
+                    data = reportData.monthlyRevenue;
+                    break;
+                case 'quarterly':
+                    data = reportData.quarterlyRevenue;
+                    break;
+                case 'yearly':
+                    data = reportData.yearlyRevenue;
+                    break;
+                default:
+                    data = reportData.monthlyRevenue;
+            }
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                
+                const growthClass = item.growth >= 0 ? 'positive' : 'negative';
+                const growthIcon = item.growth >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                const growthValue = item.growth ? Math.abs(item.growth).toFixed(1) : 'N/A';
+                
+                row.innerHTML = `
+                    <td><strong>${item.month || item.quarter || item.year}</strong></td>
+                    <td>${formatCurrency(item.revenue)}</td>
+                    <td>
+                        <span class="${growthClass}">
+                            <i class="fas ${growthIcon}"></i>
+                            ${growthValue}%
+                        </span>
+                    </td>
+                    <td>${item.bookings}</td>
+                    <td>${formatCurrency(item.avgBooking)}</td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-primary" style="width: ${Math.min(100, item.growth ? item.growth + 20 : 50)}%"></div>
+                        </div>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Render category table
+        function renderCategoryTable() {
+            const container = document.getElementById('categoryTableBody');
+            container.innerHTML = '';
+            
+            reportData.vehicleCategories.forEach(category => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td><strong>${category.category}</strong></td>
+                    <td>${formatCurrency(category.revenue)}</td>
+                    <td>${category.percentage.toFixed(1)}%</td>
+                    <td>${category.bookings}</td>
+                    <td>${formatCurrency(category.avgDaily)}</td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-success" style="width: ${category.percentage}%"></div>
+                        </div>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Update KPI cards
+        function updateKPICards() {
+            // Calculate totals
+            const totalRevenue = reportData.monthlyRevenue[reportData.monthlyRevenue.length - 1].revenue;
+            const totalBookings = reportData.monthlyRevenue[reportData.monthlyRevenue.length - 1].bookings;
+            const avgUtilization = reportData.vehiclePerformance.reduce((sum, v) => sum + v.utilization, 0) / reportData.vehiclePerformance.length;
+            const newUsers = 68; // Mock data
+            
+            document.getElementById('kpiRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('kpiBookings').textContent = totalBookings;
+            document.getElementById('kpiUtilization').textContent = `${avgUtilization.toFixed(1)}%`;
+            document.getElementById('kpiNewUsers').textContent = newUsers;
+        }
+
+        // Generate custom report
+        async function generateCustomReport() {
+            if (isGeneratingReport) return;
+            
+            isGeneratingReport = true;
+            showLoading('Đang tạo báo cáo...');
+            
+            // Simulate report generation
+            await new Promise(resolve => {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    document.getElementById('loadingProgress').textContent = 
+                        `Đang xử lý... ${progress}% hoàn thành`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            hideLoading();
+                            isGeneratingReport = false;
+                            
+                            // Show success message
+                            alert('Báo cáo đã được tạo thành công và đang được tải về!');
+                            resolve();
+                        }, 500);
+                    }
+                }, 200);
+            });
+        }
+
+        // Export report in different formats
+        function exportReport(format) {
+            const formats = {
+                pdf: { name: 'PDF', icon: 'file-pdf', color: '#e74c3c' },
+                excel: { name: 'Excel', icon: 'file-excel', color: '#2ecc71' },
+                csv: { name: 'CSV', icon: 'file-csv', color: '#3498db' },
+                presentation: { name: 'Presentation', icon: 'file-powerpoint', color: '#9b59b6' }
+            };
+            
+            const formatInfo = formats[format];
+            if (!formatInfo) return;
+            
+            showLoading(`Đang xuất báo cáo ${formatInfo.name}...`);
+            
+            setTimeout(() => {
+                hideLoading();
+                alert(`Báo cáo ${formatInfo.name} đã được xuất thành công!`);
+            }, 1500);
+        }
+
+        // Initialize all charts and data
+        function initializeReports() {
+            // Initialize charts
+            initRevenueChart(currentChartType);
+            initBookingsChart(currentBookingsChartType);
+            
+            // Render tables
+            renderRevenueTable('monthly');
+            renderCategoryTable();
+            
+            // Render comparison lists
+            renderVehiclePerformance();
+            renderCustomerAnalysis();
+            
+            // Update KPI cards
+            updateKPICards();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize reports
+            initializeReports();
+            
+            // Initialize Flatpickr
+            flatpickr("#reportDateRange", {
+                mode: "range",
+                locale: "vn",
+                dateFormat: "d/m/Y",
+                placeholder: "Chọn khoảng thời gian..."
+            });
+            
+            // Initialize Select2
+            $('#reportCategory, #reportMetrics').select2({
+                width: '100%',
+                placeholder: 'Chọn...'
+            });
+            
+            // Chart type switchers
+            document.querySelectorAll('[data-chart]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const chartType = this.dataset.chart;
+                    
+                    // Remove active class from all buttons
+                    this.parentElement.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Update and reinitialize chart
+                    if (chartType.startsWith('revenue-')) {
+                        currentChartType = chartType;
+                        initRevenueChart(chartType);
+                    } else if (chartType.startsWith('bookings-')) {
+                        currentBookingsChartType = chartType;
+                        initBookingsChart(chartType);
+                    }
+                });
+            });
+            
+            // Report period change
+            document.getElementById('reportPeriod').addEventListener('change', function() {
+                const period = this.value;
+                const dateRange = document.getElementById('reportDateRange');
+                
+                if (period === 'custom') {
+                    dateRange.disabled = false;
+                    dateRange.style.opacity = '1';
+                } else {
+                    dateRange.disabled = true;
+                    dateRange.style.opacity = '0.6';
+                }
+            });
+            
+            // Generate report button
+            document.getElementById('generateReport').addEventListener('click', async () => {
+                showLoading('Đang phân tích dữ liệu...');
+                
+                // Simulate data analysis
+                await simulateDataProcessing();
+                
+                // Reinitialize charts with new data
+                initializeReports();
+                
+                alert('Báo cáo đã được cập nhật với dữ liệu mới nhất!');
+            });
+            
+            // Refresh reports button
+            document.getElementById('refreshReports').addEventListener('click', async () => {
+                showLoading('Đang làm mới dữ liệu...');
+                
+                // Simulate data refresh
+                await simulateDataProcessing(3000);
+                
+                // Reinitialize everything
+                initializeReports();
+                
+                alert('Dữ liệu đã được làm mới thành công!');
+            });
+            
+            // Export all button
+            document.getElementById('exportAllBtn').addEventListener('click', () => {
+                exportReport('pdf');
+            });
+            
+            // Export options
+            document.querySelectorAll('.export-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const format = this.dataset.format;
+                    exportReport(format);
+                });
+            });
+            
+            // Generate custom report button
+            document.getElementById('generateCustomReport').addEventListener('click', () => {
+                customReportModal.classList.add('active');
+            });
+            
+            // Custom report modal buttons
+            document.getElementById('closeCustomModal').addEventListener('click', () => {
+                customReportModal.classList.remove('active');
+            });
+            
+            document.getElementById('cancelCustomReport').addEventListener('click', () => {
+                customReportModal.classList.remove('active');
+            });
+            
+            document.getElementById('generateCustomReportBtn').addEventListener('click', async () => {
+                const reportName = document.getElementById('reportName').value;
+                if (!reportName.trim()) {
+                    alert('Vui lòng nhập tên báo cáo!');
+                    return;
+                }
+                
+                customReportModal.classList.remove('active');
+                await generateCustomReport();
+            });
+            
+            // Reset filters button
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                document.getElementById('reportPeriod').value = 'monthly';
+                document.getElementById('reportDateRange').value = '';
+                document.getElementById('reportCategory').value = 'all';
+                document.getElementById('reportMetrics').value = 'revenue';
+                
+                $('.select2').val(null).trigger('change');
+                
+                // Reset to default view
+                initializeReports();
+                
+                alert('Bộ lọc đã được đặt lại về mặc định!');
+            });
+            
+            // Save report template
+            document.getElementById('saveReportTemplate').addEventListener('click', () => {
+                const templateName = prompt('Nhập tên cho mẫu báo cáo:');
+                if (templateName) {
+                    showLoading('Đang lưu mẫu báo cáo...');
+                    
+                    setTimeout(() => {
+                        hideLoading();
+                        alert(`Mẫu báo cáo "${templateName}" đã được lưu thành công!`);
+                    }, 1500);
+                }
+            });
+            
+            // Schedule report
+            document.getElementById('scheduleReport').addEventListener('click', () => {
+                alert('Tính năng lên lịch báo cáo đang được phát triển!');
+            });
+            
+            // View report history
+            document.getElementById('viewReportHistory').addEventListener('click', () => {
+                alert('Lịch sử báo cáo:\n\n1. Báo cáo tháng 12 - 05/12/2023\n2. Báo cáo quý 4 - 01/12/2023\n3. Báo cáo so sánh - 28/11/2023\n4. Báo cáo khách hàng - 25/11/2023');
+            });
+            
+            // Schedule auto report
+            document.getElementById('scheduleAutoReport').addEventListener('click', () => {
+                alert('Tính năng lên lịch báo cáo tự động đang được phát triển!');
+            });
+            
+            // Close modals when clicking outside
+            [loadingModal, customReportModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
