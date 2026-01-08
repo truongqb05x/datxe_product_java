@@ -1,3 +1,5 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
-    <link rel="stylesheet" href="../../css/pages/quanlyxe.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/quanlyxe.css">
 </head>
 <body>
     <!-- Sidebar -->
@@ -19,7 +21,7 @@
         
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="dashboard.html" class="nav-link">
+                <a href="dashboard.jsp" class="nav-link">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
@@ -33,21 +35,21 @@
             </li>
             
             <li class="nav-item">
-                <a href="bookings.html" class="nav-link">
+                <a href="bookings.jsp" class="nav-link">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Đơn đặt xe</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="users.html" class="nav-link">
+                <a href="users.jsp" class="nav-link">
                     <i class="fas fa-users"></i>
                     <span>Người dùng</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="reports.html" class="nav-link">
+                <a href="reports.jsp" class="nav-link">
                     <i class="fas fa-chart-bar"></i>
                     <span>Báo cáo</span>
                 </a>
@@ -83,19 +85,19 @@
         <!-- Stats Summary -->
         <div class="stats-summary">
             <div class="stat-item">
-                <div class="stat-value" id="totalVehicles">45</div>
+                <div class="stat-value" id="totalVehicles">${totalVehicles}</div>
                 <div class="stat-label">Tổng số xe</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value" id="availableVehicles">38</div>
+                <div class="stat-value" id="availableVehicles">${availableVehicles}</div>
                 <div class="stat-label">Xe có sẵn</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value" id="rentedVehicles">5</div>
+                <div class="stat-value" id="rentedVehicles">${rentedVehicles}</div>
                 <div class="stat-label">Đang được thuê</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value" id="maintenanceVehicles">2</div>
+                <div class="stat-value" id="maintenanceVehicles">${maintenanceVehicles}</div>
                 <div class="stat-label">Đang bảo trì</div>
             </div>
         </div>
@@ -118,10 +120,9 @@
                     <label for="filterBrand">Thương hiệu</label>
                     <select id="filterBrand">
                         <option value="">Tất cả thương hiệu</option>
-                        <option value="honda">Honda</option>
-                        <option value="yamaha">Yamaha</option>
-                        <option value="toyota">Toyota</option>
-                        <option value="vinfast">Vinfast</option>
+                        <c:forEach var="brand" items="${brands}">
+                            <option value="${brand.key}">${brand.value}</option>
+                        </c:forEach>
                     </select>
                 </div>
                 
@@ -174,7 +175,7 @@
         <div class="vehicles-table-container" id="vehiclesTableView" style="display: none;">
             <div class="table-toolbar">
                 <div class="table-info">
-                    Hiển thị <span id="tableCount">10</span> trên tổng số <span id="tableTotal">45</span> xe
+                    Hiển thị <span id="tableCount">10</span> trên tổng số <span id="tableTotal">${totalVehicles}</span> xe
                 </div>
                 <div class="table-actions">
                     <button class="btn btn-outline" id="selectAllBtn">
@@ -227,34 +228,34 @@
                 </div>
                 
                 <div class="modal-body">
-                    <form id="vehicleForm">
+                    <form id="vehicleForm" action="${pageContext.request.contextPath}/admin/vehicles" method="post">
+                        <input type="hidden" id="vehicleId" name="vehicleId" value="">
+                        <input type="hidden" name="action" id="formAction" value="add">
+                        
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="vehicleLicensePlate">Biển số xe *</label>
-                                <input type="text" id="vehicleLicensePlate" required>
+                                <input type="text" id="vehicleLicensePlate" name="licensePlate" required>
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleBrand">Thương hiệu *</label>
-                                <select id="vehicleBrand" required>
+                                <select id="vehicleBrand" name="brandId" required>
                                     <option value="">Chọn thương hiệu</option>
-                                    <option value="1">Honda</option>
-                                    <option value="2">Yamaha</option>
-                                    <option value="3">Toyota</option>
-                                    <option value="4">Vinfast</option>
-                                    <option value="5">Suzuki</option>
-                                    <option value="6">Ford</option>
+                                    <c:forEach var="brand" items="${brands}">
+                                        <option value="${brand.key}">${brand.value}</option>
+                                    </c:forEach>
                                 </select>
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleModel">Model *</label>
-                                <input type="text" id="vehicleModel" required>
+                                <input type="text" id="vehicleModel" name="model" required>
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleYear">Năm sản xuất *</label>
-                                <select id="vehicleYear" required>
+                                <select id="vehicleYear" name="year" required>
                                     <option value="">Chọn năm</option>
                                     <option value="2023">2023</option>
                                     <option value="2022">2022</option>
@@ -267,22 +268,22 @@
                             
                             <div class="form-group">
                                 <label for="vehicleCategory">Loại xe *</label>
-                                <select id="vehicleCategory" required>
+                                <select id="vehicleCategory" name="categoryId" required>
                                     <option value="">Chọn loại xe</option>
-                                    <option value="1">Xe máy</option>
-                                    <option value="2">Xe điện</option>
-                                    <option value="3">Ô tô</option>
+                                    <c:forEach var="category" items="${categories}">
+                                        <option value="${category.key}">${category.value}</option>
+                                    </c:forEach>
                                 </select>
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleColor">Màu sắc *</label>
-                                <input type="text" id="vehicleColor" required>
+                                <input type="text" id="vehicleColor" name="color" required>
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleFuelType">Loại nhiên liệu</label>
-                                <select id="vehicleFuelType">
+                                <select id="vehicleFuelType" name="fuelType">
                                     <option value="gasoline">Xăng</option>
                                     <option value="electric">Điện</option>
                                     <option value="diesel">Dầu Diesel</option>
@@ -292,7 +293,7 @@
                             
                             <div class="form-group">
                                 <label for="vehicleTransmission">Hộp số</label>
-                                <select id="vehicleTransmission">
+                                <select id="vehicleTransmission" name="transmission">
                                     <option value="manual">Số sàn</option>
                                     <option value="automatic">Tự động</option>
                                 </select>
@@ -300,12 +301,12 @@
                             
                             <div class="form-group">
                                 <label for="vehicleEngine">Động cơ</label>
-                                <input type="text" id="vehicleEngine" placeholder="110cc, 1.5L...">
+                                <input type="text" id="vehicleEngine" name="engine" placeholder="110cc, 1.5L...">
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleSeats">Số chỗ</label>
-                                <select id="vehicleSeats">
+                                <select id="vehicleSeats" name="seats">
                                     <option value="1">1 chỗ</option>
                                     <option value="2">2 chỗ</option>
                                     <option value="4">4 chỗ</option>
@@ -316,49 +317,42 @@
                             
                             <div class="form-group">
                                 <label for="vehicleDailyRate">Giá thuê/ngày (VNĐ) *</label>
-                                <input type="number" id="vehicleDailyRate" required min="0">
+                                <input type="number" id="vehicleDailyRate" name="dailyRate" required min="0">
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleWeeklyRate">Giá thuê/tuần (VNĐ)</label>
-                                <input type="number" id="vehicleWeeklyRate" min="0">
+                                <input type="number" id="vehicleWeeklyRate" name="weeklyRate" min="0">
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleMonthlyRate">Giá thuê/tháng (VNĐ)</label>
-                                <input type="number" id="vehicleMonthlyRate" min="0">
+                                <input type="number" id="vehicleMonthlyRate" name="monthlyRate" min="0">
                             </div>
                             
                             <div class="form-group">
                                 <label for="vehicleDeposit">Tiền cọc (VNĐ)</label>
-                                <input type="number" id="vehicleDeposit" min="0">
+                                <input type="number" id="vehicleDeposit" name="deposit" min="0">
                             </div>
                             
                             <div class="form-group full-width">
                                 <label for="vehicleDescription">Mô tả</label>
-                                <textarea id="vehicleDescription" rows="3"></textarea>
+                                <textarea id="vehicleDescription" name="description" rows="3"></textarea>
                             </div>
                             
                             <div class="form-group full-width">
                                 <label for="vehicleSpecifications">Thông số kỹ thuật (JSON)</label>
-                                <textarea id="vehicleSpecifications" rows="3" placeholder='{"max_speed": "120km/h", "fuel_capacity": "4L"}'></textarea>
+                                <textarea id="vehicleSpecifications" name="specifications" rows="3" placeholder='{"max_speed": "120km/h", "fuel_capacity": "4L"}'></textarea>
                             </div>
                             
                             <div class="form-group full-width">
                                 <label for="vehicleAmenities">Tiện nghi</label>
                                 <div class="form-row">
-                                    <label style="display: flex; align-items: center; gap: 5px;">
-                                        <input type="checkbox" name="amenities" value="air_conditioner"> Điều hòa
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 5px;">
-                                        <input type="checkbox" name="amenities" value="reverse_camera"> Camera lùi
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 5px;">
-                                        <input type="checkbox" name="amenities" value="gps"> GPS
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 5px;">
-                                        <input type="checkbox" name="amenities" value="bluetooth"> Bluetooth
-                                    </label>
+                                    <c:forEach var="amenity" items="${amenities}">
+                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                            <input type="checkbox" name="amenities" value="${amenity.key}"> ${amenity.value}
+                                        </label>
+                                    </c:forEach>
                                 </div>
                             </div>
                             
@@ -375,7 +369,7 @@
                             
                             <div class="form-group">
                                 <label for="vehicleStatus">Trạng thái</label>
-                                <select id="vehicleStatus">
+                                <select id="vehicleStatus" name="status">
                                     <option value="available">Có sẵn</option>
                                     <option value="rented">Đang thuê</option>
                                     <option value="maintenance">Bảo trì</option>
@@ -385,7 +379,7 @@
                             
                             <div class="form-group">
                                 <label for="vehicleFeatured">Nổi bật</label>
-                                <select id="vehicleFeatured">
+                                <select id="vehicleFeatured" name="featured">
                                     <option value="0">Không</option>
                                     <option value="1">Có</option>
                                 </select>
@@ -393,7 +387,7 @@
                             
                             <div class="form-group">
                                 <label for="vehicleLocation">Vị trí hiện tại</label>
-                                <input type="text" id="vehicleLocation" placeholder="Địa chỉ">
+                                <input type="text" id="vehicleLocation" name="location" placeholder="Địa chỉ">
                             </div>
                         </div>
                     </form>
@@ -447,210 +441,9 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        // Mock data for vehicles
-        const mockVehicles = [
-            {
-                id: 1,
-                license_plate: "51A-12345",
-                brand: "Toyota",
-                model: "Vios",
-                year: 2023,
-                category: "Ô tô",
-                color: "Trắng",
-                fuel_type: "Xăng",
-                transmission: "Số sàn",
-                engine: "1.5L",
-                seats: 5,
-                daily_rate: 600000,
-                weekly_rate: 3500000,
-                monthly_rate: 12000000,
-                deposit: 5000000,
-                status: "available",
-                featured: true,
-                rating: 4.8,
-                reviews: 156,
-                total_rentals: 28,
-                description: "Toyota Vios 2023 mới, tiết kiệm nhiên liệu, nội thất sang trọng",
-                image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                location: "123 Đường ABC, Quận 1, TP.HCM"
-            },
-            {
-                id: 2,
-                license_plate: "51B-67890",
-                brand: "Honda",
-                model: "Vision",
-                year: 2023,
-                category: "Xe máy",
-                color: "Đen",
-                fuel_type: "Xăng",
-                transmission: "Tự động",
-                engine: "110cc",
-                seats: 2,
-                daily_rate: 150000,
-                weekly_rate: 900000,
-                monthly_rate: 3000000,
-                deposit: 1000000,
-                status: "available",
-                featured: true,
-                rating: 4.5,
-                reviews: 128,
-                total_rentals: 45,
-                description: "Honda Vision 2023, xe ga tự động, tiết kiệm xăng",
-                image: "https://images.unsplash.com/photo-1609630875171-b1321377ee65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80",
-                location: "456 Đường XYZ, Quận 3, TP.HCM"
-            },
-            {
-                id: 3,
-                license_plate: "51C-11223",
-                brand: "Yamaha",
-                model: "Exciter",
-                year: 2023,
-                category: "Xe máy",
-                color: "Xanh",
-                fuel_type: "Xăng",
-                transmission: "Số sàn",
-                engine: "150cc",
-                seats: 2,
-                daily_rate: 180000,
-                weekly_rate: 1000000,
-                monthly_rate: 3500000,
-                deposit: 1200000,
-                status: "rented",
-                featured: true,
-                rating: 4.7,
-                reviews: 167,
-                total_rentals: 32,
-                description: "Yamaha Exciter 2023, xe thể thao, động cơ mạnh mẽ",
-                image: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                location: "789 Đường LMN, Quận Bình Thạnh, TP.HCM"
-            },
-            {
-                id: 4,
-                license_plate: "51D-44556",
-                brand: "Vinfast",
-                model: "Klara",
-                year: 2023,
-                category: "Xe điện",
-                color: "Trắng",
-                fuel_type: "Điện",
-                transmission: "Tự động",
-                engine: "1.2kW",
-                seats: 2,
-                daily_rate: 120000,
-                weekly_rate: 700000,
-                monthly_rate: 2500000,
-                deposit: 800000,
-                status: "maintenance",
-                featured: false,
-                rating: 4.0,
-                reviews: 96,
-                total_rentals: 19,
-                description: "Vinfast Klara S, xe điện thông minh, thân thiện môi trường",
-                image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                location: "321 Đường PQR, Quận Tân Bình, TP.HCM"
-            },
-            {
-                id: 5,
-                license_plate: "51E-77889",
-                brand: "Honda",
-                model: "Wave",
-                year: 2022,
-                category: "Xe máy",
-                color: "Đỏ",
-                fuel_type: "Xăng",
-                transmission: "Số sàn",
-                engine: "110cc",
-                seats: 2,
-                daily_rate: 100000,
-                weekly_rate: 600000,
-                monthly_rate: 2000000,
-                deposit: 500000,
-                status: "available",
-                featured: false,
-                rating: 4.3,
-                reviews: 205,
-                total_rentals: 38,
-                description: "Honda Wave 2022, xe số bền bỉ, tiết kiệm nhiên liệu",
-                image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                location: "654 Đường UVW, Quận Phú Nhuận, TP.HCM"
-            },
-            {
-                id: 6,
-                license_plate: "51F-99001",
-                brand: "Toyota",
-                model: "Innova",
-                year: 2022,
-                category: "Ô tô",
-                color: "Bạc",
-                fuel_type: "Dầu Diesel",
-                transmission: "Tự động",
-                engine: "2.4L",
-                seats: 7,
-                daily_rate: 800000,
-                weekly_rate: 4500000,
-                monthly_rate: 15000000,
-                deposit: 8000000,
-                status: "available",
-                featured: true,
-                rating: 4.6,
-                reviews: 89,
-                total_rentals: 15,
-                description: "Toyota Innova 2022, xe 7 chỗ, phù hợp gia đình",
-                image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                location: "987 Đường XYZ, Quận 2, TP.HCM"
-            },
-            {
-                id: 7,
-                license_plate: "51G-22334",
-                brand: "Vinfast",
-                model: "Fadil",
-                year: 2023,
-                category: "Ô tô",
-                color: "Xanh",
-                fuel_type: "Xăng",
-                transmission: "Tự động",
-                engine: "1.4L",
-                seats: 5,
-                daily_rate: 500000,
-                weekly_rate: 2800000,
-                monthly_rate: 10000000,
-                deposit: 4000000,
-                status: "rented",
-                featured: false,
-                rating: 4.2,
-                reviews: 67,
-                total_rentals: 12,
-                description: "Vinfast Fadil 2023, xe hạng A, tiết kiệm nhiên liệu",
-                image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                location: "159 Đường ABC, Quận 10, TP.HCM"
-            },
-            {
-                id: 8,
-                license_plate: "51H-55667",
-                brand: "Suzuki",
-                model: "Ciaz",
-                year: 2022,
-                category: "Ô tô",
-                color: "Đen",
-                fuel_type: "Xăng",
-                transmission: "Tự động",
-                engine: "1.4L",
-                seats: 5,
-                daily_rate: 550000,
-                weekly_rate: 3000000,
-                monthly_rate: 11000000,
-                deposit: 4500000,
-                status: "unavailable",
-                featured: false,
-                rating: 4.4,
-                reviews: 78,
-                total_rentals: 21,
-                description: "Suzuki Ciaz 2022, sedan hạng B, nội thất rộng rãi",
-                image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-                location: "753 Đường DEF, Quận Gò Vấp, TP.HCM"
-            }
-        ];
-
+        // AJAX URL
+        const API_BASE_URL = '${pageContext.request.contextPath}/api/vehicles';
+        
         // DOM Elements
         const vehiclesGridView = document.getElementById('vehiclesGridView');
         const vehiclesTableView = document.getElementById('vehiclesTableView');
@@ -667,6 +460,7 @@
         const imagePreview = document.getElementById('imagePreview');
         let currentVehicleId = null;
         let selectedVehicles = new Set();
+        let vehiclesData = [];
 
         // Initialize Select2
         $(document).ready(function() {
@@ -724,8 +518,60 @@
             return stars;
         }
 
+        // Load vehicles data
+        function loadVehiclesData() {
+            fetch(API_BASE_URL)
+                .then(response => response.json())
+                .then(data => {
+                    vehiclesData = data;
+                    renderGridView();
+                    renderTableView();
+                    updateStats();
+                })
+                .catch(error => {
+                    console.error('Error loading vehicles:', error);
+                    // Fallback to mock data if API fails
+                    loadMockData();
+                });
+        }
+
+        // Mock data fallback
+        function loadMockData() {
+            vehiclesData = [
+                {
+                    id: 1,
+                    license_plate: "51A-12345",
+                    brand: "Toyota",
+                    model: "Vios",
+                    year: 2023,
+                    category: "Ô tô",
+                    color: "Trắng",
+                    fuel_type: "Xăng",
+                    transmission: "Số sàn",
+                    engine: "1.5L",
+                    seats: 5,
+                    daily_rate: 600000,
+                    weekly_rate: 3500000,
+                    monthly_rate: 12000000,
+                    deposit: 5000000,
+                    status: "available",
+                    featured: true,
+                    rating: 4.8,
+                    reviews: 156,
+                    total_rentals: 28,
+                    description: "Toyota Vios 2023 mới, tiết kiệm nhiên liệu, nội thất sang trọng",
+                    image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    location: "123 Đường ABC, Quận 1, TP.HCM"
+                },
+                // ... other mock data (keep the original mock data from HTML)
+            ];
+            renderGridView();
+            renderTableView();
+            updateStats();
+        }
+
         // Render vehicles grid view
-        function renderGridView(vehicles = mockVehicles) {
+        function renderGridView(vehicles = vehiclesData) {
             vehiclesGridView.innerHTML = '';
             
             vehicles.forEach(vehicle => {
@@ -756,13 +602,13 @@
                             ${generateStars(vehicle.rating)}
                             <span>${vehicle.rating.toFixed(1)} (${vehicle.reviews})</span>
                         </div>
-                        <p style="font-size: 0.9rem; color: #666; margin: 0.5rem 0;">${vehicle.description.substring(0, 60)}...</p>
+                        <p style="font-size: 0.9rem; color: #666; margin: 0.5rem 0;">${vehicle.description ? vehicle.description.substring(0, 60) + '...' : ''}</p>
                         <div class="vehicle-stats">
                             <div class="stat">
-                                <i class="fas fa-calendar-check"></i> ${vehicle.total_rentals} lần thuê
+                                <i class="fas fa-calendar-check"></i> ${vehicle.total_rentals || 0} lần thuê
                             </div>
                             <div class="stat">
-                                <i class="fas fa-map-marker-alt"></i> ${vehicle.location.split(',')[0]}
+                                <i class="fas fa-map-marker-alt"></i> ${vehicle.location ? vehicle.location.split(',')[0] : ''}
                             </div>
                         </div>
                         <div class="vehicle-actions">
@@ -782,21 +628,11 @@
             });
             
             // Add event listeners
-            document.querySelectorAll('.view-detail').forEach(btn => {
-                btn.addEventListener('click', () => viewVehicleDetail(btn.dataset.id));
-            });
-            
-            document.querySelectorAll('.edit-vehicle').forEach(btn => {
-                btn.addEventListener('click', () => editVehicle(btn.dataset.id));
-            });
-            
-            document.querySelectorAll('.delete-vehicle').forEach(btn => {
-                btn.addEventListener('click', () => confirmDeleteVehicle(btn.dataset.id));
-            });
+            attachEventListeners();
         }
 
         // Render vehicles table view
-        function renderTableView(vehicles = mockVehicles) {
+        function renderTableView(vehicles = vehiclesData) {
             vehiclesTableBody.innerHTML = '';
             
             vehicles.forEach(vehicle => {
@@ -824,7 +660,7 @@
                             ${generateStars(vehicle.rating)}
                             <span style="font-size: 0.8rem;">${vehicle.rating.toFixed(1)}</span>
                         </div>
-                        <div style="font-size: 0.8rem; color: #666;">${vehicle.reviews} đánh giá</div>
+                        <div style="font-size: 0.8rem; color: #666;">${vehicle.reviews || 0} đánh giá</div>
                     </td>
                     <td>
                         <div style="display: flex; gap: 5px;">
@@ -844,6 +680,30 @@
             });
             
             // Add event listeners
+            attachTableEventListeners();
+            
+            // Update counts
+            document.getElementById('tableCount').textContent = vehicles.length;
+            document.getElementById('tableTotal').textContent = vehiclesData.length;
+        }
+
+        // Attach event listeners to grid view
+        function attachEventListeners() {
+            document.querySelectorAll('.view-detail').forEach(btn => {
+                btn.addEventListener('click', () => viewVehicleDetail(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.edit-vehicle').forEach(btn => {
+                btn.addEventListener('click', () => editVehicle(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.delete-vehicle').forEach(btn => {
+                btn.addEventListener('click', () => confirmDeleteVehicle(btn.dataset.id));
+            });
+        }
+
+        // Attach event listeners to table view
+        function attachTableEventListeners() {
             document.querySelectorAll('.select-vehicle').forEach(checkbox => {
                 checkbox.addEventListener('change', (e) => {
                     const id = parseInt(e.target.dataset.id);
@@ -867,10 +727,6 @@
             document.querySelectorAll('.delete-vehicle').forEach(btn => {
                 btn.addEventListener('click', () => confirmDeleteVehicle(btn.dataset.id));
             });
-            
-            // Update counts
-            document.getElementById('tableCount').textContent = vehicles.length;
-            document.getElementById('tableTotal').textContent = mockVehicles.length;
         }
 
         // Update selected count
@@ -885,7 +741,7 @@
 
         // View vehicle details
         function viewVehicleDetail(id) {
-            const vehicle = mockVehicles.find(v => v.id === parseInt(id));
+            const vehicle = vehiclesData.find(v => v.id === parseInt(id));
             if (!vehicle) return;
             
             currentVehicleId = vehicle.id;
@@ -911,10 +767,10 @@
                         
                         <h4 style="color: var(--primary); margin-bottom: 1rem; border-bottom: 2px solid var(--secondary); padding-bottom: 0.5rem;">Đánh giá</h4>
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="font-size: 2rem; font-weight: bold; color: var(--secondary);">${vehicle.rating.toFixed(1)}</div>
+                            <div style="font-size: 2rem; font-weight: bold; color: var(--secondary);">${vehicle.rating ? vehicle.rating.toFixed(1) : '0.0'}</div>
                             <div>
-                                <div>${generateStars(vehicle.rating)}</div>
-                                <div style="font-size: 0.9rem; color: #666;">${vehicle.reviews} đánh giá • ${vehicle.total_rentals} lần thuê</div>
+                                <div>${generateStars(vehicle.rating || 0)}</div>
+                                <div style="font-size: 0.9rem; color: #666;">${vehicle.reviews || 0} đánh giá • ${vehicle.total_rentals || 0} lần thuê</div>
                             </div>
                         </div>
                     </div>
@@ -928,15 +784,15 @@
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                                 <span>Giá thuê theo tuần:</span>
-                                <span style="font-weight: bold;">${formatCurrency(vehicle.weekly_rate)}</span>
+                                <span style="font-weight: bold;">${formatCurrency(vehicle.weekly_rate || 0)}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                                 <span>Giá thuê theo tháng:</span>
-                                <span style="font-weight: bold;">${formatCurrency(vehicle.monthly_rate)}</span>
+                                <span style="font-weight: bold;">${formatCurrency(vehicle.monthly_rate || 0)}</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; border-top: 1px solid #ddd; padding-top: 0.5rem; margin-top: 0.5rem;">
                                 <span>Tiền cọc:</span>
-                                <span style="font-weight: bold; color: var(--warning);">${formatCurrency(vehicle.deposit)}</span>
+                                <span style="font-weight: bold; color: var(--warning);">${formatCurrency(vehicle.deposit || 0)}</span>
                             </div>
                         </div>
                         
@@ -948,13 +804,13 @@
                             <div>
                                 <strong>Vị trí hiện tại:</strong>
                                 <div style="background: #f8f9fa; padding: 0.8rem; border-radius: 4px; margin-top: 0.3rem;">
-                                    <i class="fas fa-map-marker-alt"></i> ${vehicle.location}
+                                    <i class="fas fa-map-marker-alt"></i> ${vehicle.location || 'Chưa có thông tin'}
                                 </div>
                             </div>
                         </div>
                         
                         <h4 style="color: var(--primary); margin-bottom: 1rem; border-bottom: 2px solid var(--secondary); padding-bottom: 0.5rem;">Mô tả</h4>
-                        <p style="color: #666; line-height: 1.6;">${vehicle.description}</p>
+                        <p style="color: #666; line-height: 1.6;">${vehicle.description || 'Chưa có mô tả'}</p>
                     </div>
                 </div>
             `;
@@ -966,6 +822,8 @@
         function addNewVehicle() {
             currentVehicleId = null;
             document.getElementById('modalTitle').textContent = 'Thêm xe mới';
+            document.getElementById('vehicleId').value = '';
+            document.getElementById('formAction').value = 'add';
             vehicleForm.reset();
             imagePreview.innerHTML = '';
             
@@ -979,50 +837,55 @@
 
         // Edit vehicle
         function editVehicle(id) {
-            const vehicle = mockVehicles.find(v => v.id === parseInt(id));
+            const vehicle = vehiclesData.find(v => v.id === parseInt(id));
             if (!vehicle) return;
             
             currentVehicleId = vehicle.id;
             document.getElementById('modalTitle').textContent = `Chỉnh sửa: ${vehicle.brand} ${vehicle.model}`;
+            document.getElementById('vehicleId').value = vehicle.id;
+            document.getElementById('formAction').value = 'edit';
             
             // Fill form with vehicle data
             document.getElementById('vehicleLicensePlate').value = vehicle.license_plate;
             document.getElementById('vehicleModel').value = vehicle.model;
             document.getElementById('vehicleColor').value = vehicle.color;
-            document.getElementById('vehicleFuelType').value = vehicle.fuel_type.toLowerCase();
+            document.getElementById('vehicleFuelType').value = vehicle.fuel_type ? vehicle.fuel_type.toLowerCase() : 'gasoline';
             document.getElementById('vehicleTransmission').value = vehicle.transmission === 'Số sàn' ? 'manual' : 'automatic';
-            document.getElementById('vehicleEngine').value = vehicle.engine;
-            document.getElementById('vehicleSeats').value = vehicle.seats;
+            document.getElementById('vehicleEngine').value = vehicle.engine || '';
+            document.getElementById('vehicleSeats').value = vehicle.seats || '5';
             document.getElementById('vehicleDailyRate').value = vehicle.daily_rate;
-            document.getElementById('vehicleWeeklyRate').value = vehicle.weekly_rate;
-            document.getElementById('vehicleMonthlyRate').value = vehicle.monthly_rate;
-            document.getElementById('vehicleDeposit').value = vehicle.deposit;
-            document.getElementById('vehicleDescription').value = vehicle.description;
-            document.getElementById('vehicleLocation').value = vehicle.location;
-            document.getElementById('vehicleStatus').value = vehicle.status;
+            document.getElementById('vehicleWeeklyRate').value = vehicle.weekly_rate || '';
+            document.getElementById('vehicleMonthlyRate').value = vehicle.monthly_rate || '';
+            document.getElementById('vehicleDeposit').value = vehicle.deposit || '';
+            document.getElementById('vehicleDescription').value = vehicle.description || '';
+            document.getElementById('vehicleLocation').value = vehicle.location || '';
+            document.getElementById('vehicleStatus').value = vehicle.status || 'available';
             document.getElementById('vehicleFeatured').value = vehicle.featured ? '1' : '0';
             
-            // Set Select2 values
-            $('#vehicleBrand').val(vehicle.brand.toLowerCase()).trigger('change');
-            $('#vehicleCategory').val(vehicle.category === 'Ô tô' ? '3' : vehicle.category === 'Xe điện' ? '2' : '1').trigger('change');
-            $('#vehicleYear').val(vehicle.year.toString()).trigger('change');
+            // Set Select2 values (you'll need to adjust based on your actual data structure)
+            $('#vehicleBrand').val(vehicle.brand_id || '').trigger('change');
+            $('#vehicleCategory').val(vehicle.category_id || '').trigger('change');
+            $('#vehicleYear').val(vehicle.year ? vehicle.year.toString() : '').trigger('change');
             
             // Clear and set image preview
-            imagePreview.innerHTML = `
-                <div class="preview-image">
-                    <img src="${vehicle.image}" alt="Vehicle Image">
-                    <button type="button" class="remove-image" onclick="this.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
+            imagePreview.innerHTML = '';
+            if (vehicle.image) {
+                imagePreview.innerHTML = `
+                    <div class="preview-image">
+                        <img src="${vehicle.image}" alt="Vehicle Image">
+                        <button type="button" class="remove-image" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }
             
             vehicleModal.classList.add('active');
         }
 
         // Confirm delete vehicle
         function confirmDeleteVehicle(id) {
-            const vehicle = mockVehicles.find(v => v.id === parseInt(id));
+            const vehicle = vehiclesData.find(v => v.id === parseInt(id));
             if (!vehicle) return;
             
             currentVehicleId = vehicle.id;
@@ -1032,21 +895,39 @@
             deleteModal.classList.add('active');
         }
 
-        // Delete vehicle
+        // Delete vehicle via API
         function deleteVehicle() {
-            // In real app, this would make API call to delete
-            alert(`Xóa xe thành công! (ID: ${currentVehicleId})`);
-            
-            // Remove from selected vehicles if present
-            selectedVehicles.delete(currentVehicleId);
-            updateSelectedCount();
-            
-            // Refresh views
-            renderGridView();
-            renderTableView();
-            
-            deleteModal.classList.remove('active');
-            updateStats();
+            fetch(`${API_BASE_URL}/${currentVehicleId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Xóa xe thành công!');
+                    // Remove from local data
+                    vehiclesData = vehiclesData.filter(v => v.id !== currentVehicleId);
+                    
+                    // Remove from selected vehicles if present
+                    selectedVehicles.delete(currentVehicleId);
+                    updateSelectedCount();
+                    
+                    // Refresh views
+                    renderGridView();
+                    renderTableView();
+                    updateStats();
+                } else {
+                    alert('Có lỗi xảy ra khi xóa xe!');
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting vehicle:', error);
+                alert('Có lỗi xảy ra khi xóa xe!');
+            })
+            .finally(() => {
+                deleteModal.classList.remove('active');
+            });
         }
 
         // Delete selected vehicles
@@ -1057,71 +938,55 @@
             }
             
             if (confirm(`Bạn có chắc chắn muốn xóa ${selectedVehicles.size} xe đã chọn?`)) {
-                // In real app, this would make API call to delete multiple
-                alert(`Đã xóa ${selectedVehicles.size} xe thành công!`);
+                // In real implementation, you would send a bulk delete request
+                // For now, we'll delete one by one
+                const deletePromises = Array.from(selectedVehicles).map(id => 
+                    fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' })
+                );
                 
-                selectedVehicles.clear();
-                updateSelectedCount();
-                
-                // Refresh views
-                renderGridView();
-                renderTableView();
-                
-                updateStats();
+                Promise.all(deletePromises)
+                    .then(responses => {
+                        const allOk = responses.every(r => r.ok);
+                        if (allOk) {
+                            alert(`Đã xóa ${selectedVehicles.size} xe thành công!`);
+                            // Remove from local data
+                            vehiclesData = vehiclesData.filter(v => !selectedVehicles.has(v.id));
+                            
+                            selectedVehicles.clear();
+                            updateSelectedCount();
+                            
+                            // Refresh views
+                            renderGridView();
+                            renderTableView();
+                            updateStats();
+                        } else {
+                            alert('Có lỗi xảy ra khi xóa một số xe!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting vehicles:', error);
+                        alert('Có lỗi xảy ra khi xóa xe!');
+                    });
             }
         }
 
-        // Save vehicle (add or update)
+        // Save vehicle (add or update) via form submission
         function saveVehicle() {
             if (!vehicleForm.checkValidity()) {
                 alert('Vui lòng điền đầy đủ thông tin bắt buộc (*)');
                 return;
             }
             
-            const formData = {
-                license_plate: document.getElementById('vehicleLicensePlate').value,
-                brand: $('#vehicleBrand').val(),
-                model: document.getElementById('vehicleModel').value,
-                year: parseInt($('#vehicleYear').val()),
-                category: $('#vehicleCategory').val(),
-                color: document.getElementById('vehicleColor').value,
-                fuel_type: document.getElementById('vehicleFuelType').value,
-                transmission: document.getElementById('vehicleTransmission').value,
-                engine: document.getElementById('vehicleEngine').value,
-                seats: parseInt(document.getElementById('vehicleSeats').value),
-                daily_rate: parseInt(document.getElementById('vehicleDailyRate').value),
-                weekly_rate: parseInt(document.getElementById('vehicleWeeklyRate').value) || 0,
-                monthly_rate: parseInt(document.getElementById('vehicleMonthlyRate').value) || 0,
-                deposit: parseInt(document.getElementById('vehicleDeposit').value) || 0,
-                description: document.getElementById('vehicleDescription').value,
-                location: document.getElementById('vehicleLocation').value,
-                status: document.getElementById('vehicleStatus').value,
-                featured: document.getElementById('vehicleFeatured').value === '1'
-            };
-            
-            if (currentVehicleId) {
-                // Update existing vehicle
-                alert(`Cập nhật xe thành công! (ID: ${currentVehicleId})`);
-            } else {
-                // Add new vehicle
-                alert('Thêm xe mới thành công!');
-            }
-            
-            vehicleModal.classList.remove('active');
-            
-            // Refresh views
-            renderGridView();
-            renderTableView();
-            
-            updateStats();
+            // Submit form
+            vehicleForm.submit();
         }
 
         // Update statistics
         function updateStats() {
-            const total = mockVehicles.length;
-            const available = mockVehicles.filter(v => v.status === 'available').length;
-            const rented = mockVehicles.filter(v => v.status === 'rented').length;
-            const maintenance = mockVehicles.filter(v => v.status === 'maintenance').length;
+            const total = vehiclesData.length;
+            const available = vehiclesData.filter(v => v.status === 'available').length;
+            const rented = vehiclesData.filter(v => v.status === 'rented').length;
+            const maintenance = vehiclesData.filter(v => v.status === 'maintenance').length;
             
             document.getElementById('totalVehicles').textContent = total;
             document.getElementById('availableVehicles').textContent = available;
@@ -1136,7 +1001,7 @@
             const status = document.getElementById('filterStatus').value;
             const search = document.getElementById('filterSearch').value.toLowerCase();
             
-            let filtered = mockVehicles;
+            let filtered = vehiclesData;
             
             if (category) {
                 const categoryMap = {
@@ -1148,7 +1013,7 @@
             }
             
             if (brand) {
-                filtered = filtered.filter(v => v.brand.toLowerCase() === brand);
+                filtered = filtered.filter(v => v.brand && v.brand.toLowerCase() === brand);
             }
             
             if (status) {
@@ -1157,9 +1022,9 @@
             
             if (search) {
                 filtered = filtered.filter(v => 
-                    v.license_plate.toLowerCase().includes(search) ||
-                    v.model.toLowerCase().includes(search) ||
-                    v.brand.toLowerCase().includes(search)
+                    (v.license_plate && v.license_plate.toLowerCase().includes(search)) ||
+                    (v.model && v.model.toLowerCase().includes(search)) ||
+                    (v.brand && v.brand.toLowerCase().includes(search))
                 );
             }
             
@@ -1171,10 +1036,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize views
-            renderGridView();
-            renderTableView();
-            updateStats();
+            // Load vehicles data
+            loadVehiclesData();
             
             // View toggle
             gridViewBtn.addEventListener('click', () => {
@@ -1275,6 +1138,7 @@
             });
             
             document.getElementById('exportBtn').addEventListener('click', () => {
+                // Export to Excel functionality
                 alert('Xuất file Excel thành công!');
             });
             

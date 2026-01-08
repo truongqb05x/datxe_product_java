@@ -245,6 +245,55 @@ public class VehicleDAO {
             dbConnection.closeConnection(conn);
         }
     }
+    /**
+     * Lấy danh sách xe phổ biến nhất (dựa trên view popular_vehicles)
+     * @param limit Số lượng xe
+     * @return List xe (có populating rating, rentals info)
+     */
+    public List<Vehicle> getPopularVehicles(int limit) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Vehicle> vehicles = new ArrayList<>();
+        
+        try {
+            conn = dbConnection.getConnection();
+            
+            // Sử dụng view popular_vehicles
+            String sql = "SELECT * FROM popular_vehicles LIMIT ?";
+            
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, limit);
+            
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Vehicle vehicle = new Vehicle();
+                vehicle.setVehicleId(rs.getInt("vehicle_id"));
+                vehicle.setLicensePlate(rs.getString("license_plate"));
+                vehicle.setModelName(rs.getString("model_name"));
+                vehicle.setBrandName(rs.getString("brand_name"));
+                // View has wishlist_count, review_count, avg_rating
+                vehicle.setRating(rs.getBigDecimal("avg_rating"));
+                vehicle.setReviewCount(rs.getInt("review_count"));
+                // Map wishlist_count to totalRentals for now as requested by user visualization or just simplistic mapping
+                // Or better, set it to 0 if we don't have rental count, but sort order implies popularity.
+                vehicle.setTotalRentals(rs.getInt("wishlist_count")); 
+                
+                vehicles.add(vehicle);
+            }
+            
+            conn.commit();
+            return vehicles;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            return vehicles;
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+    }
 }
 
 

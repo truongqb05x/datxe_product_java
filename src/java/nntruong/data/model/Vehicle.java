@@ -264,6 +264,26 @@ public class Vehicle {
         this.createdAt = createdAt;
     }
     
+    private int reviewCount; // review_count - Số lượng đánh giá (transient)
+    private BigDecimal revenue; // revenue - Doanh thu (transient)
+
+    public int getReviewCount() {
+        return reviewCount;
+    }
+
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
+    }
+
+    public BigDecimal getRevenue() {
+        return revenue;
+    }
+
+    public void setRevenue(BigDecimal revenue) {
+        this.revenue = revenue;
+    }
+
+    // Existing updateAt methods
     public Date getUpdatedAt() {
         return updatedAt;
     }

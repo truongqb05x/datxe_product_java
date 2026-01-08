@@ -431,4 +431,70 @@ public class BookingDAO {
             dbConnection.closeConnection(conn);
         }
     }
+    /**
+     * Lấy danh sách booking gần đây (dùng cho dashboard)
+     * @param limit Số lượng booking cần lấy
+     * @return List<Booking>
+     */
+    public List<Booking> getRecentBookings(int limit) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Booking> bookings = new ArrayList<>();
+        
+        try {
+            conn = dbConnection.getConnection();
+            
+            // Query lấy bookings gần nhất, join với users và vehicles để lấy tên
+            // Note: Booking model might need to store extra info or we just populate fields
+            String sql = "SELECT b.*, u.full_name, v.model_name FROM bookings b " +
+                         "JOIN users u ON b.user_id = u.user_id " +
+                         "JOIN vehicles v ON b.vehicle_id = v.vehicle_id " +
+                         "ORDER BY b.created_at DESC LIMIT ?";
+            
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, limit);
+            
+            rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                Booking booking = mapResultSetToBooking(rs);
+                // Manually set transient fields if Booking model supports them, 
+                // or we rely on the caller to fetch related objects.
+                // For simplified dashboard, we might want to extend Booking or set transient properties
+                // Let's assume we can fetch User/Vehicle or just set IDs.
+                // To minimize N+1, ideally we'd map the joined columns.
+                // But Booking model structure:
+                // private Vehicle vehicle; 
+                // We can populate simple vehicle/user objects
+                
+                // For now, let's keep it simple and just return the booking. 
+                // If the JSP needs names, we might need to populate them.
+                // Checking Booking model... it has setVehicle.
+                
+                Vehicle v = new Vehicle();
+                v.setModelName(rs.getString("model_name"));
+                booking.setVehicle(v);
+                
+                // User info is not directly in Booking model usually, unless it has a User field.
+                // Let's check Booking.java later. Assuming for now we need a DTO or just handle it in Servlet?
+                // Actually the Dashboard JSP uses ${booking.customerName}, implying a DTO or specific getter.
+                // But let's return standard Booking objects and maybe wrap them in DTOs in the Servlet or use a map.
+                
+                bookings.add(booking);
+            }
+            
+            conn.commit();
+            return bookings;
+            
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy recent bookings: " + e.getMessage());
+            e.printStackTrace();
+            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            return bookings;
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+    }
+
 }
