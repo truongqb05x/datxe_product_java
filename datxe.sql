@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th1 08, 2026 lúc 07:33 PM
+-- Thời gian đã tạo: Th1 08, 2026 lúc 07:53 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -75,6 +75,13 @@ CREATE TABLE `bookings` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `bookings`
+--
+
+INSERT INTO `bookings` (`booking_id`, `booking_code`, `user_id`, `vehicle_id`, `pickup_location_id`, `return_location_id`, `pickup_date`, `return_date`, `total_days`, `daily_rate`, `base_amount`, `insurance_fee`, `service_fee`, `discount_amount`, `total_amount`, `deposit_amount`, `status`, `payment_status`, `payment_method`, `notes`, `cancellation_reason`, `cancelled_at`, `created_at`, `updated_at`) VALUES
+(2, 'RENT20260001', 1, 1, 1, 1, '2026-01-08 17:00:00', '2026-01-09 17:00:00', 1, 120000.00, 120000.00, 24000.00, 20000.00, 0.00, 164000.00, 120000.00, 'pending', 'unpaid', 'cash', NULL, NULL, '2026-01-08 18:52:04', '2026-01-08 18:52:04', '2026-01-08 18:52:04');
 
 -- --------------------------------------------------------
 
@@ -232,6 +239,13 @@ CREATE TABLE `users` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `users`
+--
+
+INSERT INTO `users` (`user_id`, `email`, `password_hash`, `full_name`, `phone_number`, `avatar_url`, `date_of_birth`, `identity_card`, `driver_license_number`, `driver_license_type`, `address`, `is_verified`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'truongqb05x@gmail.com', 't9bsmGn95P48yRlT2xjV/w==:9ES4V7uB3QbE3/CtgiyJM+tD1w4HlbR2Lw5C0x86Njw=', 'truong ngoc', '0945748231', NULL, NULL, NULL, NULL, NULL, NULL, 0, 1, '2026-01-08 18:49:46', '2026-01-08 18:49:46');
+
 -- --------------------------------------------------------
 
 --
@@ -369,6 +383,16 @@ CREATE TABLE `vehicle_locations` (
   `operating_hours` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_vietnamese_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `vehicle_locations`
+--
+
+INSERT INTO `vehicle_locations` (`location_id`, `vehicle_id`, `address`, `latitude`, `longitude`, `city`, `district`, `is_pickup_point`, `is_return_point`, `operating_hours`, `created_at`) VALUES
+(1, 1, '123 Đường ABC, Quận 1', 10.77565800, 106.70175500, 'Hồ Chí Minh', 'Quận 1', 1, 1, NULL, '2026-01-08 18:51:39'),
+(2, 2, '456 Đường XYZ, Quận 2', 10.78701100, 106.74917800, 'Hồ Chí Minh', 'Quận 2', 1, 1, NULL, '2026-01-08 18:51:39'),
+(3, 3, '789 Đường LMN, Quận 3', 10.78219200, 106.68600500, 'Hồ Chí Minh', 'Quận 3', 1, 1, NULL, '2026-01-08 18:51:39'),
+(4, 4, '321 Đường DEF, Quận 4', 10.76262200, 106.70528200, 'Hồ Chí Minh', 'Quận 4', 1, 1, NULL, '2026-01-08 18:51:39');
 
 -- --------------------------------------------------------
 
@@ -607,7 +631,7 @@ ALTER TABLE `blog_posts`
 -- AUTO_INCREMENT cho bảng `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `chatbot_messages`
@@ -643,7 +667,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `vehicles`
@@ -673,7 +697,7 @@ ALTER TABLE `vehicle_images`
 -- AUTO_INCREMENT cho bảng `vehicle_locations`
 --
 ALTER TABLE `vehicle_locations`
-  MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `vehicle_shares`
