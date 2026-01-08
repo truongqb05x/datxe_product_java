@@ -321,6 +321,221 @@ public class VehicleDAO {
         }
         return vehicles;
     }
+    /**
+     * Search vehicles with filters and pagination
+     */
+    public List<Vehicle> searchVehicles(String keyword, String categoryId, String brandId, String status, int offset, int limit) {
+        List<Vehicle> vehicles = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            StringBuilder sql = new StringBuilder("SELECT v.*, b.brand_name, c.category_name FROM vehicles v " +
+                                                "LEFT JOIN vehicle_brands b ON v.brand_id = b.brand_id " +
+                                                "LEFT JOIN vehicle_categories c ON v.category_id = c.category_id " +
+                                                "WHERE 1=1 ");
+            List<Object> params = new ArrayList<>();
+            
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append("AND (v.license_plate LIKE ? OR v.model_name LIKE ?) ");
+                String likeKey = "%" + keyword + "%";
+                params.add(likeKey);
+                params.add(likeKey);
+            }
+            if (categoryId != null && !categoryId.isEmpty()) {
+                sql.append("AND v.category_id = ? ");
+                params.add(Integer.parseInt(categoryId));
+            }
+            if (brandId != null && !brandId.isEmpty()) {
+                sql.append("AND v.brand_id = ? ");
+                params.add(Integer.parseInt(brandId));
+            }
+            if (status != null && !status.isEmpty()) {
+                if ("available".equals(status)) {
+                    sql.append("AND v.is_available = TRUE ");
+                } else if ("rented".equals(status)) {
+                    // Logic for rented might be complex (booking active), for now assuming is_available=FALSE means rented or maintenance
+                    // Simplified: just check is_available or adding status column if exists. 
+                    // The model has is_available. Let's assume unavailable means rented for now or we need a status column.
+                    // Checking existing code: v.is_available boolean.
+                    // User requirements imply status: available, rented, maintenance, unavailable.
+                    // Database likely only has is_available. we might need to rely on bookings to know if rented.
+                    // For now, let's map: available -> is_available=1. unavailable -> is_available=0.
+                    sql.append("AND v.is_available = FALSE ");
+                }
+            }
+            
+            sql.append("ORDER BY v.created_at DESC LIMIT ? OFFSET ?");
+            params.add(limit);
+            params.add(offset);
+            
+            stmt = conn.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                vehicles.add(mapResultSetToVehicle(rs));
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return vehicles;
+    }
+
+    public int countVehicles(String keyword, String categoryId, String brandId, String status) {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM vehicles v WHERE 1=1 ");
+            List<Object> params = new ArrayList<>();
+            
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append("AND (v.license_plate LIKE ? OR v.model_name LIKE ?) ");
+                String likeKey = "%" + keyword + "%";
+                params.add(likeKey);
+                params.add(likeKey);
+            }
+            if (categoryId != null && !categoryId.isEmpty()) {
+                sql.append("AND v.category_id = ? ");
+                params.add(Integer.parseInt(categoryId));
+            }
+            if (brandId != null && !brandId.isEmpty()) {
+                sql.append("AND v.brand_id = ? ");
+                params.add(Integer.parseInt(brandId));
+            }
+            if (status != null && !status.isEmpty()) {
+                 if ("available".equals(status)) {
+                    sql.append("AND v.is_available = TRUE ");
+                } else if ("rented".equals(status) || "unavailable".equals(status)) {
+                    sql.append("AND v.is_available = FALSE ");
+                }
+            }
+            
+            stmt = conn.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            rs = stmt.executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return count;
+    }
+    
+    public java.util.Map<String, Integer> getVehicleStats() {
+        java.util.Map<String, Integer> stats = new java.util.HashMap<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            stmt = conn.createStatement();
+            
+            // Total
+            rs = stmt.executeQuery("SELECT COUNT(*) FROM vehicles");
+            if (rs.next()) stats.put("totalVehicles", rs.getInt(1));
+            rs.close();
+            
+            // Available
+            rs = stmt.executeQuery("SELECT COUNT(*) FROM vehicles WHERE is_available = TRUE");
+            if (rs.next()) stats.put("availableVehicles", rs.getInt(1));
+            rs.close();
+            
+            // Rented/Unavailable (Approximation)
+            rs = stmt.executeQuery("SELECT COUNT(*) FROM vehicles WHERE is_available = FALSE");
+            if (rs.next()) stats.put("rentedVehicles", rs.getInt(1));
+            // Maintenance (Assuming no specific column yet, using 0)
+            stats.put("maintenanceVehicles", 0);
+            
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        return stats;
+    }
+    
+    public java.util.Map<Integer, String> getAllBrands() {
+        java.util.Map<Integer, String> brands = new java.util.HashMap<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM vehicle_brands ORDER BY brand_name");
+            while (rs.next()) {
+                brands.put(rs.getInt("brand_id"), rs.getString("brand_name"));
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return brands;
+    }
+    
+    public java.util.Map<Integer, String> getAllCategories() {
+        java.util.Map<Integer, String> cats = new java.util.HashMap<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM vehicle_categories ORDER BY category_name");
+            while (rs.next()) {
+                cats.put(rs.getInt("category_id"), rs.getString("category_name"));
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return cats;
+    }
+    
+    public boolean deleteVehicle(int id) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = dbConnection.getConnection();
+            // Delete related images first (if cascade not set)
+            stmt = conn.prepareStatement("DELETE FROM vehicle_images WHERE vehicle_id = ?");
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            stmt.close();
+            
+            // Delete vehicle
+            stmt = conn.prepareStatement("DELETE FROM vehicles WHERE vehicle_id = ?");
+            stmt.setInt(1, id);
+            int rows = stmt.executeUpdate();
+            conn.commit();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            return false;
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+    }
 }
 
 

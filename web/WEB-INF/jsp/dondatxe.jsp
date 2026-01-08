@@ -2,7 +2,7 @@
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
         <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-            <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
                 <!DOCTYPE html>
                 <html lang="vi">
 
@@ -72,13 +72,6 @@
                                 <a href="${pageContext.request.contextPath}/admin/bookings" class="nav-link active">
                                     <i class="fas fa-calendar-alt"></i>
                                     <span>Đơn đặt xe</span>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="${pageContext.request.contextPath}/admin/users" class="nav-link">
-                                    <i class="fas fa-users"></i>
-                                    <span>Người dùng</span>
                                 </a>
                             </li>
 
