@@ -27,35 +27,28 @@
 
                         <ul class="nav-menu">
                             <li class="nav-item">
-                                <a href="dashboard.jsp" class="nav-link">
+                                <a href="${pageContext.request.contextPath}/admin/dashboard" class="nav-link">
                                     <i class="fas fa-tachometer-alt"></i>
                                     <span>Dashboard</span>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="#" class="nav-link active">
+                                <a href="${pageContext.request.contextPath}/admin/vehicles" class="nav-link active">
                                     <i class="fas fa-car"></i>
                                     <span>Quản lý xe</span>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="bookings.jsp" class="nav-link">
+                                <a href="${pageContext.request.contextPath}/admin/bookings" class="nav-link">
                                     <i class="fas fa-calendar-alt"></i>
                                     <span>Đơn đặt xe</span>
                                 </a>
                             </li>
 
                             <li class="nav-item">
-                                <a href="users.jsp" class="nav-link">
-                                    <i class="fas fa-users"></i>
-                                    <span>Người dùng</span>
-                                </a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="reports.jsp" class="nav-link">
+                                <a href="${pageContext.request.contextPath}/admin/reports" class="nav-link">
                                     <i class="fas fa-chart-bar"></i>
                                     <span>Báo cáo</span>
                                 </a>
@@ -64,13 +57,41 @@
 
                         <div class="sidebar-footer">
                             <div class="user-info">
-                                <div class="user-avatar">A</div>
+                                <div class="user-avatar">
+                                    <c:choose>
+                                        <c:when test="${not empty sessionScope.adminUser.fullName}">
+                                            ${fn:substring(sessionScope.adminUser.fullName, 0, 1)}
+                                        </c:when>
+                                        <c:otherwise>A</c:otherwise>
+                                    </c:choose>
+                                </div>
                                 <div>
-                                    <h4>Admin User</h4>
+                                    <h4>
+                                        <c:choose>
+                                            <c:when test="${not empty sessionScope.adminUser.fullName}">
+                                                ${sessionScope.adminUser.fullName}
+                                            </c:when>
+                                            <c:otherwise>Admin User</c:otherwise>
+                                        </c:choose>
+                                    </h4>
                                     <p>Quản trị viên</p>
                                 </div>
                             </div>
                         </div>
+                    </aside>
+                    </a>
+                    </li>
+                    </ul>
+
+                    <div class="sidebar-footer">
+                        <div class="user-info">
+                            <div class="user-avatar">A</div>
+                            <div>
+                                <h4>Admin User</h4>
+                                <p>Quản trị viên</p>
+                            </div>
+                        </div>
+                    </div>
                     </aside>
 
                     <!-- Main Content -->
