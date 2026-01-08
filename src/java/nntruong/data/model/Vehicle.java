@@ -293,6 +293,18 @@ public class Vehicle {
     }
     
     /**
+     * Alias for getModelName or getFullName - used in BookingDAO and JSP
+     */
+    public String getName() {
+        return getFullName();
+    }
+
+    public void setName(String name) {
+        // Since this is often used for model name alias in display
+        this.modelName = name;
+    }
+
+    /**
      * Lấy tên đầy đủ của xe (Brand + Model)
      */
     public String getFullName() {

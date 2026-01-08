@@ -468,4 +468,28 @@ public class UserDAO {
             dbConnection.closeConnection(conn);
         }
     }
+    /**
+     * Lấy danh sách tất cả users (dùng cho admin)
+     */
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            String sql = "SELECT * FROM users ORDER BY created_at DESC";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return users;
+    }
 }

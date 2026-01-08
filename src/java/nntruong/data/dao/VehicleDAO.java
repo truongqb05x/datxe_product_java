@@ -294,6 +294,33 @@ public class VehicleDAO {
             closeResources(conn, stmt, rs);
         }
     }
+    /**
+     * Lấy danh sách tất cả vehicles (dùng cho admin)
+     */
+    public List<Vehicle> getAllVehicles() {
+        List<Vehicle> vehicles = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            String sql = "SELECT v.*, b.brand_name, c.category_name FROM vehicles v " +
+                         "LEFT JOIN vehicle_brands b ON v.brand_id = b.brand_id " +
+                         "LEFT JOIN vehicle_categories c ON v.category_id = c.category_id " +
+                         "ORDER BY v.created_at DESC";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                vehicles.add(mapResultSetToVehicle(rs));
+            }
+            conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return vehicles;
+    }
 }
 
 

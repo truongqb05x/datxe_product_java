@@ -497,4 +497,227 @@ public class BookingDAO {
         }
     }
 
+    /**
+     * Search bookings with filters and pagination
+     */
+    public List<Booking> searchBookings(String keyword, String status, Integer customerId, Integer vehicleId, 
+                                      String paymentStatus, Date startDate, Date endDate, int offset, int limit) {
+        List<Booking> bookings = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = dbConnection.getConnection();
+            StringBuilder sql = new StringBuilder("SELECT b.*, u.full_name, u.phone, u.email, v.model_name, v.license_plate, v.color, v.daily_rate " +
+                                                "FROM bookings b " +
+                                                "JOIN users u ON b.user_id = u.user_id " +
+                                                "JOIN vehicles v ON b.vehicle_id = v.vehicle_id " +
+                                                "WHERE 1=1 ");
+            List<Object> params = new ArrayList<>();
+            
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append("AND (b.booking_code LIKE ? OR u.full_name LIKE ? OR u.phone LIKE ?) ");
+                String likeKey = "%" + keyword + "%";
+                params.add(likeKey);
+                params.add(likeKey);
+                params.add(likeKey);
+            }
+            if (status != null && !status.isEmpty() && !"all".equalsIgnoreCase(status)) {
+                sql.append("AND b.status = ? ");
+                params.add(status);
+            }
+            if (customerId != null) {
+                sql.append("AND b.user_id = ? ");
+                params.add(customerId);
+            }
+            if (vehicleId != null) {
+                sql.append("AND b.vehicle_id = ? ");
+                params.add(vehicleId);
+            }
+             if (paymentStatus != null && !paymentStatus.isEmpty()) {
+                sql.append("AND b.payment_status = ? ");
+                params.add(paymentStatus);
+            }
+            if (startDate != null) {
+                sql.append("AND b.created_at >= ? ");
+                params.add(new Timestamp(startDate.getTime()));
+            }
+            if (endDate != null) {
+                sql.append("AND b.created_at <= ? ");
+                params.add(new Timestamp(endDate.getTime()));
+            }
+            
+            sql.append("ORDER BY b.created_at DESC LIMIT ? OFFSET ?");
+            params.add(limit);
+            params.add(offset);
+            
+            stmt = conn.prepareStatement(sql.toString());
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Booking b = mapResultSetToBooking(rs);
+                // Populate Customer (User) info
+                nntruong.data.model.User u = new nntruong.data.model.User();
+                u.setId(rs.getInt("user_id"));
+                u.setFullName(rs.getString("full_name"));
+                u.setPhone(rs.getString("phone"));
+                u.setEmail(rs.getString("email"));
+                b.setCustomer(u); // Assuming Booking has setCustomer
+                
+                // Populate Vehicle info
+                Vehicle v = new Vehicle();
+                v.setVehicleId(rs.getInt("vehicle_id"));
+                v.setModelName(rs.getString("model_name"));
+                v.setLicensePlate(rs.getString("license_plate"));
+                v.setColor(rs.getString("color"));
+                v.setDailyRate(rs.getBigDecimal("daily_rate"));
+                v.setName(rs.getString("model_name")); // Alias if needed
+                b.setVehicle(v);
+                
+                bookings.add(b);
+            }
+             conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return bookings;
+    }
+
+    /**
+     * Count total bookings for pagination
+     */
+    public int countBookings(String keyword, String status, Integer customerId, Integer vehicleId, 
+                           String paymentStatus, Date startDate, Date endDate) {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM bookings b " +
+                                                "JOIN users u ON b.user_id = u.user_id " +
+                                                "WHERE 1=1 ");
+            List<Object> params = new ArrayList<>();
+             if (keyword != null && !keyword.trim().isEmpty()) {
+                sql.append("AND (b.booking_code LIKE ? OR u.full_name LIKE ? OR u.phone LIKE ?) ");
+                String likeKey = "%" + keyword + "%";
+                params.add(likeKey);
+                params.add(likeKey);
+                params.add(likeKey);
+            }
+            if (status != null && !status.isEmpty() && !"all".equalsIgnoreCase(status)) {
+                sql.append("AND b.status = ? ");
+                params.add(status);
+            }
+            if (customerId != null) {
+                sql.append("AND b.user_id = ? ");
+                params.add(customerId);
+            }
+            if (vehicleId != null) {
+                sql.append("AND b.vehicle_id = ? ");
+                params.add(vehicleId);
+            }
+             if (paymentStatus != null && !paymentStatus.isEmpty()) {
+                sql.append("AND b.payment_status = ? ");
+                params.add(paymentStatus);
+            }
+            if (startDate != null) {
+                sql.append("AND b.created_at >= ? ");
+                params.add(new Timestamp(startDate.getTime()));
+            }
+            if (endDate != null) {
+                sql.append("AND b.created_at <= ? ");
+                params.add(new Timestamp(endDate.getTime()));
+            }
+            
+            stmt = conn.prepareStatement(sql.toString());
+             for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+             conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        return count;
+    }
+
+    public boolean updateStatus(int bookingId, String status) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = dbConnection.getConnection();
+            String sql = "UPDATE bookings SET status = ?, updated_at = NOW() WHERE booking_id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, status);
+            stmt.setInt(2, bookingId);
+            int rows = stmt.executeUpdate();
+            if(rows > 0) conn.commit();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+             if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            return false;
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+    }
+    
+    public boolean delete(int bookingId) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = dbConnection.getConnection();
+            String sql = "DELETE FROM bookings WHERE booking_id = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, bookingId);
+            int rows = stmt.executeUpdate();
+             if(rows > 0) conn.commit();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            return false;
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+    }
+
+    public java.util.Map<String, Integer> getBookingStats() {
+        java.util.Map<String, Integer> stats = new java.util.HashMap<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = dbConnection.getConnection();
+            String sql = "SELECT status, COUNT(*) as count FROM bookings GROUP BY status";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            int total = 0;
+            while (rs.next()) {
+                String status = rs.getString("status");
+                int count = rs.getInt("count");
+                stats.put(status.toLowerCase() + "Bookings", count); // PENDING -> pendingBookings
+                total += count;
+            }
+            stats.put("totalBookings", total);
+             conn.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        return stats;
+    }
 }
