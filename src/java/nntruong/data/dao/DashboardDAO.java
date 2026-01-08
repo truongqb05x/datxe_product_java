@@ -55,7 +55,7 @@ public class DashboardDAO {
             stmt.close();
 
             // 3. Count Active Vehicles
-            String sqlActiveVehicles = "SELECT COUNT(*) as total FROM vehicles WHERE is_active = TRUE AND is_available = TRUE";
+            String sqlActiveVehicles = "SELECT COUNT(*) as total FROM vehicles WHERE is_available = TRUE";
             stmt = conn.prepareStatement(sqlActiveVehicles);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -65,7 +65,7 @@ public class DashboardDAO {
             stmt.close();
             
             // 4. Count Maintenance Vehicles (Not available but active)
-             String sqlMaintenanceVehicles = "SELECT COUNT(*) as total FROM vehicles WHERE is_active = TRUE AND is_available = FALSE";
+             String sqlMaintenanceVehicles = "SELECT COUNT(*) as total FROM vehicles WHERE is_available = FALSE";
             stmt = conn.prepareStatement(sqlMaintenanceVehicles);
             rs = stmt.executeQuery();
             if (rs.next()) {

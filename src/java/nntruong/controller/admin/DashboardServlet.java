@@ -1,6 +1,6 @@
 package nntruong.controller.admin;
 
-import com.google.gson.Gson;
+import nntruong.utils.JsonUtil;
 import nntruong.data.dao.BookingDAO;
 import nntruong.data.dao.DashboardDAO;
 import nntruong.data.dao.VehicleDAO;
@@ -61,16 +61,16 @@ public class DashboardServlet extends HttpServlet {
 
         // 2. Get Chart Data (Monthly Revenue)
         List<BigDecimal> monthlyRevenueData = dashboardDAO.getMonthlyRevenueData();
-        request.setAttribute("monthlyRevenueData", new Gson().toJson(monthlyRevenueData));
+        request.setAttribute("monthlyRevenueData", JsonUtil.toJson(monthlyRevenueData));
         
         // Quarterly Revenue
         List<BigDecimal> quarterlyRevenueData = dashboardDAO.getQuarterlyRevenueData();
-        request.setAttribute("quarterlyRevenueData", new Gson().toJson(quarterlyRevenueData));
+        request.setAttribute("quarterlyRevenueData", JsonUtil.toJson(quarterlyRevenueData));
         
         // Yearly Revenue
         Map<Integer, BigDecimal> yearlyRevenueData = dashboardDAO.getYearlyRevenueData();
         // JSP expects a JSON object, e.g. {"2022": 500, "2023": 700}
-        request.setAttribute("yearlyRevenueData", new Gson().toJson(yearlyRevenueData));
+        request.setAttribute("yearlyRevenueData", JsonUtil.toJson(yearlyRevenueData));
 
         // 3. Get Recent Bookings
         List<Booking> rawBookings = bookingDAO.getRecentBookings(5);

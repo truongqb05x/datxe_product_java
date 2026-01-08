@@ -1,6 +1,6 @@
 package nntruong.controller.admin;
 
-import com.google.gson.Gson;
+import nntruong.utils.JsonUtil;
 import nntruong.data.dao.DashboardDAO;
 import nntruong.data.model.DashboardStats;
 
@@ -29,7 +29,7 @@ public class DashboardApiServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String pathInfo = request.getPathInfo(); // /notifications, /recent-activities, /dashboard-stats
-        Gson gson = new Gson();
+        // Gson gson = new Gson(); // Removed
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
@@ -39,15 +39,15 @@ public class DashboardApiServlet extends HttpServlet {
 
             if (pathInfo.equals("/notifications")) {
                 List<Map<String, Object>> notifications = dashboardDAO.getNotifications();
-                response.getWriter().write(gson.toJson(notifications));
+                response.getWriter().write(JsonUtil.toJson(notifications));
                 
             } else if (pathInfo.equals("/recent-activities")) {
                 List<Map<String, String>> activities = dashboardDAO.getRecentActivities();
-                response.getWriter().write(gson.toJson(activities));
+                response.getWriter().write(JsonUtil.toJson(activities));
                 
             } else if (pathInfo.equals("/dashboard-stats")) {
                 DashboardStats stats = dashboardDAO.getDashboardStats();
-                response.getWriter().write(gson.toJson(stats));
+                response.getWriter().write(JsonUtil.toJson(stats));
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
