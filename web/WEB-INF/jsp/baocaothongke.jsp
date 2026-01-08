@@ -907,7 +907,7 @@
                                                     label: function (context) {
                                                         const total = statusData.reduce((a, b) => a + b, 0);
                                                         const percentage = Math.round((context.parsed / total) * 100);
-                                                        return `${context.label}: ${context.parsed} đơn (${percentage}%)`;
+                                                        return `\${context.label}: \${context.parsed} đơn (\${percentage}%)`;
                                                     }
                                                 }
                                             }
@@ -1183,7 +1183,7 @@
                                         headers: {
                                             'Content-Type': 'application/x-www-form-urlencoded',
                                         },
-                                        body: `name=${encodeURIComponent(templateName)}&period=${document.getElementById('reportPeriod').value}&category=${document.getElementById('reportCategory').value}&metrics=${document.getElementById('reportMetrics').value}`
+                                        body: `name=\${encodeURIComponent(templateName)}&period=\${document.getElementById('reportPeriod').value}&category=\${document.getElementById('reportCategory').value}&metrics=\${document.getElementById('reportMetrics').value}`
                                     })
                                         .then(response => response.json())
                                         .then(data => {

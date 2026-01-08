@@ -304,7 +304,9 @@ public class VehicleDAO {
         ResultSet rs = null;
         try {
             conn = dbConnection.getConnection();
-            String sql = "SELECT v.*, b.brand_name, c.category_name FROM vehicles v " +
+            String sql = "SELECT v.*, b.brand_name, c.category_name, " +
+                         "(SELECT image_url FROM vehicle_images WHERE vehicle_id = v.vehicle_id AND image_type = 'main' ORDER BY display_order LIMIT 1) as main_image_url " +
+                         "FROM vehicles v " +
                          "LEFT JOIN vehicle_brands b ON v.brand_id = b.brand_id " +
                          "LEFT JOIN vehicle_categories c ON v.category_id = c.category_id " +
                          "ORDER BY v.created_at DESC";
@@ -331,7 +333,9 @@ public class VehicleDAO {
         ResultSet rs = null;
         try {
             conn = dbConnection.getConnection();
-            StringBuilder sql = new StringBuilder("SELECT v.*, b.brand_name, c.category_name FROM vehicles v " +
+            StringBuilder sql = new StringBuilder("SELECT v.*, b.brand_name, c.category_name, " +
+                                                "(SELECT image_url FROM vehicle_images WHERE vehicle_id = v.vehicle_id AND image_type = 'main' ORDER BY display_order LIMIT 1) as main_image_url " +
+                                                "FROM vehicles v " +
                                                 "LEFT JOIN vehicle_brands b ON v.brand_id = b.brand_id " +
                                                 "LEFT JOIN vehicle_categories c ON v.category_id = c.category_id " +
                                                 "WHERE 1=1 ");
