@@ -112,512 +112,506 @@
                         <!-- Stats Summary -->
                         <div class="stats-summary">
                             <div class="stat-item">
-                                <div class="stat-item">
-                                    <div class="stat-value" id="totalVehicles">${totalVehiclesCount != null ?
-                                        totalVehiclesCount : 0}</div>
-                                    <div class="stat-label">Tổng số xe</div>
+                                <div class="stat-value" id="totalVehicles">${totalVehiclesCount != null ?
+                                    totalVehiclesCount : 0}</div>
+                                <div class="stat-label">Tổng số xe</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="availableVehicles">${availableVehicles != null ?
+                                    availableVehicles : 0}</div>
+                                <div class="stat-label">Xe có sẵn</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="rentedVehicles">${rentedVehicles != null ? rentedVehicles :
+                                    0}</div>
+                                <div class="stat-label">Đang được thuê</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="maintenanceVehicles">${maintenanceVehicles != null ?
+                                    maintenanceVehicles : 0}</div>
+                                <div class="stat-label">Đang bảo trì</div>
+                            </div>
+                        </div>
+
+                        <!-- Filters Section -->
+                        <section class="filters-section">
+                            <h3><i class="fas fa-filter"></i> Bộ lọc</h3>
+                            <div class="filter-grid">
+                                <div class="filter-group">
+                                    <label for="filterCategory">Loại xe</label>
+                                    <select id="filterCategory">
+                                        <option value="">Tất cả loại</option>
+                                        <option value="motorcycle">Xe máy</option>
+                                        <option value="electric">Xe điện</option>
+                                        <option value="car">Ô tô</option>
+                                    </select>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="availableVehicles">${availableVehicles != null ?
-                                        availableVehicles : 0}</div>
-                                    <div class="stat-label">Xe có sẵn</div>
+
+                                <div class="filter-group">
+                                    <label for="filterBrand">Thương hiệu</label>
+                                    <select id="filterBrand">
+                                        <option value="">Tất cả thương hiệu</option>
+                                        <c:forEach var="brand" items="${brands}">
+                                            <option value="${brand.key}">${brand.value}</option>
+                                        </c:forEach>
+                                    </select>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="rentedVehicles">${rentedVehicles != null ?
-                                        rentedVehicles : 0}</div>
-                                    <div class="stat-label">Đang được thuê</div>
+
+                                <div class="filter-group">
+                                    <label for="filterStatus">Trạng thái</label>
+                                    <select id="filterStatus">
+                                        <option value="">Tất cả trạng thái</option>
+                                        <option value="available">Có sẵn</option>
+                                        <option value="rented">Đang thuê</option>
+                                        <option value="maintenance">Bảo trì</option>
+                                        <option value="unavailable">Không khả dụng</option>
+                                    </select>
                                 </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" id="maintenanceVehicles">${maintenanceVehicles != null ?
-                                        maintenanceVehicles : 0}</div>
-                                    <div class="stat-label">Đang bảo trì</div>
+
+                                <div class="filter-group">
+                                    <label for="filterSearch">Tìm kiếm</label>
+                                    <input type="text" id="filterSearch" placeholder="Biển số, model...">
                                 </div>
                             </div>
 
-                            <!-- Filters Section -->
-                            <section class="filters-section">
-                                <h3><i class="fas fa-filter"></i> Bộ lọc</h3>
-                                <div class="filter-grid">
-                                    <div class="filter-group">
-                                        <label for="filterCategory">Loại xe</label>
-                                        <select id="filterCategory">
-                                            <option value="">Tất cả loại</option>
-                                            <option value="motorcycle">Xe máy</option>
-                                            <option value="electric">Xe điện</option>
-                                            <option value="car">Ô tô</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="filter-group">
-                                        <label for="filterBrand">Thương hiệu</label>
-                                        <select id="filterBrand">
-                                            <option value="">Tất cả thương hiệu</option>
-                                            <c:forEach var="brand" items="${brands}">
-                                                <option value="${brand.key}">${brand.value}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </div>
-
-                                    <div class="filter-group">
-                                        <label for="filterStatus">Trạng thái</label>
-                                        <select id="filterStatus">
-                                            <option value="">Tất cả trạng thái</option>
-                                            <option value="available">Có sẵn</option>
-                                            <option value="rented">Đang thuê</option>
-                                            <option value="maintenance">Bảo trì</option>
-                                            <option value="unavailable">Không khả dụng</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="filter-group">
-                                        <label for="filterSearch">Tìm kiếm</label>
-                                        <input type="text" id="filterSearch" placeholder="Biển số, model...">
-                                    </div>
-                                </div>
-
-                                <div class="filter-actions">
-                                    <button class="btn btn-primary" id="applyFilters">
-                                        <i class="fas fa-search"></i> Áp dụng bộ lọc
-                                    </button>
-                                    <button class="btn btn-outline" id="resetFilters">
-                                        <i class="fas fa-redo"></i> Đặt lại
-                                    </button>
-                                    <button class="btn btn-success" id="exportBtn">
-                                        <i class="fas fa-file-export"></i> Xuất Excel
-                                    </button>
-                                </div>
-                            </section>
-
-                            <!-- View Toggle -->
-                            <div class="view-toggle">
-                                <button class="view-btn active" id="gridViewBtn">
-                                    <i class="fas fa-th"></i> Grid
+                            <div class="filter-actions">
+                                <button class="btn btn-primary" id="applyFilters">
+                                    <i class="fas fa-search"></i> Áp dụng bộ lọc
                                 </button>
-                                <button class="view-btn" id="tableViewBtn">
-                                    <i class="fas fa-list"></i> Table
+                                <button class="btn btn-outline" id="resetFilters">
+                                    <i class="fas fa-redo"></i> Đặt lại
+                                </button>
+                                <button class="btn btn-success" id="exportBtn">
+                                    <i class="fas fa-file-export"></i> Xuất Excel
                                 </button>
                             </div>
+                        </section>
 
-                            <!-- Vehicles Grid View -->
-                            <div class="vehicles-grid" id="vehiclesGridView">
-                                <c:forEach var="v" items="${vehicles}">
-                                    <div class="vehicle-card-grid">
-                                        <div class="vehicle-card-header">
-                                            <img src="${v.mainImageUrl}" alt="${v.brandName} ${v.modelName}"
-                                                onerror="this.src='${pageContext.request.contextPath}/images/default-car.png'">
-                                            <span class="status-badge status-${v.available ? 'available' : 'rented'}">
-                                                ${v.available ? 'Có sẵn' : 'Đang thuê'}
+                        <!-- View Toggle -->
+                        <div class="view-toggle">
+                            <button class="view-btn active" id="gridViewBtn">
+                                <i class="fas fa-th"></i> Grid
+                            </button>
+                            <button class="view-btn" id="tableViewBtn">
+                                <i class="fas fa-list"></i> Table
+                            </button>
+                        </div>
+
+                        <!-- Vehicles Grid View -->
+                        <div class="vehicles-grid" id="vehiclesGridView">
+                            <c:forEach var="v" items="${vehicles}">
+                                <div class="vehicle-card-grid">
+                                    <div class="vehicle-card-header">
+                                        <img src="${v.mainImageUrl}" alt="${v.brandName} ${v.modelName}"
+                                            onerror="this.src='${pageContext.request.contextPath}/images/default-car.png'">
+                                        <span class="status-badge status-${v.available ? 'available' : 'rented'}">
+                                            ${v.available ? 'Có sẵn' : 'Đang thuê'}
+                                        </span>
+                                    </div>
+                                    <div class="vehicle-card-body">
+                                        <div class="vehicle-title">
+                                            <h4>${v.brandName} ${v.modelName} ${v.modelYear}</h4>
+                                            <div class="vehicle-price">
+                                                <fmt:formatNumber value="${v.dailyRate}" type="currency"
+                                                    currencySymbol="đ" /> <small>/ngày</small>
+                                            </div>
+                                        </div>
+                                        <div class="vehicle-details">
+                                            <div class="vehicle-detail">
+                                                <i class="fas fa-tag"></i> ${v.licensePlate}
+                                            </div>
+                                            <div class="vehicle-detail">
+                                                <i class="fas fa-gas-pump"></i> ${v.fuelType}
+                                            </div>
+                                            <div class="vehicle-detail">
+                                                <i class="fas fa-user"></i> ${v.seatCapacity} chỗ
+                                            </div>
+                                        </div>
+                                        <div class="vehicle-rating">
+                                            <span class="stars">
+                                                <c:forEach begin="1" end="5" var="i">
+                                                    <i class="${i <= v.rating ? 'fas' : 'far'} fa-star"
+                                                        style="color: #f39c12;"></i>
+                                                </c:forEach>
                                             </span>
+                                            <span>${v.rating} (${v.totalRentals})</span>
                                         </div>
-                                        <div class="vehicle-card-body">
-                                            <div class="vehicle-title">
-                                                <h4>${v.brandName} ${v.modelName} ${v.modelYear}</h4>
-                                                <div class="vehicle-price">
-                                                    <fmt:formatNumber value="${v.dailyRate}" type="currency"
-                                                        currencySymbol="đ" /> <small>/ngày</small>
-                                                </div>
-                                            </div>
-                                            <div class="vehicle-details">
-                                                <div class="vehicle-detail">
-                                                    <i class="fas fa-tag"></i> ${v.licensePlate}
-                                                </div>
-                                                <div class="vehicle-detail">
-                                                    <i class="fas fa-gas-pump"></i> ${v.fuelType}
-                                                </div>
-                                                <div class="vehicle-detail">
-                                                    <i class="fas fa-user"></i> ${v.seatCapacity} chỗ
-                                                </div>
-                                            </div>
-                                            <div class="vehicle-rating">
-                                                <span class="stars">
-                                                    <c:forEach begin="1" end="5" var="i">
-                                                        <i class="${i <= v.rating ? 'fas' : 'far'} fa-star"
-                                                            style="color: #f39c12;"></i>
-                                                    </c:forEach>
-                                                </span>
-                                                <span>${v.rating} (${v.totalRentals})</span>
-                                            </div>
-                                            <p style="font-size: 0.9rem; color: #666; margin: 0.5rem 0;">
-                                                <c:if test="${not empty v.description}">
-                                                    ${fn:substring(v.description, 0, 60)}${fn:length(v.description) > 60
-                                                    ? '...' : ''}
-                                                </c:if>
-                                            </p>
-                                            <div class="vehicle-stats">
-                                                <div class="stat">
-                                                    <i class="fas fa-calendar-check"></i> ${v.totalRentals} lần thuê
-                                                </div>
-                                            </div>
-                                            <div class="vehicle-actions">
-                                                <button class="btn btn-outline view-detail" data-id="${v.vehicleId}">
-                                                    <i class="fas fa-eye"></i> Xem
-                                                </button>
-                                                <button class="btn btn-primary edit-vehicle" data-id="${v.vehicleId}">
-                                                    <i class="fas fa-edit"></i> Sửa
-                                                </button>
-                                                <button class="btn btn-danger delete-vehicle" data-id="${v.vehicleId}">
-                                                    <i class="fas fa-trash"></i> Xóa
-                                                </button>
+                                        <p style="font-size: 0.9rem; color: #666; margin: 0.5rem 0;">
+                                            <c:if test="${not empty v.description}">
+                                                ${fn:substring(v.description, 0, 60)}${fn:length(v.description) > 60
+                                                ? '...' : ''}
+                                            </c:if>
+                                        </p>
+                                        <div class="vehicle-stats">
+                                            <div class="stat">
+                                                <i class="fas fa-calendar-check"></i> ${v.totalRentals} lần thuê
                                             </div>
                                         </div>
-                                    </div>
-                                </c:forEach>
-                                <c:if test="${empty vehicles}">
-                                    <div style="grid-column: 1/-1; text-align: center; padding: 2rem;">
-                                        <p>Không tìm thấy xe nào phù hợp.</p>
-                                    </div>
-                                </c:if>
-                            </div>
-
-                            <!-- Vehicles Table View -->
-                            <div class="vehicles-table-container" id="vehiclesTableView" style="display: none;">
-                                <div class="table-toolbar">
-                                    <div class="table-info">
-                                        Hiển thị <span id="tableCount">${fn:length(vehicles)}</span> trên tổng số <span
-                                            id="tableTotal">${totalVehicles}</span> xe
-                                    </div>
-                                    <div class="table-actions">
-                                        <button class="btn btn-outline" id="selectAllBtn">
-                                            <i class="fas fa-check-square"></i> Chọn tất cả
-                                        </button>
-                                        <button class="btn btn-danger" id="deleteSelectedBtn">
-                                            <i class="fas fa-trash"></i> Xóa đã chọn
-                                        </button>
+                                        <div class="vehicle-actions">
+                                            <button class="btn btn-outline view-detail" data-id="${v.vehicleId}">
+                                                <i class="fas fa-eye"></i> Xem
+                                            </button>
+                                            <button class="btn btn-primary edit-vehicle" data-id="${v.vehicleId}">
+                                                <i class="fas fa-edit"></i> Sửa
+                                            </button>
+                                            <button class="btn btn-danger delete-vehicle" data-id="${v.vehicleId}">
+                                                <i class="fas fa-trash"></i> Xóa
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
+                            </c:forEach>
+                            <c:if test="${empty vehicles}">
+                                <div style="grid-column: 1/-1; text-align: center; padding: 2rem;">
+                                    <p>Không tìm thấy xe nào phù hợp.</p>
+                                </div>
+                            </c:if>
+                        </div>
 
-                                <div class="table-responsive">
-                                    <table id="vehiclesTable">
-                                        <thead>
+                        <!-- Vehicles Table View -->
+                        <div class="vehicles-table-container" id="vehiclesTableView" style="display: none;">
+                            <div class="table-toolbar">
+                                <div class="table-info">
+                                    Hiển thị <span id="tableCount">${fn:length(vehicles)}</span> trên tổng số <span
+                                        id="tableTotal">${totalVehicles}</span> xe
+                                </div>
+                                <div class="table-actions">
+                                    <button class="btn btn-outline" id="selectAllBtn">
+                                        <i class="fas fa-check-square"></i> Chọn tất cả
+                                    </button>
+                                    <button class="btn btn-danger" id="deleteSelectedBtn">
+                                        <i class="fas fa-trash"></i> Xóa đã chọn
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table id="vehiclesTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50px;">
+                                                <input type="checkbox" class="select-checkbox" id="selectAllCheckbox">
+                                            </th>
+                                            <th style="width: 80px;">Ảnh</th>
+                                            <th>Thông tin xe</th>
+                                            <th>Loại xe</th>
+                                            <th>Giá thuê</th>
+                                            <th>Trạng thái</th>
+                                            <th>Đánh giá</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vehiclesTableBody">
+                                        <c:forEach var="v" items="${vehicles}">
                                             <tr>
-                                                <th style="width: 50px;">
-                                                    <input type="checkbox" class="select-checkbox"
-                                                        id="selectAllCheckbox">
-                                                </th>
-                                                <th style="width: 80px;">Ảnh</th>
-                                                <th>Thông tin xe</th>
-                                                <th>Loại xe</th>
-                                                <th>Giá thuê</th>
-                                                <th>Trạng thái</th>
-                                                <th>Đánh giá</th>
-                                                <th>Thao tác</th>
+                                                <td>
+                                                    <input type="checkbox" class="select-checkbox select-vehicle"
+                                                        data-id="${v.vehicleId}">
+                                                </td>
+                                                <td>
+                                                    <img src="${v.mainImageUrl}" class="vehicle-thumb"
+                                                        alt="${v.brandName} ${v.modelName}"
+                                                        onerror="this.src='${pageContext.request.contextPath}/images/default-car.png'">
+                                                </td>
+                                                <td>
+                                                    <div style="font-weight: 600;">${v.brandName} ${v.modelName}
+                                                        ${v.modelYear}</div>
+                                                    <div style="font-size: 0.8rem; color: #666;">${v.licensePlate}
+                                                    </div>
+                                                    <div style="font-size: 0.8rem;">${v.color} • ${v.seatCapacity}
+                                                        chỗ</div>
+                                                </td>
+                                                <td>${v.categoryName}</td>
+                                                <td>
+                                                    <div style="font-weight: 600; color: var(--secondary);">
+                                                        <fmt:formatNumber value="${v.dailyRate}" type="currency"
+                                                            currencySymbol="đ" />
+                                                    </div>
+                                                    <div style="font-size: 0.8rem; color: #666;">/ngày</div>
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        class="status-badge status-${v.available ? 'available' : 'rented'}">
+                                                        ${v.available ? 'Có sẵn' : 'Đang thuê'}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div style="display: flex; align-items: center; gap: 5px;">
+                                                        <span style="color: #f39c12;"><i class="fas fa-star"></i></span>
+                                                        <span style="font-size: 0.8rem;">${v.rating}</span>
+                                                    </div>
+                                                    <div style="font-size: 0.8rem; color: #666;">${v.totalRentals}
+                                                        lần thuê</div>
+                                                </td>
+                                                <td>
+                                                    <div style="display: flex; gap: 5px;">
+                                                        <button class="action-btn view-detail" data-id="${v.vehicleId}"
+                                                            title="Xem chi tiết">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button class="action-btn edit-vehicle" data-id="${v.vehicleId}"
+                                                            title="Chỉnh sửa">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="action-btn delete-vehicle"
+                                                            data-id="${v.vehicleId}" title="Xóa">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody id="vehiclesTableBody">
-                                            <c:forEach var="v" items="${vehicles}">
-                                                <tr>
-                                                    <td>
-                                                        <input type="checkbox" class="select-checkbox select-vehicle"
-                                                            data-id="${v.vehicleId}">
-                                                    </td>
-                                                    <td>
-                                                        <img src="${v.mainImageUrl}" class="vehicle-thumb"
-                                                            alt="${v.brandName} ${v.modelName}"
-                                                            onerror="this.src='${pageContext.request.contextPath}/images/default-car.png'">
-                                                    </td>
-                                                    <td>
-                                                        <div style="font-weight: 600;">${v.brandName} ${v.modelName}
-                                                            ${v.modelYear}</div>
-                                                        <div style="font-size: 0.8rem; color: #666;">${v.licensePlate}
-                                                        </div>
-                                                        <div style="font-size: 0.8rem;">${v.color} • ${v.seatCapacity}
-                                                            chỗ</div>
-                                                    </td>
-                                                    <td>${v.categoryName}</td>
-                                                    <td>
-                                                        <div style="font-weight: 600; color: var(--secondary);">
-                                                            <fmt:formatNumber value="${v.dailyRate}" type="currency"
-                                                                currencySymbol="đ" />
-                                                        </div>
-                                                        <div style="font-size: 0.8rem; color: #666;">/ngày</div>
-                                                    </td>
-                                                    <td>
-                                                        <span
-                                                            class="status-badge status-${v.available ? 'available' : 'rented'}">
-                                                            ${v.available ? 'Có sẵn' : 'Đang thuê'}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <div style="display: flex; align-items: center; gap: 5px;">
-                                                            <span style="color: #f39c12;"><i
-                                                                    class="fas fa-star"></i></span>
-                                                            <span style="font-size: 0.8rem;">${v.rating}</span>
-                                                        </div>
-                                                        <div style="font-size: 0.8rem; color: #666;">${v.totalRentals}
-                                                            lần thuê</div>
-                                                    </td>
-                                                    <td>
-                                                        <div style="display: flex; gap: 5px;">
-                                                            <button class="action-btn view-detail"
-                                                                data-id="${v.vehicleId}" title="Xem chi tiết">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                            <button class="action-btn edit-vehicle"
-                                                                data-id="${v.vehicleId}" title="Chỉnh sửa">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
-                                                            <button class="action-btn delete-vehicle"
-                                                                data-id="${v.vehicleId}" title="Xóa">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </c:forEach>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
 
-                            <!-- Server-side Pagination -->
-                            <div class="pagination">
-                                <c:if test="${totalPages > 1}">
-                                    <c:if test="${currentPage > 1}">
-                                        <a href="?page=${currentPage - 1}&keyword=${keyword}&categoryId=${categoryId}&brandId=${brandId}&status=${status}"
-                                            class="page-btn"><i class="fas fa-chevron-left"></i></a>
-                                    </c:if>
-
-                                    <c:forEach begin="1" end="${totalPages}" var="p">
-                                        <a href="?page=${p}&keyword=${keyword}&categoryId=${categoryId}&brandId=${brandId}&status=${status}"
-                                            class="page-btn ${p == currentPage ? 'active' : ''}">${p}</a>
-                                    </c:forEach>
-
-                                    <c:if test="${currentPage < totalPages}">
-                                        <a href="?page=${currentPage + 1}&keyword=${keyword}&categoryId=${categoryId}&brandId=${brandId}&status=${status}"
-                                            class="page-btn"><i class="fas fa-chevron-right"></i></a>
-                                    </c:if>
+                        <!-- Server-side Pagination -->
+                        <div class="pagination">
+                            <c:if test="${totalPages > 1}">
+                                <c:if test="${currentPage > 1}">
+                                    <a href="?page=${currentPage - 1}&keyword=${keyword}&categoryId=${categoryId}&brandId=${brandId}&status=${status}"
+                                        class="page-btn"><i class="fas fa-chevron-left"></i></a>
                                 </c:if>
-                            </div>
 
-                            <!-- Add/Edit Vehicle Modal -->
-                            <div class="modal" id="vehicleModal">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h3 id="modalTitle">Thêm xe mới</h3>
-                                        <button class="close-modal" id="closeModal">&times;</button>
-                                    </div>
+                                <c:forEach begin="1" end="${totalPages}" var="p">
+                                    <a href="?page=${p}&keyword=${keyword}&categoryId=${categoryId}&brandId=${brandId}&status=${status}"
+                                        class="page-btn ${p == currentPage ? 'active' : ''}">${p}</a>
+                                </c:forEach>
 
-                                    <div class="modal-body">
-                                        <form id="vehicleForm"
-                                            action="${pageContext.request.contextPath}/admin/vehicles" method="post">
-                                            <input type="hidden" id="vehicleId" name="vehicleId" value="">
-                                            <input type="hidden" name="action" id="formAction" value="add">
+                                <c:if test="${currentPage < totalPages}">
+                                    <a href="?page=${currentPage + 1}&keyword=${keyword}&categoryId=${categoryId}&brandId=${brandId}&status=${status}"
+                                        class="page-btn"><i class="fas fa-chevron-right"></i></a>
+                                </c:if>
+                            </c:if>
+                        </div>
 
-                                            <div class="form-grid">
-                                                <div class="form-group">
-                                                    <label for="vehicleLicensePlate">Biển số xe *</label>
-                                                    <input type="text" id="vehicleLicensePlate" name="licensePlate"
-                                                        required>
-                                                </div>
+                        <!-- Add/Edit Vehicle Modal -->
+                        <div class="modal" id="vehicleModal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 id="modalTitle">Thêm xe mới</h3>
+                                    <button class="close-modal" id="closeModal">&times;</button>
+                                </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleBrand">Thương hiệu *</label>
-                                                    <select id="vehicleBrand" name="brandId" required>
-                                                        <option value="">Chọn thương hiệu</option>
-                                                        <c:forEach var="brand" items="${brands}">
-                                                            <option value="${brand.key}">${brand.value}</option>
-                                                        </c:forEach>
-                                                    </select>
-                                                </div>
+                                <div class="modal-body">
+                                    <form id="vehicleForm" action="${pageContext.request.contextPath}/admin/vehicles"
+                                        method="post">
+                                        <input type="hidden" id="vehicleId" name="vehicleId" value="">
+                                        <input type="hidden" name="action" id="formAction" value="add">
 
-                                                <div class="form-group">
-                                                    <label for="vehicleModel">Model *</label>
-                                                    <input type="text" id="vehicleModel" name="model" required>
-                                                </div>
+                                        <div class="form-grid">
+                                            <div class="form-group">
+                                                <label for="vehicleLicensePlate">Biển số xe *</label>
+                                                <input type="text" id="vehicleLicensePlate" name="licensePlate"
+                                                    required>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleYear">Năm sản xuất *</label>
-                                                    <select id="vehicleYear" name="year" required>
-                                                        <option value="">Chọn năm</option>
-                                                        <option value="2023">2023</option>
-                                                        <option value="2022">2022</option>
-                                                        <option value="2021">2021</option>
-                                                        <option value="2020">2020</option>
-                                                        <option value="2019">2019</option>
-                                                        <option value="2018">2018</option>
-                                                    </select>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleBrand">Thương hiệu *</label>
+                                                <select id="vehicleBrand" name="brandId" required>
+                                                    <option value="">Chọn thương hiệu</option>
+                                                    <c:forEach var="brand" items="${brands}">
+                                                        <option value="${brand.key}">${brand.value}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleCategory">Loại xe *</label>
-                                                    <select id="vehicleCategory" name="categoryId" required>
-                                                        <option value="">Chọn loại xe</option>
-                                                        <c:forEach var="category" items="${categories}">
-                                                            <option value="${category.key}">${category.value}</option>
-                                                        </c:forEach>
-                                                    </select>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleModel">Model *</label>
+                                                <input type="text" id="vehicleModel" name="model" required>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleColor">Màu sắc *</label>
-                                                    <input type="text" id="vehicleColor" name="color" required>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleYear">Năm sản xuất *</label>
+                                                <select id="vehicleYear" name="year" required>
+                                                    <option value="">Chọn năm</option>
+                                                    <option value="2023">2023</option>
+                                                    <option value="2022">2022</option>
+                                                    <option value="2021">2021</option>
+                                                    <option value="2020">2020</option>
+                                                    <option value="2019">2019</option>
+                                                    <option value="2018">2018</option>
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleFuelType">Loại nhiên liệu</label>
-                                                    <select id="vehicleFuelType" name="fuelType">
-                                                        <option value="gasoline">Xăng</option>
-                                                        <option value="electric">Điện</option>
-                                                        <option value="diesel">Dầu Diesel</option>
-                                                        <option value="hybrid">Hybrid</option>
-                                                    </select>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleCategory">Loại xe *</label>
+                                                <select id="vehicleCategory" name="categoryId" required>
+                                                    <option value="">Chọn loại xe</option>
+                                                    <c:forEach var="category" items="${categories}">
+                                                        <option value="${category.key}">${category.value}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleTransmission">Hộp số</label>
-                                                    <select id="vehicleTransmission" name="transmission">
-                                                        <option value="manual">Số sàn</option>
-                                                        <option value="automatic">Tự động</option>
-                                                    </select>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleColor">Màu sắc *</label>
+                                                <input type="text" id="vehicleColor" name="color" required>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleEngine">Động cơ</label>
-                                                    <input type="text" id="vehicleEngine" name="engine"
-                                                        placeholder="110cc, 1.5L...">
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleFuelType">Loại nhiên liệu</label>
+                                                <select id="vehicleFuelType" name="fuelType">
+                                                    <option value="gasoline">Xăng</option>
+                                                    <option value="electric">Điện</option>
+                                                    <option value="diesel">Dầu Diesel</option>
+                                                    <option value="hybrid">Hybrid</option>
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleSeats">Số chỗ</label>
-                                                    <select id="vehicleSeats" name="seats">
-                                                        <option value="1">1 chỗ</option>
-                                                        <option value="2">2 chỗ</option>
-                                                        <option value="4">4 chỗ</option>
-                                                        <option value="5">5 chỗ</option>
-                                                        <option value="7">7 chỗ</option>
-                                                    </select>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleTransmission">Hộp số</label>
+                                                <select id="vehicleTransmission" name="transmission">
+                                                    <option value="manual">Số sàn</option>
+                                                    <option value="automatic">Tự động</option>
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleDailyRate">Giá thuê/ngày (VNĐ) *</label>
-                                                    <input type="number" id="vehicleDailyRate" name="dailyRate" required
-                                                        min="0">
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleEngine">Động cơ</label>
+                                                <input type="text" id="vehicleEngine" name="engine"
+                                                    placeholder="110cc, 1.5L...">
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleWeeklyRate">Giá thuê/tuần (VNĐ)</label>
-                                                    <input type="number" id="vehicleWeeklyRate" name="weeklyRate"
-                                                        min="0">
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleSeats">Số chỗ</label>
+                                                <select id="vehicleSeats" name="seats">
+                                                    <option value="1">1 chỗ</option>
+                                                    <option value="2">2 chỗ</option>
+                                                    <option value="4">4 chỗ</option>
+                                                    <option value="5">5 chỗ</option>
+                                                    <option value="7">7 chỗ</option>
+                                                </select>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleMonthlyRate">Giá thuê/tháng (VNĐ)</label>
-                                                    <input type="number" id="vehicleMonthlyRate" name="monthlyRate"
-                                                        min="0">
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleDailyRate">Giá thuê/ngày (VNĐ) *</label>
+                                                <input type="number" id="vehicleDailyRate" name="dailyRate" required
+                                                    min="0">
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleDeposit">Tiền cọc (VNĐ)</label>
-                                                    <input type="number" id="vehicleDeposit" name="deposit" min="0">
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleWeeklyRate">Giá thuê/tuần (VNĐ)</label>
+                                                <input type="number" id="vehicleWeeklyRate" name="weeklyRate" min="0">
+                                            </div>
 
-                                                <div class="form-group full-width">
-                                                    <label for="vehicleDescription">Mô tả</label>
-                                                    <textarea id="vehicleDescription" name="description"
-                                                        rows="3"></textarea>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleMonthlyRate">Giá thuê/tháng (VNĐ)</label>
+                                                <input type="number" id="vehicleMonthlyRate" name="monthlyRate" min="0">
+                                            </div>
 
-                                                <div class="form-group full-width">
-                                                    <label for="vehicleSpecifications">Thông số kỹ thuật (JSON)</label>
-                                                    <textarea id="vehicleSpecifications" name="specifications" rows="3"
-                                                        placeholder='{"max_speed": "120km/h", "fuel_capacity": "4L"}'></textarea>
-                                                </div>
+                                            <div class="form-group">
+                                                <label for="vehicleDeposit">Tiền cọc (VNĐ)</label>
+                                                <input type="number" id="vehicleDeposit" name="deposit" min="0">
+                                            </div>
 
-                                                <div class="form-group full-width">
-                                                    <label for="vehicleAmenities">Tiện nghi</label>
-                                                    <div class="form-row">
-                                                        <c:forEach var="amenity" items="${amenities}">
-                                                            <label
-                                                                style="display: flex; align-items: center; gap: 5px;">
-                                                                <input type="checkbox" name="amenities"
-                                                                    value="${amenity.key}"> ${amenity.value}
-                                                            </label>
-                                                        </c:forEach>
-                                                    </div>
-                                                </div>
+                                            <div class="form-group full-width">
+                                                <label for="vehicleDescription">Mô tả</label>
+                                                <textarea id="vehicleDescription" name="description"
+                                                    rows="3"></textarea>
+                                            </div>
 
-                                                <div class="form-group full-width">
-                                                    <label>Hình ảnh xe</label>
-                                                    <div class="image-upload" id="imageUpload">
-                                                        <i class="fas fa-cloud-upload-alt"></i>
-                                                        <p>Kéo thả hình ảnh vào đây hoặc click để chọn</p>
-                                                        <p><small>Định dạng hỗ trợ: JPG, PNG, GIF. Tối đa 5MB mỗi
-                                                                ảnh</small></p>
-                                                        <input type="file" id="imageInput" multiple accept="image/*"
-                                                            style="display: none;">
-                                                    </div>
-                                                    <div class="image-preview" id="imagePreview"></div>
-                                                </div>
+                                            <div class="form-group full-width">
+                                                <label for="vehicleSpecifications">Thông số kỹ thuật (JSON)</label>
+                                                <textarea id="vehicleSpecifications" name="specifications" rows="3"
+                                                    placeholder='{"max_speed": "120km/h", "fuel_capacity": "4L"}'></textarea>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <label for="vehicleStatus">Trạng thái</label>
-                                                    <select id="vehicleStatus" name="status">
-                                                        <option value="available">Có sẵn</option>
-                                                        <option value="rented">Đang thuê</option>
-                                                        <option value="maintenance">Bảo trì</option>
-                                                        <option value="unavailable">Không khả dụng</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="vehicleFeatured">Nổi bật</label>
-                                                    <select id="vehicleFeatured" name="featured">
-                                                        <option value="0">Không</option>
-                                                        <option value="1">Có</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="vehicleLocation">Vị trí hiện tại</label>
-                                                    <input type="text" id="vehicleLocation" name="location"
-                                                        placeholder="Địa chỉ">
+                                            <div class="form-group full-width">
+                                                <label for="vehicleAmenities">Tiện nghi</label>
+                                                <div class="form-row">
+                                                    <c:forEach var="amenity" items="${amenities}">
+                                                        <label style="display: flex; align-items: center; gap: 5px;">
+                                                            <input type="checkbox" name="amenities"
+                                                                value="${amenity.key}"> ${amenity.value}
+                                                        </label>
+                                                    </c:forEach>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
 
-                                    <div class="modal-footer">
-                                        <button class="btn btn-outline" id="cancelModal">Hủy</button>
-                                        <button class="btn btn-primary" id="saveVehicle">Lưu thông tin</button>
-                                    </div>
-                                </div>
-                            </div>
+                                            <div class="form-group full-width">
+                                                <label>Hình ảnh xe</label>
+                                                <div class="image-upload" id="imageUpload">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <p>Kéo thả hình ảnh vào đây hoặc click để chọn</p>
+                                                    <p><small>Định dạng hỗ trợ: JPG, PNG, GIF. Tối đa 5MB mỗi
+                                                            ảnh</small></p>
+                                                    <input type="file" id="imageInput" multiple accept="image/*"
+                                                        style="display: none;">
+                                                </div>
+                                                <div class="image-preview" id="imagePreview"></div>
+                                            </div>
 
-                            <!-- Delete Confirmation Modal -->
-                            <div class="modal" id="deleteModal">
-                                <div class="modal-content" style="max-width: 400px;">
-                                    <div class="modal-header">
-                                        <h3><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa</h3>
-                                        <button class="close-modal" id="closeDeleteModal">&times;</button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p id="deleteMessage">Bạn có chắc chắn muốn xóa xe này?</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-outline" id="cancelDelete">Hủy</button>
-                                        <button class="btn btn-danger" id="confirmDelete">Xóa</button>
-                                    </div>
-                                </div>
-                            </div>
+                                            <div class="form-group">
+                                                <label for="vehicleStatus">Trạng thái</label>
+                                                <select id="vehicleStatus" name="status">
+                                                    <option value="available">Có sẵn</option>
+                                                    <option value="rented">Đang thuê</option>
+                                                    <option value="maintenance">Bảo trì</option>
+                                                    <option value="unavailable">Không khả dụng</option>
+                                                </select>
+                                            </div>
 
-                            <!-- Vehicle Detail Modal -->
-                            <div class="modal" id="detailModal">
-                                <div class="modal-content" style="max-width: 900px;">
-                                    <div class="modal-header">
-                                        <h3 id="detailVehicleName">Toyota Vios 2023</h3>
-                                        <button class="close-modal" id="closeDetailModal">&times;</button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="detailContent">
-                                            <!-- Detail content will be loaded dynamically -->
+                                            <div class="form-group">
+                                                <label for="vehicleFeatured">Nổi bật</label>
+                                                <select id="vehicleFeatured" name="featured">
+                                                    <option value="0">Không</option>
+                                                    <option value="1">Có</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="vehicleLocation">Vị trí hiện tại</label>
+                                                <input type="text" id="vehicleLocation" name="location"
+                                                    placeholder="Địa chỉ">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-outline" id="closeDetail">Đóng</button>
-                                        <button class="btn btn-primary" id="editDetail">Chỉnh sửa</button>
-                                    </div>
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-outline" id="cancelModal">Hủy</button>
+                                    <button class="btn btn-primary" id="saveVehicle">Lưu thông tin</button>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Delete Confirmation Modal -->
+                        <div class="modal" id="deleteModal">
+                            <div class="modal-content" style="max-width: 400px;">
+                                <div class="modal-header">
+                                    <h3><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa</h3>
+                                    <button class="close-modal" id="closeDeleteModal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <p id="deleteMessage">Bạn có chắc chắn muốn xóa xe này?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-outline" id="cancelDelete">Hủy</button>
+                                    <button class="btn btn-danger" id="confirmDelete">Xóa</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Detail Modal -->
+                        <div class="modal" id="detailModal">
+                            <div class="modal-content" style="max-width: 900px;">
+                                <div class="modal-header">
+                                    <h3 id="detailVehicleName">Toyota Vios 2023</h3>
+                                    <button class="close-modal" id="closeDetailModal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="detailContent">
+                                        <!-- Detail content will be loaded dynamically -->
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-outline" id="closeDetail">Đóng</button>
+                                    <button class="btn btn-primary" id="editDetail">Chỉnh sửa</button>
+                                </div>
+                            </div>
+                        </div>
                     </main>
 
                     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>

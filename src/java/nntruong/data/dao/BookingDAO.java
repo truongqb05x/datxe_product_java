@@ -1,6 +1,7 @@
 package nntruong.data.dao;
 
 import nntruong.data.model.Booking;
+import nntruong.data.model.User;
 import nntruong.data.model.Vehicle;
 import nntruong.utils.DatabaseConnection;
 
@@ -509,7 +510,7 @@ public class BookingDAO {
         
         try {
             conn = dbConnection.getConnection();
-            StringBuilder sql = new StringBuilder("SELECT b.*, u.full_name, u.phone, u.email, v.model_name, v.license_plate, v.color, v.daily_rate " +
+            StringBuilder sql = new StringBuilder("SELECT b.*, u.full_name, u.phone_number, u.email, v.model_name, v.license_plate, v.color, v.daily_rate " +
                                                 "FROM bookings b " +
                                                 "JOIN users u ON b.user_id = u.user_id " +
                                                 "JOIN vehicles v ON b.vehicle_id = v.vehicle_id " +
@@ -517,7 +518,7 @@ public class BookingDAO {
             List<Object> params = new ArrayList<>();
             
             if (keyword != null && !keyword.trim().isEmpty()) {
-                sql.append("AND (b.booking_code LIKE ? OR u.full_name LIKE ? OR u.phone LIKE ?) ");
+                sql.append("AND (b.booking_code LIKE ? OR u.full_name LIKE ? OR u.phone_number LIKE ?) ");
                 String likeKey = "%" + keyword + "%";
                 params.add(likeKey);
                 params.add(likeKey);
@@ -562,11 +563,11 @@ public class BookingDAO {
                 Booking b = mapResultSetToBooking(rs);
                 // Populate Customer (User) info
                 nntruong.data.model.User u = new nntruong.data.model.User();
-                u.setId(rs.getInt("user_id"));
+                u.setUserId(rs.getInt("user_id"));
                 u.setFullName(rs.getString("full_name"));
-                u.setPhone(rs.getString("phone"));
+                u.setPhone(rs.getString("phone_number"));
                 u.setEmail(rs.getString("email"));
-                b.setCustomer(u); // Assuming Booking has setCustomer
+                b.setCustomer(u); 
                 
                 // Populate Vehicle info
                 Vehicle v = new Vehicle();
@@ -605,7 +606,7 @@ public class BookingDAO {
                                                 "WHERE 1=1 ");
             List<Object> params = new ArrayList<>();
              if (keyword != null && !keyword.trim().isEmpty()) {
-                sql.append("AND (b.booking_code LIKE ? OR u.full_name LIKE ? OR u.phone LIKE ?) ");
+                sql.append("AND (b.booking_code LIKE ? OR u.full_name LIKE ? OR u.phone_number LIKE ?) ");
                 String likeKey = "%" + keyword + "%";
                 params.add(likeKey);
                 params.add(likeKey);

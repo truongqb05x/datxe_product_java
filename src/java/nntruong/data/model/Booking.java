@@ -26,6 +26,7 @@ public class Booking {
     
     // Linked object
     private Vehicle vehicle;
+    private User customer;
     
     // Thông tin thời gian
     private Timestamp pickupDate;
@@ -87,6 +88,10 @@ public class Booking {
     
     public void setBookingId(Integer bookingId) {
         this.bookingId = bookingId;
+    }
+
+    public Integer getId() {
+        return bookingId;
     }
     
     public String getBookingCode() {
@@ -152,6 +157,14 @@ public class Booking {
     public void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
     }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
+    }
     
     public Integer getTotalDays() {
         return totalDays;
@@ -159,6 +172,14 @@ public class Booking {
     
     public void setTotalDays(Integer totalDays) {
         this.totalDays = totalDays;
+    }
+
+    public long getTotalHours() {
+        if (pickupDate == null || returnDate == null) {
+            return 0;
+        }
+        long diffInMillis = returnDate.getTime() - pickupDate.getTime();
+        return java.util.concurrent.TimeUnit.MILLISECONDS.toHours(diffInMillis);
     }
     
     public BigDecimal getDailyRate() {

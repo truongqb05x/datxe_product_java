@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Cá Nhân - RentCar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../static/css/pages/trangcanhan.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/trangcanhan.css">
 </head>
+
 <body>
     <!-- Header -->
     <header>
@@ -26,17 +31,21 @@
                 <button class="btn btn-outline" id="loginBtn">Đăng nhập</button>
                 <button class="btn btn-primary" id="registerBtn">Đăng ký</button>
             </div>
-            
+
             <!-- User Avatar (hidden by default) -->
             <div class="user-avatar" id="userAvatar" style="display: none;">
                 <div class="avatar-placeholder" id="avatarPlaceholder">N</div>
                 <div class="user-dropdown">
                     <ul>
-                        <li><a href="${pageContext.request.contextPath}/trangcanhan.jsp" class="active"><i class="fas fa-user"></i> Thông tin tài khoản</a></li>
-                        <li><a href="${pageContext.request.contextPath}/lichsu.jsp"><i class="fas fa-history"></i> Lịch sử thuê xe</a></li>
-                        <li><a href="${pageContext.request.contextPath}/yeuthich.jsp"><i class="fas fa-heart"></i> Xe yêu thích</a></li>
+                        <li><a href="${pageContext.request.contextPath}/trangcanhan.jsp" class="active"><i
+                                    class="fas fa-user"></i> Thông tin tài khoản</a></li>
+                        <li><a href="${pageContext.request.contextPath}/lichsu.jsp"><i class="fas fa-history"></i> Lịch
+                                sử thuê xe</a></li>
+                        <li><a href="${pageContext.request.contextPath}/yeuthich.jsp"><i class="fas fa-heart"></i> Xe
+                                yêu thích</a></li>
                         <li class="divider"></li>
-                        <li><a href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                        <li><a href="${pageContext.request.contextPath}/logout"><i class="fas fa-sign-out-alt"></i> Đăng
+                                xuất</a></li>
                     </ul>
                 </div>
             </div>
@@ -65,29 +74,29 @@
             <div class="profile-menu">
                 <ul>
                     <li><a href="#" class="active" onclick="showSection('overview')">
-                        <i class="fas fa-user-circle"></i>
-                        Tổng quan
-                    </a></li>
+                            <i class="fas fa-user-circle"></i>
+                            Tổng quan
+                        </a></li>
                     <li><a href="#" onclick="showSection('personal')">
-                        <i class="fas fa-user-edit"></i>
-                        Thông tin cá nhân
-                    </a></li>
+                            <i class="fas fa-user-edit"></i>
+                            Thông tin cá nhân
+                        </a></li>
                     <li><a href="#" onclick="showSection('security')">
-                        <i class="fas fa-shield-alt"></i>
-                        Bảo mật
-                    </a></li>
+                            <i class="fas fa-shield-alt"></i>
+                            Bảo mật
+                        </a></li>
                     <li><a href="#" onclick="showSection('verification')">
-                        <i class="fas fa-id-card"></i>
-                        Xác minh danh tính
-                    </a></li>
+                            <i class="fas fa-id-card"></i>
+                            Xác minh danh tính
+                        </a></li>
                     <li><a href="#" onclick="showSection('notifications')">
-                        <i class="fas fa-bell"></i>
-                        Thông báo
-                    </a></li>
+                            <i class="fas fa-bell"></i>
+                            Thông báo
+                        </a></li>
                     <li><a href="#" onclick="showSection('preferences')">
-                        <i class="fas fa-cog"></i>
-                        Tùy chọn
-                    </a></li>
+                            <i class="fas fa-cog"></i>
+                            Tùy chọn
+                        </a></li>
                 </ul>
             </div>
         </div>
@@ -217,7 +226,7 @@
                             <input type="tel" id="phone" value="0912345678" required>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="email">Email *</label>
                         <input type="email" id="email" value="nguyenvana@email.com" required>
@@ -245,7 +254,7 @@
                         <label for="address">Địa chỉ</label>
                         <input type="text" id="address" value="123 Đường ABC, Quận 1, TP.HCM">
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="city">Thành phố</label>
@@ -480,7 +489,7 @@
                     <h3>Xóa tài khoản</h3>
                     <div class="form-group">
                         <p style="color: #666; margin-bottom: 1rem;">
-                            Khi xóa tài khoản, tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn và không thể khôi phục. 
+                            Khi xóa tài khoản, tất cả dữ liệu của bạn sẽ bị xóa vĩnh viễn và không thể khôi phục.
                             Hãy chắc chắn trước khi thực hiện thao tác này.
                         </p>
                         <button class="btn btn-danger" onclick="deleteAccount()">Xóa tài khoản</button>
@@ -546,7 +555,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Check if user is logged in (for demo, we'll assume they are)
             const isLoggedIn = true;
-            
+
             if (isLoggedIn) {
                 document.getElementById('authButtons').style.display = 'none';
                 document.getElementById('userAvatar').style.display = 'block';
@@ -560,16 +569,16 @@
             sections.forEach(section => {
                 section.classList.remove('active');
             });
-            
+
             // Show selected section
             document.getElementById(sectionId).classList.add('active');
-            
+
             // Update active menu item
             const menuItems = document.querySelectorAll('.profile-menu a');
             menuItems.forEach(item => {
                 item.classList.remove('active');
             });
-            
+
             event.target.classList.add('active');
         }
 
@@ -622,14 +631,14 @@
             notification.className = `notification ${type}`;
             notification.innerHTML = `
                 <div class="notification-content">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <i class="fas fa-${type == 'success' ? 'check-circle' : 'info-circle'}"></i>
                     <span>${message}</span>
                 </div>
                 <button class="notification-close" onclick="this.parentElement.remove()">
                     <i class="fas fa-times"></i>
                 </button>
             `;
-            
+
             // Add styles for notification
             notification.style.cssText = `
                 position: fixed;
@@ -644,12 +653,12 @@
                 gap: 1rem;
                 z-index: 10000;
                 animation: slideIn 0.3s ease;
-                border-left: 4px solid ${type === 'success' ? 'var(--success)' : 'var(--secondary)'};
+                border-left: 4px solid ${type == 'success' ? 'var(--success)' : 'var(--secondary)'};
                 max-width: 350px;
             `;
-            
+
             document.body.appendChild(notification);
-            
+
             // Auto remove after 5 seconds
             setTimeout(() => {
                 if (notification.parentElement) {
@@ -676,4 +685,5 @@
         document.head.appendChild(style);
     </script>
 </body>
+
 </html>
