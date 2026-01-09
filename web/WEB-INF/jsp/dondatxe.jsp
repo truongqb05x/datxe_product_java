@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-        <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+            <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
                 <!DOCTYPE html>
                 <html lang="vi">
@@ -1291,7 +1291,7 @@
                             $('#priceInsurance').text(formatCurrency(booking.insuranceFee));
                             $('#priceService').text(formatCurrency(booking.serviceFee));
                             $('#priceExtra').text(formatCurrency(booking.extraFee || 0));
-                            $('#priceDiscount').text(`-${formatCurrency(booking.discountAmount)}`);
+                            $('#priceDiscount').text(`-\${formatCurrency(booking.discountAmount)}`);
                             $('#priceTotal').text(formatCurrency(booking.totalAmount));
                             $('#priceDeposit').text(formatCurrency(booking.depositAmount));
                             $('#pricePaid').text(formatCurrency(booking.paidAmount));

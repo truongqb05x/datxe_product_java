@@ -158,7 +158,10 @@ public class AdminBookingApiServlet extends HttpServlet {
         cal.set(java.util.Calendar.DAY_OF_MONTH, cal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
         java.util.Date end = cal.getTime();
         
-        List<Booking> bookings = bookingDAO.searchBookings(null, null, null, null, null, start, end, 0, 1000);
+        java.sql.Date sqlStart = new java.sql.Date(start.getTime());
+        java.sql.Date sqlEnd = new java.sql.Date(end.getTime());
+        
+        List<Booking> bookings = bookingDAO.searchBookings(null, null, null, null, null, sqlStart, sqlEnd, 0, 1000);
         
         // Map to Calendar Event format
         List<Map<String, Object>> events = new ArrayList<>();

@@ -60,6 +60,10 @@ public class Vehicle {
         return vehicleId;
     }
     
+    public int getId() {
+        return vehicleId;
+    }
+    
     public void setVehicleId(int vehicleId) {
         this.vehicleId = vehicleId;
     }

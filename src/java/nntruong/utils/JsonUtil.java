@@ -22,6 +22,9 @@ public class JsonUtil {
         if (obj instanceof Number || obj instanceof Boolean) {
             return obj.toString();
         }
+        if (obj instanceof java.util.Date) {
+            return "\"" + obj.toString() + "\"";
+        }
         if (obj instanceof Collection) {
             return collectionToJson((Collection<?>) obj);
         }
